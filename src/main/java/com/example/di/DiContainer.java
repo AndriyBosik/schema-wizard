@@ -13,6 +13,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class DiContainer {
     private final Map<Class<?>, Map<String, Class<?>>> DI = new HashMap<>();
     private final Map<Class<?>, Map<String, Object>> CACHE = new HashMap<>();
