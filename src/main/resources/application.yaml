@@ -1,0 +1,18 @@
+schema:
+  wizard:
+    database:
+      connection-url: jdbc:postgresql://${DS_HOST:default}:${DS_PORT:5432}/${DS_DATABASE:changeMe}?reWriteBatchedInserts=true
+      username: postgres
+      password: postgres
+    migration:
+      packages:
+        - com.example.model
+        - com.example.db.migration
+        - com.example.db.${SOME_ENV_VALUE:default}.downgrade
+    logging:
+      - item: upgrade
+        log-level: ${UPGRADE_LOG_LEVEL:TRACE}
+        enabled: true
+      - item: downgrade
+        log-level: WARN
+        enabled: ${DOWNGRADE_LOG_ENABLED:false}
