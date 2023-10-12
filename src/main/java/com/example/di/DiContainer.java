@@ -27,6 +27,13 @@ public class DiContainer {
         DI.get(baseType).put(name, instanceType);
     }
 
+    public <T, R extends T> void register(Class<T> baseType, R instance) {
+        Class<?> instanceType = instance.getClass();
+        String name = getInstanceTypeName(instanceType);
+        CACHE.putIfAbsent(baseType, new HashMap<>());
+        CACHE.get(baseType).put(name, instance);
+    }
+
     public <T> T resolve(Class<T> baseType) {
         return resolve(baseType, null);
     }
@@ -36,7 +43,7 @@ public class DiContainer {
     }
 
     private <T> Map.Entry<String, T> resolve(Class<T> baseType, String name, Stack<Class<?>> dependencyStack) {
-        T obj = (T) CACHE.getOrDefault(baseType, new HashMap<>()).get(name);
+        T obj = getInstanceFromCache(baseType, name);
         if (obj != null) {
             return new AbstractMap.SimpleEntry<>(name, obj);
         }
@@ -53,6 +60,20 @@ public class DiContainer {
         CACHE.putIfAbsent(baseType, new HashMap<>());
         CACHE.get(baseType).put(entry.getKey(), entry.getValue());
         return entry;
+    }
+
+    private <T> T getInstanceFromCache(Class<T> baseType, String name) {
+        Map<String, Object> instances = CACHE.getOrDefault(baseType, new HashMap<>());
+        if (name == null) {
+            if (instances.isEmpty()) {
+                return null;
+            } else if (instances.size() == 1) {
+                return (T) instances.entrySet().iterator().next().getValue();
+            } else {
+                throw new ConflictDependencyException("More than one instance of " + baseType + " was found. Use @Qualifier to define exact instance which you want to inject");
+            }
+        }
+        return (T) instances.get(name);
     }
 
     private <T> T instantiateDependency(Class<T> instanceType, Stack<Class<?>> dependencyStack) {
