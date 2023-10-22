@@ -32,15 +32,15 @@ public class BoolColumnBuilder implements ColumnBuilder {
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
-                this.schema,
-                this.table,
-                this.name,
+                schema,
+                table,
+                name,
                 "boolean",
                 null,
                 null,
                 null,
                 null,
-                this.nullable,
+                nullable,
                 defaultValue == null ? null : String.valueOf(defaultValue));
     }
 }

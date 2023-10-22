@@ -7,8 +7,6 @@ public class IntegerColumnBuilder implements ColumnBuilder {
     private final String table;
     private final String name;
     private boolean nullable = true;
-    private Integer minValue;
-    private Integer maxValue;
     private Integer defaultValue;
 
     private IntegerColumnBuilder(String schema, String table, String name) {
@@ -26,16 +24,6 @@ public class IntegerColumnBuilder implements ColumnBuilder {
         return this;
     }
 
-    public IntegerColumnBuilder minValue(int minValue) {
-        this.minValue = minValue;
-        return this;
-    }
-
-    public IntegerColumnBuilder maxValue(int maxValue) {
-        this.maxValue = maxValue;
-        return this;
-    }
-
     public IntegerColumnBuilder defaultValue(int defaultValue) {
         this.defaultValue = defaultValue;
         return this;
@@ -44,15 +32,15 @@ public class IntegerColumnBuilder implements ColumnBuilder {
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
-                this.schema,
-                this.table,
-                this.name,
+                schema,
+                table,
+                name,
                 "integer",
-                this.minValue,
-                this.maxValue,
                 null,
                 null,
-                this.nullable,
+                null,
+                null,
+                nullable,
                 defaultValue == null ? null : String.valueOf(defaultValue));
     }
 }

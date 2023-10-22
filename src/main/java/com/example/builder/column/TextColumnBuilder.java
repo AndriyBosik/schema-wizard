@@ -44,15 +44,15 @@ public class TextColumnBuilder implements ColumnBuilder {
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
-                this.schema,
-                this.table,
-                this.name,
+                schema,
+                table,
+                name,
                 "text",
-                this.minLength,
-                this.maxLength,
+                minLength,
+                maxLength,
                 null,
                 null,
-                this.nullable,
+                nullable,
                 defaultValue);
     }
 }
