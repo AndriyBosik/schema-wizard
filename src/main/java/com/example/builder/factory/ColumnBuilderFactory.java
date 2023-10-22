@@ -1,6 +1,7 @@
 package com.example.builder.factory;
 
 import com.example.builder.column.BoolColumnBuilder;
+import com.example.builder.column.GenericColumnBuilder;
 import com.example.builder.column.IntegerColumnBuilder;
 import com.example.builder.column.TextColumnBuilder;
 
@@ -13,15 +14,19 @@ public class ColumnBuilderFactory {
         this.table = table;
     }
 
+    public GenericColumnBuilder generic(String name) {
+        return GenericColumnBuilder.builder(schema, table, name);
+    }
+
     public IntegerColumnBuilder integer(String name) {
-        return IntegerColumnBuilder.builder(this.schema, this.table, name);
+        return IntegerColumnBuilder.builder(schema, table, name);
     }
 
     public TextColumnBuilder text(String name) {
-        return TextColumnBuilder.builder(this.schema, this.table, name);
+        return TextColumnBuilder.builder(schema, table, name);
     }
 
     public BoolColumnBuilder bool(String name) {
-        return BoolColumnBuilder.builder(this.schema, this.table, name);
+        return BoolColumnBuilder.builder(schema, table, name);
     }
 }
