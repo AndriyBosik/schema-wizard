@@ -10,6 +10,7 @@ import com.example.exception.ConflictDependencyException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,7 +87,13 @@ public class DiContainer {
 
     private Object resolveConstructorParameter(Parameter parameter, Stack<Class<?>> dependencyStack) {
         if (parameter.getType().isAssignableFrom(List.class)) {
-            Class<?> listBaseType = (Class<?>) ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0];
+            Type parametrizedType = ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0];
+            Class<?> listBaseType;
+            if (parametrizedType instanceof ParameterizedType) {
+                listBaseType = (Class<?>) ((ParameterizedType) ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[0]).getRawType();
+            } else {
+                listBaseType = (Class<?>) parametrizedType;
+            }
             return DI.get(listBaseType).keySet().stream()
                     .map(aClass -> resolve(listBaseType, aClass, dependencyStack))
                     .map(Map.Entry::getValue)
