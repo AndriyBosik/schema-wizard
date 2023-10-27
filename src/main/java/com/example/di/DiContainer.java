@@ -94,13 +94,13 @@ public class DiContainer {
             } else {
                 listBaseType = (Class<?>) parametrizedType;
             }
-            return DI.get(listBaseType).keySet().stream()
+            return DI.getOrDefault(listBaseType, new HashMap<>()).keySet().stream()
                     .map(aClass -> resolve(listBaseType, aClass, dependencyStack))
                     .map(Map.Entry::getValue)
                     .collect(Collectors.toList());
         } else if (parameter.getType().isAssignableFrom(Map.class)) {
             Class<?> mapBaseType = (Class<?>) ((ParameterizedType) parameter.getParameterizedType()).getActualTypeArguments()[1];
-            return DI.get(mapBaseType).keySet().stream()
+            return DI.getOrDefault(mapBaseType, new HashMap<>()).keySet().stream()
                     .map(aClass -> resolve(mapBaseType, aClass, dependencyStack))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
