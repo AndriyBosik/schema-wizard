@@ -42,7 +42,7 @@ public class SW001CreateUsersTable implements Migration {
                                 return factory.text("last_name").nullable(false);
                             }
                         })
-                .checkIfNotExists(true)
+                .ifNotExists()
                 .primaryKey(table -> table.id())
                 .unique(table -> table.email())
                 .compositeUnique("unq_first_name_last_name", table -> List.of(table.firstName(), table.lastName()))
@@ -52,7 +52,7 @@ public class SW001CreateUsersTable implements Migration {
     @Override
     public Operation down(MigrationContext context) {
         return DropTable.builder("example", "users")
-                .checkIfExists(true)
+                .ifExists()
                 .build();
     }
 }

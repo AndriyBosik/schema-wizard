@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class CreateTable<T> implements OperationBuilder {
     private final String schema;
     private final String table;
-    private boolean checkIfNotExists;
+    private boolean ifNotExists;
     private final T columnsDefinitor;
     private PrimaryKeyDefinition<T> primaryKeyDefinition;
     private final List<AddForeignKeyOperation> foreignKeyOperations = new ArrayList<>();
@@ -33,6 +33,7 @@ public class CreateTable<T> implements OperationBuilder {
     ) {
         this.schema = schema;
         this.table = table;
+        this.ifNotExists = false;
         this.columnsDefinitor = columnsDefinitor;
     }
 
@@ -53,8 +54,8 @@ public class CreateTable<T> implements OperationBuilder {
         return new CreateTable<>(null, table, columnsFunction.apply(factory));
     }
 
-    public CreateTable<T> checkIfNotExists(boolean checkIfNotExists) {
-        this.checkIfNotExists = checkIfNotExists;
+    public CreateTable<T> ifNotExists() {
+        this.ifNotExists = true;
         return this;
     }
 
@@ -125,7 +126,7 @@ public class CreateTable<T> implements OperationBuilder {
         return new CreateTableOperation(
                 schema,
                 table,
-                checkIfNotExists,
+                ifNotExists,
                 primaryKeyDefinition == null ? null : new AddPrimaryKeyOperation(
                         schema,
                         table,

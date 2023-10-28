@@ -5,7 +5,7 @@ import java.util.List;
 public class CreateTableOperation implements Operation {
     private final String schema;
     private final String table;
-    private final boolean checkIfNotExists;
+    private final boolean ifNotExists;
     private final AddPrimaryKeyOperation primaryKey;
     private final List<AddColumnOperation> columns;
     private final List<AddForeignKeyOperation> foreignKeys;
@@ -14,7 +14,7 @@ public class CreateTableOperation implements Operation {
     public CreateTableOperation(
             String schema,
             String table,
-            boolean checkIfNotExists,
+            boolean ifNotExists,
             AddPrimaryKeyOperation primaryKey,
             List<AddColumnOperation> columns,
             List<AddForeignKeyOperation> foreignKeys,
@@ -22,7 +22,7 @@ public class CreateTableOperation implements Operation {
     ) {
         this.schema = schema;
         this.table = table;
-        this.checkIfNotExists = checkIfNotExists;
+        this.ifNotExists = ifNotExists;
         this.primaryKey = primaryKey;
         this.columns = columns;
         this.foreignKeys = foreignKeys;
@@ -37,8 +37,8 @@ public class CreateTableOperation implements Operation {
         return table;
     }
 
-    public boolean isCheckIfNotExists() {
-        return checkIfNotExists;
+    public boolean isIfNotExists() {
+        return ifNotExists;
     }
 
     public AddPrimaryKeyOperation getPrimaryKey() {

@@ -8,7 +8,7 @@ import com.example.utils.StringUtils;
 public class DropTable<T> implements OperationBuilder {
     private final String schema;
     private final String table;
-    private boolean checkIfExists;
+    private boolean ifExists;
 
     private DropTable(
             String schema,
@@ -16,6 +16,7 @@ public class DropTable<T> implements OperationBuilder {
     ) {
         this.schema = schema;
         this.table = table;
+        this.ifExists = false;
     }
 
     public static <T> DropTable<T> builder(String schema, String table) {
@@ -26,8 +27,8 @@ public class DropTable<T> implements OperationBuilder {
         return new DropTable<>(null, table);
     }
 
-    public DropTable<T> checkIfExists(boolean ifExists) {
-        this.checkIfExists = ifExists;
+    public DropTable<T> ifExists() {
+        this.ifExists = true;
         return this;
     }
 
@@ -36,6 +37,6 @@ public class DropTable<T> implements OperationBuilder {
         if (StringUtils.isBlank(table)) {
             throw new InvalidMigrationMetadataException("Table name must not be blank");
         }
-        return new DropTableOperation(schema, table, checkIfExists);
+        return new DropTableOperation(schema, table, ifExists);
     }
 }

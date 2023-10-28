@@ -3,16 +3,16 @@ package com.example.migration.operation;
 public class DropTableOperation implements Operation {
     private final String schema;
     private final String table;
-    private final boolean checkIfExists;
+    private final boolean ifExists;
 
     public DropTableOperation(
             String schema,
             String table,
-            boolean checkIfExists
+            boolean ifExists
     ) {
         this.schema = schema;
         this.table = table;
-        this.checkIfExists = checkIfExists;
+        this.ifExists = ifExists;
     }
 
     public String getSchema() {
@@ -23,7 +23,7 @@ public class DropTableOperation implements Operation {
         return table;
     }
 
-    public boolean getCheckIfExists() {
-        return checkIfExists;
+    public boolean isIfExists() {
+        return ifExists;
     }
 }
