@@ -1,8 +1,6 @@
 package com.example.migration.operation;
 
-public class DropColumnOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class DropColumnOperation extends TableBasedOperation {
     private final String name;
 
     public DropColumnOperation(
@@ -10,17 +8,8 @@ public class DropColumnOperation implements Operation {
             String table,
             String name
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

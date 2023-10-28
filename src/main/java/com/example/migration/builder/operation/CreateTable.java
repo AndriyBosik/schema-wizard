@@ -1,10 +1,10 @@
 package com.example.migration.builder.operation;
 
+import com.example.exception.InvalidMigrationMetadataException;
 import com.example.migration.builder.column.ColumnBuilder;
 import com.example.migration.factory.ColumnBuilderFactory;
-import com.example.migration.operation.*;
-import com.example.exception.InvalidMigrationMetadataException;
 import com.example.migration.metadata.ReferentialAction;
+import com.example.migration.operation.*;
 import com.example.utils.ReflectionUtils;
 import com.example.utils.StringUtils;
 
@@ -38,20 +38,22 @@ public class CreateTable<T> implements OperationBuilder {
     }
 
     public static <T> CreateTable<T> builder(
+            String table,
+            Function<ColumnBuilderFactory, T> columnsFunction
+    ) {
+        return CreateTable.builder(null, table, columnsFunction);
+    }
+
+    public static <T> CreateTable<T> builder(
             String schema,
             String table,
             Function<ColumnBuilderFactory, T> columnsFunction
     ) {
+        if (StringUtils.isBlank(table)) {
+            throw new InvalidMigrationMetadataException("Table name must not be blank");
+        }
         ColumnBuilderFactory factory = new ColumnBuilderFactory(schema, table);
         return new CreateTable<>(schema, table, columnsFunction.apply(factory));
-    }
-
-    public static <T> CreateTable<T> builder(
-            String table,
-            Function<ColumnBuilderFactory, T> columnsFunction
-    ) {
-        ColumnBuilderFactory factory = new ColumnBuilderFactory(null, table);
-        return new CreateTable<>(null, table, columnsFunction.apply(factory));
     }
 
     public CreateTable<T> ifNotExists() {
@@ -120,9 +122,6 @@ public class CreateTable<T> implements OperationBuilder {
 
     @Override
     public Operation build() {
-        if (StringUtils.isBlank(table)) {
-            throw new InvalidMigrationMetadataException("Table name must not be blank");
-        }
         return new CreateTableOperation(
                 schema,
                 table,

@@ -1,8 +1,6 @@
 package com.example.migration.operation;
 
-public class DropTableOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class DropTableOperation extends TableBasedOperation {
     private final boolean ifExists;
 
     public DropTableOperation(
@@ -10,17 +8,8 @@ public class DropTableOperation implements Operation {
             String table,
             boolean ifExists
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.ifExists = ifExists;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public boolean isIfExists() {

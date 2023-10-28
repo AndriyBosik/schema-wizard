@@ -2,9 +2,7 @@ package com.example.migration.operation;
 
 import com.example.migration.metadata.ReferentialAction;
 
-public class AddForeignKeyOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class AddForeignKeyOperation extends TableBasedOperation {
     private final String[] columns;
     private final String name;
     private final String foreignSchema;
@@ -24,8 +22,7 @@ public class AddForeignKeyOperation implements Operation {
             ReferentialAction onUpdate,
             ReferentialAction onDelete
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.columns = columns;
         this.name = name;
         this.foreignSchema = foreignSchema;
@@ -33,14 +30,6 @@ public class AddForeignKeyOperation implements Operation {
         this.foreignColumns = foreignColumns;
         this.onUpdate = onUpdate;
         this.onDelete = onDelete;
-    }
-
-    public String getSchema() {
-        return this.schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

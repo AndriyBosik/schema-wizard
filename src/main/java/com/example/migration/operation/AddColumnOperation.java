@@ -1,8 +1,6 @@
 package com.example.migration.operation;
 
-public class AddColumnOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class AddColumnOperation extends TableBasedOperation {
     private final String name;
     private final String type;
     private final Integer minLength;
@@ -24,8 +22,7 @@ public class AddColumnOperation implements Operation {
             boolean nullable,
             String sqlDefault
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
         this.type = type;
         this.minLength = minLength;
@@ -34,14 +31,6 @@ public class AddColumnOperation implements Operation {
         this.scale = scale;
         this.nullable = nullable;
         this.sqlDefault = sqlDefault;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

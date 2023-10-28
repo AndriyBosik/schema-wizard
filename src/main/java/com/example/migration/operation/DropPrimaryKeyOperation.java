@@ -1,8 +1,6 @@
 package com.example.migration.operation;
 
-public class DropPrimaryKeyOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class DropPrimaryKeyOperation extends TableBasedOperation {
     private final String name;
 
     public DropPrimaryKeyOperation(
@@ -10,17 +8,8 @@ public class DropPrimaryKeyOperation implements Operation {
             String table,
             String name
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
-    }
-
-    public String getSchema() {
-        return this.schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

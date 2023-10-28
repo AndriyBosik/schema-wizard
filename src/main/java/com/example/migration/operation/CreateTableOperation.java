@@ -2,9 +2,7 @@ package com.example.migration.operation;
 
 import java.util.List;
 
-public class CreateTableOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class CreateTableOperation extends TableBasedOperation {
     private final boolean ifNotExists;
     private final AddPrimaryKeyOperation primaryKey;
     private final List<AddColumnOperation> columns;
@@ -20,21 +18,12 @@ public class CreateTableOperation implements Operation {
             List<AddForeignKeyOperation> foreignKeys,
             List<AddUniqueOperation> uniques
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.ifNotExists = ifNotExists;
         this.primaryKey = primaryKey;
         this.columns = columns;
         this.foreignKeys = foreignKeys;
         this.uniques = uniques;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public boolean isIfNotExists() {

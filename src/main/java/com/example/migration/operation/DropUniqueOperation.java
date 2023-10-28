@@ -1,10 +1,6 @@
 package com.example.migration.operation;
 
-public class DropUniqueOperation implements Operation {
-    private final String schema;
-
-    private final String table;
-
+public class DropUniqueOperation extends TableBasedOperation {
     private final String name;
 
     public DropUniqueOperation(
@@ -12,17 +8,8 @@ public class DropUniqueOperation implements Operation {
             String table,
             String name
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

@@ -1,12 +1,7 @@
 package com.example.migration.operation;
 
-public class AddUniqueOperation implements Operation {
-    private final String schema;
-
-    private final String table;
-
+public class AddUniqueOperation extends TableBasedOperation {
     private final String name;
-
     private final String[] columns;
 
     public AddUniqueOperation(
@@ -15,18 +10,9 @@ public class AddUniqueOperation implements Operation {
             String name,
             String[] columns
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
         this.columns = columns;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {

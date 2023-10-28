@@ -1,8 +1,6 @@
 package com.example.migration.operation;
 
-public class AddPrimaryKeyOperation implements Operation {
-    private final String schema;
-    private final String table;
+public class AddPrimaryKeyOperation extends TableBasedOperation {
     private final String name;
     private final String[] columns;
 
@@ -12,18 +10,9 @@ public class AddPrimaryKeyOperation implements Operation {
             String name,
             String[] columns
     ) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.name = name;
         this.columns = columns;
-    }
-
-    public String getSchema() {
-        return this.schema;
-    }
-
-    public String getTable() {
-        return table;
     }
 
     public String getName() {
