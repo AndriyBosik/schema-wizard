@@ -1,11 +1,13 @@
 package com.example.property.service.impl;
 
 import com.example.exception.InvalidEnvironmentVariable;
+import com.example.metadata.ErrorMessage;
 import com.example.property.service.PropertyParser;
 import com.example.utils.StringUtils;
 
 public class PropertyParserImpl implements PropertyParser {
     private final static String ENVIRONMENT_START_SUBSTRING = "${";
+    private final static String SEMICOLON = ":";
 
     @Override
     public String parseStringValue(String propertyValue) {
@@ -20,16 +22,18 @@ public class PropertyParserImpl implements PropertyParser {
             int envValueStartFrom = envPatternStartFrom + ENVIRONMENT_START_SUBSTRING.length();
             int closingCurlyBraceIndex = findBalancedBrace(propertyValue, envValueStartFrom);
             if (closingCurlyBraceIndex < 0) {
-                throw new InvalidEnvironmentVariable("Invalid property value: '" + propertyValue + "'. Brackets are not balanced");
+                throw new InvalidEnvironmentVariable(
+                        String.format(ErrorMessage.INVALID_PROPERTY_VALUE_BRACKETS_NOT_BALANCED_FORMAT, propertyValue));
             }
             searchFrom = closingCurlyBraceIndex;
-            if (envPatternStartFrom - plainValueStartFrom > 0) {
+            if (envPatternStartFrom > plainValueStartFrom) {
                 value.append(propertyValue, plainValueStartFrom, envPatternStartFrom);
             }
             value.append(parseEnvironmentValue(propertyValue.substring(envValueStartFrom, closingCurlyBraceIndex)));
             plainValueStartFrom = closingCurlyBraceIndex + 1;
         }
-        if (propertyValue.length() - 1 - plainValueStartFrom > 0) {
+        int propertyValueLastIndex = propertyValue.length() - 1;
+        if (propertyValueLastIndex > plainValueStartFrom) {
             value.append(propertyValue, plainValueStartFrom, propertyValue.length());
         }
         return value.toString();
@@ -42,15 +46,18 @@ public class PropertyParserImpl implements PropertyParser {
     }
 
     private int findBalancedBrace(String propertyValue, int envStart) {
-        int notBalancesBraces = 1;
+        int notBalancedBraces = 1;
         for (int i = envStart; i < propertyValue.length(); i++) {
             char symbol = propertyValue.charAt(i);
-            if (symbol == '{') {
-                notBalancesBraces++;
-            } else if (symbol == '}') {
-                notBalancesBraces--;
+            switch (symbol) {
+                case '{':
+                    notBalancedBraces++;
+                    break;
+                case '}':
+                    notBalancedBraces--;
+                    break;
             }
-            if (notBalancesBraces == 0) {
+            if (notBalancedBraces == 0) {
                 return i;
             }
         }
@@ -60,11 +67,12 @@ public class PropertyParserImpl implements PropertyParser {
     private String parseEnvironmentValue(String rawValue) {
         rawValue = StringUtils.strip(rawValue);
         if (rawValue == null) {
-            throw new InvalidEnvironmentVariable("Null property value");
+            throw new InvalidEnvironmentVariable(ErrorMessage.NULL_PROPERTY_VALUE);
         }
-        int semicolonIndex = rawValue.indexOf(":");
+        int semicolonIndex = rawValue.indexOf(SEMICOLON);
         if (semicolonIndex == 0) {
-            throw new InvalidEnvironmentVariable("Invalid value for environment variable: " + rawValue);
+            throw new InvalidEnvironmentVariable(
+                    String.format(ErrorMessage.INVALID_ENVIRONMENT_VALUE_FORMAT, rawValue));
         }
         boolean semicolonPresent = semicolonIndex >= 1;
         String envName = rawValue.substring(0, semicolonPresent ? semicolonIndex : rawValue.length());
@@ -72,7 +80,7 @@ public class PropertyParserImpl implements PropertyParser {
         String systemEnvValue = StringUtils.strip(System.getenv(envName));
         boolean blankSystemEnvValue = StringUtils.isBlank(systemEnvValue);
         if (blankSystemEnvValue && defaultValue == null) {
-            throw new InvalidEnvironmentVariable("Environment value does not exist and no default value had been set");
+            throw new InvalidEnvironmentVariable(ErrorMessage.NON_EXISTENT_ENVIRONMENT);
         }
         return !blankSystemEnvValue ? systemEnvValue : defaultValue;
     }

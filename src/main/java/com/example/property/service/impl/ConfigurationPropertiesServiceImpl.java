@@ -1,6 +1,7 @@
 package com.example.property.service.impl;
 
 import com.example.exception.InvalidConfigurationPropertiesLocation;
+import com.example.metadata.ErrorMessage;
 import com.example.model.ConfigurationProperties;
 import com.example.property.model.YamlContext;
 import com.example.property.service.ConfigurationPropertiesService;
@@ -41,7 +42,8 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
     public ConfigurationProperties getProperties(String location) {
         URL resource = getClass().getClassLoader().getResource(location);
         if (resource == null) {
-            throw new InvalidConfigurationPropertiesLocation("Properties by location " + location + " do not exists");
+            throw new InvalidConfigurationPropertiesLocation(
+                    String.format(ErrorMessage.INVALID_PROPERTIES_LOCATION_FORMAT, location));
         }
         InputStream inputStream = IOUtils.getInputStream(resource.getFile());
         Yaml yaml = new Yaml(buildConstructor(), buildRepresenter());
