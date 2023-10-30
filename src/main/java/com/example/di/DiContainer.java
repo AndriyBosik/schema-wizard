@@ -1,6 +1,7 @@
 package com.example.di;
 
 import com.example.exception.DependencyRegisteredException;
+import com.example.metadata.ErrorMessage;
 import com.example.utils.ReflectionUtils;
 import com.example.di.annotation.Primary;
 import com.example.di.annotation.Qualifier;
@@ -71,7 +72,8 @@ public class DiContainer {
             } else if (instances.size() == 1) {
                 return (T) instances.entrySet().iterator().next().getValue();
             } else {
-                throw new ConflictDependencyException("More than one instance of " + baseType + " was found. Use @Qualifier to define exact instance which you want to inject");
+                throw new ConflictDependencyException(
+                        String.format(ErrorMessage.MULTIPLE_TYPE_INSTANCES_FORMAT, baseType));
             }
         }
         return (T) instances.get(name);
@@ -120,15 +122,16 @@ public class DiContainer {
 
     private <T, R extends T> Class<R> getInstanceType(Class<T> baseType, String name) {
         Map<String, Class<?>> baseDiMap = DI.getOrDefault(baseType, new HashMap<>());
-        if (name == null && baseDiMap.size() != 1) {
+        boolean isSingle = baseDiMap.size() == 1;
+        if (name == null && !isSingle) {
             throw new ConflictDependencyException(
-                    String.format("Unable to instantiate dependee. Container doesn't contain %s class metadata or contains more than one records", baseType));
+                    String.format(ErrorMessage.UNABLE_TO_INSTANTIATE_DEPENDEE_NO_CLASS_METADATA_FORMAT, baseType));
         }
         if (name != null) {
             Class<?> instanceType = baseDiMap.get(name);
             if (instanceType == null) {
                 throw new ConflictDependencyException(
-                        String.format("Unable to instantiate dependee. Container has no information about dependency of %s class and with %s name", baseType, name));
+                        String.format(ErrorMessage.UNABLE_TO_INSTANTIATE_DEPENDEE_NO_DEPENDENCY_INFORMATION_FORMAT, baseType, name));
             }
             return (Class<R>) instanceType;
         }
@@ -146,7 +149,7 @@ public class DiContainer {
         if (primaryAnnotatedConstructors.size() != 1) {
             throw new ConflictDependencyException(
                     String.format(
-                            "Unable to instantiate dependee of class %s. No unique primary constructor was found. Consider using %s annotation only once!",
+                            ErrorMessage.UNABLE_TO_INSTANTIATE_DEPENDEE_NO_PRIMARY_CONSTRUCTOR_FORMAT,
                             instanceType,
                             Primary.class));
         }
