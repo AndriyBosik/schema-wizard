@@ -1,5 +1,6 @@
 package com.example.migration.builder.column;
 
+import com.example.migration.metadata.PlainColumnType;
 import com.example.migration.operation.AddColumnOperation;
 
 public class BoolColumnBuilder implements ColumnBuilder {
@@ -35,7 +36,7 @@ public class BoolColumnBuilder implements ColumnBuilder {
                 schema,
                 table,
                 name,
-                "boolean",
+                PlainColumnType.BOOLEAN,
                 null,
                 null,
                 null,

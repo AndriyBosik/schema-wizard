@@ -1,5 +1,6 @@
 package com.example.migration.builder.column;
 
+import com.example.migration.metadata.PlainColumnType;
 import com.example.migration.operation.AddColumnOperation;
 
 public class TextColumnBuilder implements ColumnBuilder {
@@ -47,7 +48,7 @@ public class TextColumnBuilder implements ColumnBuilder {
                 schema,
                 table,
                 name,
-                "text",
+                PlainColumnType.TEXT,
                 minLength,
                 maxLength,
                 null,

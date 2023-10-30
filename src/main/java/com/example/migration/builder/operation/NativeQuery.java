@@ -1,5 +1,6 @@
 package com.example.migration.builder.operation;
 
+import com.example.metadata.ErrorMessage;
 import com.example.migration.operation.CompositeOperation;
 import com.example.migration.operation.NativeQueryFileOperation;
 import com.example.migration.operation.NativeQueryRawOperation;
@@ -33,7 +34,7 @@ public class NativeQuery implements OperationBuilder {
     @Override
     public Operation build() {
         if (operations.isEmpty()) {
-            throw new InvalidMigrationMetadataException("Native query migration is empty");
+            throw new InvalidMigrationMetadataException(ErrorMessage.EMPTY_NATIVE_QUERY_MIGRATION);
         }
         return operations.size() == 1 ? operations.get(0) : new CompositeOperation(operations);
     }

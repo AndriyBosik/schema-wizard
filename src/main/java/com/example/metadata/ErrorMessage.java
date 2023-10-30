@@ -21,6 +21,12 @@ public class ErrorMessage {
             "Invalid value for environment variable: %s";
     public final static String NON_EXISTENT_ENVIRONMENT =
             "Environment value does not exist and no default value had been set";
+    public static final String DUPLICATE_PRIMARY_KEY_DEFINITION =
+            "Duplicate primary key definition";
+    public static final String BLANK_TABLE_NAME =
+            "Table name must not be blank";
+    public static final String EMPTY_NATIVE_QUERY_MIGRATION =
+            "Native query migration is empty";
 
     private ErrorMessage() {
     }

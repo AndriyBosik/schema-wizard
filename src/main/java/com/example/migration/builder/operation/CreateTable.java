@@ -1,6 +1,7 @@
 package com.example.migration.builder.operation;
 
 import com.example.exception.InvalidMigrationMetadataException;
+import com.example.metadata.ErrorMessage;
 import com.example.migration.builder.column.ColumnBuilder;
 import com.example.migration.factory.ColumnBuilderFactory;
 import com.example.migration.metadata.ReferentialAction;
@@ -50,7 +51,7 @@ public class CreateTable<T> implements OperationBuilder {
             Function<ColumnBuilderFactory, T> columnsFunction
     ) {
         if (StringUtils.isBlank(table)) {
-            throw new InvalidMigrationMetadataException("Table name must not be blank");
+            throw new InvalidMigrationMetadataException(ErrorMessage.DUPLICATE_PRIMARY_KEY_DEFINITION);
         }
         ColumnBuilderFactory factory = new ColumnBuilderFactory(schema, table);
         return new CreateTable<>(schema, table, columnsFunction.apply(factory));

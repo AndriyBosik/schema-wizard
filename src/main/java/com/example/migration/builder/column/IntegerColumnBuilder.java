@@ -1,5 +1,6 @@
 package com.example.migration.builder.column;
 
+import com.example.migration.metadata.PlainColumnType;
 import com.example.migration.operation.AddColumnOperation;
 
 public class IntegerColumnBuilder implements ColumnBuilder {
@@ -35,7 +36,7 @@ public class IntegerColumnBuilder implements ColumnBuilder {
                 schema,
                 table,
                 name,
-                "integer",
+                PlainColumnType.INTEGER,
                 null,
                 null,
                 null,

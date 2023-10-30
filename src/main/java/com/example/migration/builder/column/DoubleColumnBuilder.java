@@ -1,5 +1,6 @@
 package com.example.migration.builder.column;
 
+import com.example.migration.metadata.PlainColumnType;
 import com.example.migration.operation.AddColumnOperation;
 
 public class DoubleColumnBuilder implements ColumnBuilder {
@@ -47,7 +48,7 @@ public class DoubleColumnBuilder implements ColumnBuilder {
                 schema,
                 table,
                 name,
-                "double",
+                PlainColumnType.DOUBLE,
                 null,
                 null,
                 precision,

@@ -1,5 +1,6 @@
 package com.example.migration.builder.operation;
 
+import com.example.metadata.ErrorMessage;
 import com.example.migration.operation.DropTableOperation;
 import com.example.migration.operation.Operation;
 import com.example.exception.InvalidMigrationMetadataException;
@@ -35,7 +36,7 @@ public class DropTable<T> implements OperationBuilder {
     @Override
     public Operation build() {
         if (StringUtils.isBlank(table)) {
-            throw new InvalidMigrationMetadataException("Table name must not be blank");
+            throw new InvalidMigrationMetadataException(ErrorMessage.BLANK_TABLE_NAME);
         }
         return new DropTableOperation(schema, table, ifExists);
     }
