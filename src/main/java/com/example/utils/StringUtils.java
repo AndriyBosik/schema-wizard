@@ -1,7 +1,8 @@
 package com.example.utils;
 
 public class StringUtils {
-    private StringUtils() {}
+    private StringUtils() {
+    }
 
     public static boolean isBlank(String value) {
         return value == null || value.isBlank();
