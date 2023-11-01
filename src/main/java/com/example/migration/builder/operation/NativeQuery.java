@@ -5,7 +5,7 @@ import com.example.migration.operation.CompositeOperation;
 import com.example.migration.operation.NativeQueryFileOperation;
 import com.example.migration.operation.NativeQueryRawOperation;
 import com.example.migration.operation.Operation;
-import com.example.exception.InvalidMigrationMetadataException;
+import com.example.exception.InvalidMigrationDefinitionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class NativeQuery implements OperationBuilder {
     @Override
     public Operation build() {
         if (operations.isEmpty()) {
-            throw new InvalidMigrationMetadataException(ErrorMessage.EMPTY_NATIVE_QUERY_MIGRATION);
+            throw new InvalidMigrationDefinitionException(ErrorMessage.EMPTY_NATIVE_QUERY_MIGRATION);
         }
         return operations.size() == 1 ? operations.get(0) : new CompositeOperation(operations);
     }

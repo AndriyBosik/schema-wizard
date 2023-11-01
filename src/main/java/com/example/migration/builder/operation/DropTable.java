@@ -3,7 +3,7 @@ package com.example.migration.builder.operation;
 import com.example.metadata.ErrorMessage;
 import com.example.migration.operation.DropTableOperation;
 import com.example.migration.operation.Operation;
-import com.example.exception.InvalidMigrationMetadataException;
+import com.example.exception.InvalidMigrationDefinitionException;
 import com.example.utils.StringUtils;
 
 public class DropTable<T> implements OperationBuilder {
@@ -36,7 +36,7 @@ public class DropTable<T> implements OperationBuilder {
     @Override
     public Operation build() {
         if (StringUtils.isBlank(table)) {
-            throw new InvalidMigrationMetadataException(ErrorMessage.BLANK_TABLE_NAME);
+            throw new InvalidMigrationDefinitionException(ErrorMessage.BLANK_TABLE_NAME);
         }
         return new DropTableOperation(schema, table, ifExists);
     }

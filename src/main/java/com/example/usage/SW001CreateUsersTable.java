@@ -43,7 +43,7 @@ public class SW001CreateUsersTable implements Migration {
                             }
                         })
                 .ifNotExists()
-                .primaryKey(table -> table.id())
+                .primaryKey("pk_users", table -> table.id())
                 .unique(table -> table.email())
                 .compositeUnique("unq_first_name_last_name", table -> List.of(table.firstName(), table.lastName()))
                 .build();

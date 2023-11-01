@@ -1,6 +1,6 @@
 package com.example.migration.builder.operation;
 
-import com.example.exception.InvalidMigrationMetadataException;
+import com.example.exception.InvalidMigrationDefinitionException;
 import com.example.metadata.ErrorMessage;
 import com.example.migration.builder.column.ColumnBuilder;
 import com.example.migration.factory.ColumnBuilderFactory;
@@ -51,7 +51,7 @@ public class CreateTable<T> implements OperationBuilder {
             Function<ColumnBuilderFactory, T> columnsFunction
     ) {
         if (StringUtils.isBlank(table)) {
-            throw new InvalidMigrationMetadataException(ErrorMessage.DUPLICATE_PRIMARY_KEY_DEFINITION);
+            throw new InvalidMigrationDefinitionException(ErrorMessage.DUPLICATE_PRIMARY_KEY_DEFINITION);
         }
         ColumnBuilderFactory factory = new ColumnBuilderFactory(schema, table);
         return new CreateTable<>(schema, table, columnsFunction.apply(factory));
@@ -80,7 +80,7 @@ public class CreateTable<T> implements OperationBuilder {
     public CreateTable<T> compositePrimaryKey(String name, Function<T, List<ColumnBuilder>> primaryKeyFunc) {
         Objects.requireNonNull(primaryKeyFunc);
         if (this.primaryKeyDefinition != null) {
-            throw new InvalidMigrationMetadataException("Duplicate primary key definition");
+            throw new InvalidMigrationDefinitionException(ErrorMessage.DUPLICATE_PRIMARY_KEY_DEFINITION);
         }
         this.primaryKeyDefinition = new PrimaryKeyDefinition<>(name, primaryKeyFunc);
         return this;
