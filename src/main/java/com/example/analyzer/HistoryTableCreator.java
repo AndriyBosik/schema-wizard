@@ -1,4 +1,4 @@
-package com.schemawizard.analyzer;
+package com.example.analyzer;
 
 public interface HistoryTableCreator {
     void createTableIfNotExist();
