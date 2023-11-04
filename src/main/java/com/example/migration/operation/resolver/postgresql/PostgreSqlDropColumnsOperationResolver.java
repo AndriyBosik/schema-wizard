@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.postgresql;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropColumnOperation;
@@ -22,7 +23,8 @@ public class PostgreSqlDropColumnsOperationResolver implements OperationResolver
     public MigrationInfo resolve(DropColumnsOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s %s",
+                        "%s %s %s",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         buildDropColumnsQuery(operation)));
     }
@@ -30,7 +32,7 @@ public class PostgreSqlDropColumnsOperationResolver implements OperationResolver
     private String buildDropColumnsQuery(DropColumnsOperation operation) {
         return operation.getColumns().stream()
                 .map(DropColumnOperation::getName)
-                .map(name -> "DROP COLUMN " + name)
-                .collect(Collectors.joining(", "));
+                .map(name -> String.format("%s %s", SqlClause.DROP_COLUMN, name))
+                .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
     }
 }

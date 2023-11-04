@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.oracle;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropTableOperation;
@@ -19,8 +20,8 @@ public class OracleDropTableOperationResolver implements OperationResolver<DropT
     public MigrationInfo resolve(DropTableOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "DROP TABLE %s%s",
-                        operation.isIfExists() ? "IF EXISTS " : "",
+                        "%s %s",
+                        SqlClause.DROP_TABLE,
                         operationService.buildTable(operation)));
     }
 }

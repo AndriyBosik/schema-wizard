@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.postgresql;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropTableOperation;
@@ -19,8 +20,9 @@ public class PostgreSqlDropTableOperationResolver implements OperationResolver<D
     public MigrationInfo resolve(DropTableOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "DROP TABLE %s%s",
-                        operation.isIfExists() ? "IF EXISTS " : "",
+                        "%s %s%s",
+                        SqlClause.DROP_TABLE,
+                        operation.isIfExists() ? (SqlClause.IF_EXISTS + " ") : "",
                         operationService.buildTable(operation)));
     }
 }

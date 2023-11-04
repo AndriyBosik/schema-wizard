@@ -1,5 +1,6 @@
 package com.example.migration.service.impl;
 
+import com.example.migration.factory.ColumnTypeFactory;
 import com.example.migration.operation.AddColumnOperation;
 import com.example.migration.operation.TableBasedOperation;
 import com.example.migration.service.OperationService;
@@ -16,10 +17,10 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public String buildColumnDefinition(AddColumnOperation operation) {
+    public String buildColumnDefinition(AddColumnOperation operation, ColumnTypeFactory typeFactory) {
         StringBuilder builder = new StringBuilder(operation.getName());
 
-        builder.append(" ").append(operation.getType());
+        builder.append(" ").append(typeFactory.getNative(operation.getType()));
         if (operation.getMinLength() != null || operation.getMaxLength() != null) {
             builder.append("(");
             if (operation.getMinLength() != null) {

@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.oracle;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.AddPrimaryKeyOperation;
@@ -19,9 +20,12 @@ public class OracleAddPrimaryKeyOperationResolver implements OperationResolver<A
     public MigrationInfo resolve(AddPrimaryKeyOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s ADD CONSTRAINT %s PRIMARY KEY (%s)",
+                        "%s %s %s %s %s (%s)",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
+                        SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
-                        String.join(",", operation.getColumns())));
+                        SqlClause.PRIMARY_KEY,
+                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns())));
     }
 }

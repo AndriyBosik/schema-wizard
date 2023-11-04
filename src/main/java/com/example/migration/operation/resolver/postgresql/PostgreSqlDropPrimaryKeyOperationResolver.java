@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.postgresql;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropPrimaryKeyOperation;
@@ -19,8 +20,10 @@ public class PostgreSqlDropPrimaryKeyOperationResolver implements OperationResol
     public MigrationInfo resolve(DropPrimaryKeyOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s DROP CONSTRAINT %s",
+                        "%s %s %s %s",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
+                        SqlClause.DROP_CONSTRAINT,
                         operation.getName()));
     }
 }

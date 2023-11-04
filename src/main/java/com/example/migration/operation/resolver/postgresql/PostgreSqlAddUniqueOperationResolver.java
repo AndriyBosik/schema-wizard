@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.postgresql;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.AddUniqueOperation;
@@ -19,9 +20,12 @@ public class PostgreSqlAddUniqueOperationResolver implements OperationResolver<A
     public MigrationInfo resolve(AddUniqueOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s ADD CONSTRAINT %s UNIQUE (%s)",
+                        "%s %s %s %s %s (%s)",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
+                        SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
-                        String.join(",", operation.getColumns())));
+                        SqlClause.UNIQUE,
+                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns())));
     }
 }

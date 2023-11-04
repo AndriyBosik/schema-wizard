@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.oracle;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropColumnOperation;
@@ -22,15 +23,15 @@ public class OracleDropColumnsOperationResolver implements OperationResolver<Dro
     public MigrationInfo resolve(DropColumnsOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s %s",
+                        "%s %s (%s)",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
-                        buildDropColumnsQuery(operation)));
+                        buildCommaSeparatedColumns(operation)));
     }
 
-    private String buildDropColumnsQuery(DropColumnsOperation operation) {
+    private String buildCommaSeparatedColumns(DropColumnsOperation operation) {
         return operation.getColumns().stream()
                 .map(DropColumnOperation::getName)
-                .map(name -> "DROP COLUMN " + name)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
     }
 }

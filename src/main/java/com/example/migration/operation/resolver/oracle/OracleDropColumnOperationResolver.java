@@ -1,6 +1,7 @@
 package com.example.migration.operation.resolver.oracle;
 
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.SqlClause;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.DropColumnOperation;
@@ -19,8 +20,10 @@ public class OracleDropColumnOperationResolver implements OperationResolver<Drop
     public MigrationInfo resolve(DropColumnOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "ALTER TABLE %s DROP COLUMN %s",
+                        "%s %s %s %s",
+                        SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
+                        SqlClause.DROP_COLUMN,
                         operation.getName()));
     }
 }

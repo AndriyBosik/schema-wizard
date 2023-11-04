@@ -2,6 +2,7 @@ package com.example.migration.operation.resolver.multi;
 
 import com.example.exception.InvalidMigrationDefinitionException;
 import com.example.metadata.DatabaseProvider;
+import com.example.metadata.ErrorMessage;
 import com.example.migration.annotation.Provider;
 import com.example.migration.model.MigrationInfo;
 import com.example.migration.operation.NativeQueryFileOperation;
@@ -15,9 +16,10 @@ import java.net.URL;
 public class MultiNativeQueryFileOperationResolver implements OperationResolver<NativeQueryFileOperation> {
     @Override
     public MigrationInfo resolve(NativeQueryFileOperation operation) {
-        URL resource = getClass().getClassLoader().getResource(operation.getFilePath());
+        String filePath = operation.getFilePath();
+        URL resource = getClass().getClassLoader().getResource(filePath);
         if (resource == null) {
-            throw new InvalidMigrationDefinitionException("File " + operation.getFilePath() + " does not exist");
+            throw new InvalidMigrationDefinitionException(String.format(ErrorMessage.NOT_EXISTENT_FILE_FORMAT, filePath));
         }
         InputStream inputStream = IOUtils.getInputStream(resource.getFile());
         return new MigrationInfo(
