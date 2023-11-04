@@ -1,19 +1,22 @@
-package com.schemawizard.analyzer.impl;
+package com.example.analyzer.impl;
 
-import com.schemawizard.analyzer.HistoryTableCreator;
-import lombok.extern.slf4j.Slf4j;
+import com.example.analyzer.HistoryTableCreator;
+import com.example.analyzer.exception.MigrationAnalyzerException;
+import com.example.dao.ConnectionHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@Slf4j
 public class PostgresHistoryTableCreator implements HistoryTableCreator {
 
-    private final Connection connection;
+    private final Logger log = LoggerFactory.getLogger(PostgresHistoryTableCreator.class);
+
+    private final ConnectionHolder connectionHolder;
 
     private static final String CREATE_MIGRATION_HISTORY_TABLE_SQL =
-            "CREATE TABLE IF NOT EXISTS public.migration_history ("
+            "CREATE TABLE IF NOT EXISTS migration_history ("
                     + "id SERIAL PRIMARY KEY, "
                     + "version INTEGER NOT NULL, "
                     + "description TEXT NOT NULL, "
@@ -23,15 +26,15 @@ public class PostgresHistoryTableCreator implements HistoryTableCreator {
                     + ");";
     private static final String SELECT_TABLE_SQL = "SELECT table_name " +
             "FROM information_schema.tables " +
-            "WHERE table_schema='public' AND table_type='BASE TABLE' AND table_name='migration_history';";
+            "WHERE table_type='BASE TABLE' AND table_name='migration_history';";
 
-    public PostgresHistoryTableCreator(Connection connection) {
-        this.connection = connection;
+    public PostgresHistoryTableCreator(ConnectionHolder connectionHolder) {
+        this.connectionHolder = connectionHolder;
     }
 
     @Override
     public void createTableIfNotExist() {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = connectionHolder.getConnection().createStatement()) {
             statement.execute(SELECT_TABLE_SQL);
             if (!statement.getResultSet().next()) {
                 statement.execute(CREATE_MIGRATION_HISTORY_TABLE_SQL);
@@ -40,7 +43,7 @@ public class PostgresHistoryTableCreator implements HistoryTableCreator {
                 log.info("Migration history table already exists.");
             }
         } catch (SQLException e) {
-            log.error("Error creating migration history table: " + e.getMessage());
+            throw new MigrationAnalyzerException("Error creating migration history table: " + e.getMessage(), e);
         }
     }
 }

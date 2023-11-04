@@ -1,13 +1,18 @@
 package com.schemawizard.analyzer.impl;
 
-import com.schemawizard.analyzer.HistoryTableCreator;
-import com.schemawizard.analyzer.Migration;
-import com.schemawizard.analyzer.MigrationAnalyzer;
-import com.schemawizard.analyzer.MigrationService;
-import com.schemawizard.analyzer.exception.MigrationAnalyzerException;
+import com.example.analyzer.*;
+import com.example.analyzer.impl.MigrationAnalyzerImpl;
+import com.example.analyzer.exception.MigrationAnalyzerException;
+import com.example.analyzer.service.AppliedMigrationsService;
+import com.example.analyzer.service.DeclaredMigrationService;
+import com.example.analyzer.AppliedMigration;
+import com.schemawizard.migration.SW001FirstMigration;
+import com.schemawizard.migration.SW002SecondMigration;
+import com.schemawizard.migration.SW003ThirdMigration;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,77 +20,129 @@ import static org.mockito.Mockito.when;
 
 public class MigrationAnalyzerImplTest {
 
-    private final MigrationService tableMigrationsService = Mockito.mock(MigrationService.class);
+    private final AppliedMigrationsService appliedMigrationsService = Mockito.mock(AppliedMigrationsService.class);
 
-    private final MigrationService classesMigrationsService = Mockito.mock(MigrationService.class);
+    private final DeclaredMigrationService declaredMigrationsService = Mockito.mock(DeclaredMigrationService.class);
 
     private final HistoryTableCreator historyTableCreator = Mockito.mock(HistoryTableCreator.class);
 
     private final MigrationAnalyzer migrationAnalyzer = new MigrationAnalyzerImpl(
-            tableMigrationsService,
-            classesMigrationsService,
+            appliedMigrationsService,
+            declaredMigrationsService,
             historyTableCreator);
 
     @Test
     void analyzeShouldReturnNotAppliedMigrations() {
-        var appliedMigrations = createTwoMigrations();
-        var declaredMigrations = createThreeMigrations();
+        var appliedMigrations = createTwoAppliedMigrations();
+        var declaredMigrations = createThreeDeclaredMigrations();
 
-        when(tableMigrationsService.getMigrations()).thenReturn(appliedMigrations);
-        when(classesMigrationsService.getMigrations()).thenReturn(declaredMigrations);
+        when(appliedMigrationsService.getAppliedMigrations()).thenReturn(appliedMigrations);
+        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrations);
 
-        var expectedMigrations = declaredMigrations.subList(appliedMigrations.size(), declaredMigrations.size());
+        MigrationData thirdMigrationData = new MigrationData(
+                3,
+                "ThirdMigration",
+                new SW003ThirdMigration()
+        );
+
+        var expectedMigrations = List.of(thirdMigrationData);
         var actualMigrations = migrationAnalyzer.analyze();
 
         assertNotNull(actualMigrations);
         assertEquals(expectedMigrations.size(), actualMigrations.size());
         for (int i = 0; i < expectedMigrations.size(); i++) {
-            Migration expectedMigration = expectedMigrations.get(i);
-            Migration actualMigration = actualMigrations.get(i);
-            assertEquals(expectedMigration.getVersion(), actualMigration.getVersion());
-            assertEquals(expectedMigration.getChecksum(), actualMigration.getChecksum());
+            MigrationData expectedMigrationData = expectedMigrations.get(i);
+            MigrationData actualMigrationData = actualMigrations.get(i);
+            assertEquals(expectedMigrationData.getVersion(), actualMigrationData.getVersion());
         }
     }
 
-    private List<Migration> createTwoMigrations() {
-        Migration migration1 = new Migration();
-        migration1.setVersion(1);
-        migration1.setDescription("Migration Description 1");
-        migration1.setChecksum(12345);
+    private List<AppliedMigration> createTwoAppliedMigrations() {
+        AppliedMigration migration1 = new AppliedMigration(
+                1,
+                1,
+                "Migration Description 1",
+                LocalDateTime.now()
+        );
 
-        Migration migration2 = new Migration();
-        migration2.setVersion(2);
-        migration2.setDescription("Migration Description 2");
-        migration2.setChecksum(54321);
+        AppliedMigration migration2 = new AppliedMigration(
+                2,
+                2,
+                "Migration Description 2",
+                LocalDateTime.now()
+        );
+        return List.of(migration1, migration2);
+    }
+
+    private List<DeclaredMigration> createTwoDeclaredMigrations() {
+        DeclaredMigration migration1 = new DeclaredMigration(
+                1,
+                "FirstMigration",
+                SW001FirstMigration.class
+        );
+
+        DeclaredMigration migration2 = new DeclaredMigration(
+                2,
+                "SecondMigration",
+                SW002SecondMigration.class
+        );
 
         return List.of(migration1, migration2);
     }
 
-    private List<Migration> createThreeMigrations() {
-        Migration migration1 = new Migration();
-        migration1.setVersion(1);
-        migration1.setDescription("Migration Description 1");
-        migration1.setChecksum(12345);
+    private List<AppliedMigration> createThreeAppliedMigrations() {
+        AppliedMigration migration1 = new AppliedMigration(
+                1,
+                1,
+                "FirstMigration",
+                LocalDateTime.now()
+        );
 
-        Migration migration2 = new Migration();
-        migration2.setVersion(2);
-        migration2.setDescription("Migration Description 2");
-        migration2.setChecksum(54321);
+        AppliedMigration migration2 = new AppliedMigration(
+                2,
+                2,
+                "SecondMigration",
+                LocalDateTime.now()
+        );
 
-        Migration migration3 = new Migration();
-        migration3.setVersion(3);
-        migration3.setDescription("Migration Description 3");
-        migration3.setChecksum(56789);
+        AppliedMigration migration3 = new AppliedMigration(
+                3,
+                3,
+                "ThirdMigration",
+                LocalDateTime.now()
+        );
+
+        return List.of(migration1, migration2, migration3);
+    }
+
+    private List<DeclaredMigration> createThreeDeclaredMigrations() {
+        DeclaredMigration migration1 = new DeclaredMigration(
+                1,
+                "FirstMigration",
+                SW001FirstMigration.class
+        );
+
+        DeclaredMigration migration2 = new DeclaredMigration(
+                2,
+                "SecondMigration",
+                SW002SecondMigration.class
+        );
+
+        DeclaredMigration migration3 = new DeclaredMigration(
+                3,
+                "ThirdMigration",
+                SW003ThirdMigration.class
+        );
 
         return List.of(migration1, migration2, migration3);
     }
 
     @Test
     void analyzeShouldNotReturnAnythingIfMigrationsNumbersTheSame() {
-        var appliedMigrations = createTwoMigrations();
-        var declaredMigrations = createTwoMigrations();
-        when(tableMigrationsService.getMigrations()).thenReturn(appliedMigrations);
-        when(classesMigrationsService.getMigrations()).thenReturn(declaredMigrations);
+        var appliedMigrations = createTwoAppliedMigrations();
+        var declaredMigrations = createTwoDeclaredMigrations();
+        when(appliedMigrationsService.getAppliedMigrations()).thenReturn(appliedMigrations);
+        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrations);
 
         var actualMigrations = migrationAnalyzer.analyze();
         assertNotNull(actualMigrations);
@@ -94,46 +151,31 @@ public class MigrationAnalyzerImplTest {
 
     @Test
     void analyseShouldThrowExceptionIfAppliedMigrationsNumberGreaterThenDeclared() {
-        var appliedMigrations = createThreeMigrations();
-        var declaredMigrations = createTwoMigrations();
+        var appliedMigrations = createThreeAppliedMigrations();
+        var declaredMigrations = createTwoDeclaredMigrations();
 
-        when(tableMigrationsService.getMigrations()).thenReturn(appliedMigrations);
-        when(classesMigrationsService.getMigrations()).thenReturn(declaredMigrations);
+        when(appliedMigrationsService.getAppliedMigrations()).thenReturn(appliedMigrations);
+        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrations);
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::analyze);
     }
 
     @Test
     void analyseShouldThrowExceptionIfAppliedAndDeclaredMigrationVersionDifferent() {
-        Migration appliedMigration = new Migration();
-        appliedMigration.setVersion(1);
-        appliedMigration.setDescription("Migration Description 1");
-        appliedMigration.setChecksum(12345);
+        AppliedMigration appliedMigration = new AppliedMigration(
+                1,
+                1,
+                "Migration Description 1",
+                LocalDateTime.now()
+        );
 
-        Migration declaredMigration = new Migration();
-        declaredMigration.setVersion(2);
-        declaredMigration.setDescription("Migration Description 1");
-        declaredMigration.setChecksum(12345);
+        DeclaredMigration declaredMigration = new DeclaredMigration(
+                2,
+                "Migration Description 1",
+                SW002SecondMigration.class
+        );
 
-        when(tableMigrationsService.getMigrations()).thenReturn(List.of(appliedMigration));
-        when(classesMigrationsService.getMigrations()).thenReturn(List.of(declaredMigration));
-
-        assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::analyze);
-    }
-
-    @Test
-    void analyseShouldThrowExceptionIfAppliedAndDeclaredMigrationChecksumDifferent() {
-        Migration appliedMigration = new Migration();
-        appliedMigration.setVersion(1);
-        appliedMigration.setDescription("Migration Description 1");
-        appliedMigration.setChecksum(12345);
-
-        Migration declaredMigration = new Migration();
-        declaredMigration.setVersion(1);
-        declaredMigration.setDescription("Migration Description 1");
-        declaredMigration.setChecksum(56789);
-
-        when(tableMigrationsService.getMigrations()).thenReturn(List.of(appliedMigration));
-        when(classesMigrationsService.getMigrations()).thenReturn(List.of(declaredMigration));
+        when(appliedMigrationsService.getAppliedMigrations()).thenReturn(List.of(appliedMigration));
+        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(List.of(declaredMigration));
 
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::analyze);
     }
