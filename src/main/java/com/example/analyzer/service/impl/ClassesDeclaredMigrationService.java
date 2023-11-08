@@ -4,10 +4,14 @@ import com.example.analyzer.DeclaredMigration;
 import com.example.analyzer.service.DeclaredMigrationService;
 import com.example.analyzer.exception.MigrationAnalyzerException;
 import com.example.migration.Migration;
+import com.example.migration.annotation.SWName;
+import com.example.model.ConfigurationProperties;
 import org.reflections.Reflections;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -15,18 +19,17 @@ import static org.reflections.scanners.Scanners.SubTypes;
 
 public class ClassesDeclaredMigrationService implements DeclaredMigrationService {
 
-    private final String packageName;
-
+    private final ConfigurationProperties configurationProperties;
     private static final Pattern MIGRATION_CLASS_NAME_PATTERN = Pattern.compile("^SW(\\d+)(\\D+\\w*)");
 
-    public ClassesDeclaredMigrationService(String packageName) {
-        this.packageName = packageName;
+    public ClassesDeclaredMigrationService(ConfigurationProperties configurationProperties) {
+        this.configurationProperties = configurationProperties;
     }
 
     @Override
     public List<DeclaredMigration> getDeclaredMigrations() {
 
-        Reflections reflections = new Reflections(packageName);
+        Reflections reflections = new Reflections(configurationProperties.getMigrationsPackage());
         var migrationClasses = reflections.get(SubTypes.of(Migration.class).asClass());
         return migrationClasses.stream()
                 .map(this::migrationClassToDeclaredMigration)
@@ -44,7 +47,9 @@ public class ClassesDeclaredMigrationService implements DeclaredMigrationService
         }
 
         int version = Integer.parseInt(matcher.group(1));
-        String description = matcher.group(2);
+        String description = Optional.ofNullable(migrationClass.getAnnotation(SWName.class))
+                .map(SWName::value)
+                .orElse(descriptionFromClassName(matcher.group(2)));
         @SuppressWarnings("unchecked")
         var dbMigrationClass = (Class<? extends Migration>) migrationClass;
 
@@ -53,5 +58,11 @@ public class ClassesDeclaredMigrationService implements DeclaredMigrationService
                 description,
                 dbMigrationClass
         );
+    }
+
+    private String descriptionFromClassName(String descriptionClassNamePart) {
+        return Arrays.stream(descriptionClassNamePart.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])"))
+                .map(String::toLowerCase)
+                .collect(Collectors.joining(" "));
     }
 }

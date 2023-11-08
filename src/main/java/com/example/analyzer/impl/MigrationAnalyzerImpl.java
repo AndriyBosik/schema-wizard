@@ -11,13 +11,13 @@ import com.example.analyzer.AppliedMigration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     private final AppliedMigrationsService appliedMigrationsService;
-
     private final DeclaredMigrationService declaredMigrationService;
-
     private final HistoryTableCreator historyTableCreator;
 
     public MigrationAnalyzerImpl(AppliedMigrationsService appliedMigrationsService,
@@ -32,28 +32,25 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     public List<MigrationData> analyze() {
         historyTableCreator.createTableIfNotExist();
         var appliedMigrations = appliedMigrationsService.getAppliedMigrations();
-        var declaredMigrations = declaredMigrationService.getDeclaredMigrations();
-        if (appliedMigrations.size() > declaredMigrations.size()) {
-            throw new MigrationAnalyzerException("Applied migrations number is greater then declared migrations number");
-        }
-        for (int i = 0; i < appliedMigrations.size(); i++) {
-            AppliedMigration appliedMigration = appliedMigrations.get(i);
-            DeclaredMigration declaredMigration = declaredMigrations.get(i);
-            compareAppliedAndDeclaredMigrations(appliedMigration, declaredMigration);
+        Map<Integer, DeclaredMigration> declaredMigrationsMap = declaredMigrationService.getDeclaredMigrations()
+                .stream()
+                .collect(Collectors.toMap(
+                                DeclaredMigration::getVersion,
+                                Function.identity(),
+                                (first, second) -> {
+                                    throw new MigrationAnalyzerException("Multiple migrations with version " + first.getVersion() + " were found");
+                                }));
+        for (AppliedMigration migration: appliedMigrations) {
+            if (!declaredMigrationsMap.containsKey(migration.getVersion())) {
+                throw new MigrationAnalyzerException("Migration with version " + migration.getVersion() + " was not found");
+            }
+            declaredMigrationsMap.remove(migration.getVersion());
         }
 
-        return declaredMigrations.subList(appliedMigrations.size(), declaredMigrations.size())
-                .stream()
+        return declaredMigrationsMap.values().stream()
+                .sorted()
                 .map(this::declaredMigrationToMigrationData)
                 .collect(Collectors.toList());
-    }
-
-    private void compareAppliedAndDeclaredMigrations(AppliedMigration appliedMigration, DeclaredMigration declaredMigration) {
-        if (appliedMigration.getVersion() != declaredMigration.getVersion()) {
-            throw new MigrationAnalyzerException(
-                    String.format("Applied migration version %d doesn't match declared migration version %d",
-                            appliedMigration.getVersion(), declaredMigration.getVersion()));
-        }
     }
 
     private MigrationData declaredMigrationToMigrationData(DeclaredMigration declaredMigration) {

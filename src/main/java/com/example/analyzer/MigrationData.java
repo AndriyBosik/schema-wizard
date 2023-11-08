@@ -4,9 +4,7 @@ import com.example.migration.Migration;
 
 public class MigrationData {
     private final int version;
-
     private final String description;
-
     private final Migration migration;
 
     public MigrationData(int version, String description, Migration migration) {

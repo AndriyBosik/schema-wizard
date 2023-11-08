@@ -4,6 +4,7 @@ import com.example.analyzer.AppliedMigration;
 import com.example.analyzer.exception.MigrationAnalyzerException;
 import com.example.analyzer.service.AppliedMigrationsService;
 import com.example.dao.ConnectionHolder;
+import com.example.dao.HistoryTableQueryFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,21 +12,20 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgresAppliedMigrationsService implements AppliedMigrationsService {
-
-    private static final String SELECT_MIGRATIONS_SQL = "SELECT id, version, description, applied_on " +
-            "FROM migration_history;";
+public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
 
     private final ConnectionHolder connectionHolder;
+    private final HistoryTableQueryFactory historyTableQueryFactory;
 
-    public PostgresAppliedMigrationsService(ConnectionHolder connectionHolder) {
+    public AppliedMigrationsServiceImpl(ConnectionHolder connectionHolder, HistoryTableQueryFactory historyTableQueryFactory) {
         this.connectionHolder = connectionHolder;
+        this.historyTableQueryFactory = historyTableQueryFactory;
     }
 
     @Override
     public List<AppliedMigration> getAppliedMigrations() {
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
-            statement.execute(SELECT_MIGRATIONS_SQL);
+            statement.execute(historyTableQueryFactory.getSelectMigrationsSql());
             var rs = statement.getResultSet();
             List<AppliedMigration> migrations = new ArrayList<>();
             while (rs.next()) {
