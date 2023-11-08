@@ -6,9 +6,7 @@ public class AppliedMigration {
 
     private final Integer id;
     private final Integer version;
-
     private final String description;
-
     private final LocalDateTime appliedOn;
 
     public AppliedMigration(Integer id, Integer version, String description, LocalDateTime appliedOn) {

@@ -2,8 +2,10 @@ package com.schemawizard.analyzer.service.impl;
 
 import com.example.analyzer.service.AppliedMigrationsService;
 import com.example.analyzer.AppliedMigration;
-import com.example.analyzer.service.impl.PostgresAppliedMigrationsService;
+import com.example.analyzer.service.impl.AppliedMigrationsServiceImpl;
 import com.example.dao.ConnectionHolder;
+import com.example.dao.impl.PostgresHistoryTableQueryFactory;
+import com.example.model.ConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-public class PostgresAppliedMigrationsServiceTest {
+public class AppliedMigrationsServiceImplTest {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
 
     private static final String INSERT_MIGRATION_SQL = "INSERT INTO migration_history " +
@@ -35,9 +37,14 @@ public class PostgresAppliedMigrationsServiceTest {
                     + ")";
 
     private final ConnectionHolder connectionHolder = new ConnectionHolder(
-            postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+            ConfigurationProperties.builder()
+                    .connectionUrl(postgres.getJdbcUrl())
+                    .username(postgres.getUsername())
+                    .password(postgres.getPassword())
+                    .build());
 
-    private final AppliedMigrationsService appliedMigrationsService = new PostgresAppliedMigrationsService(connectionHolder);
+    private final AppliedMigrationsService appliedMigrationsService = new AppliedMigrationsServiceImpl(
+            connectionHolder, new PostgresHistoryTableQueryFactory());
 
     @BeforeAll
     static void setUp() {

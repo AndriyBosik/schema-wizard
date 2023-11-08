@@ -3,6 +3,7 @@ package com.schemawizard.analyzer.service.impl;
 import com.example.analyzer.DeclaredMigration;
 import com.example.analyzer.service.DeclaredMigrationService;
 import com.example.analyzer.service.impl.ClassesDeclaredMigrationService;
+import com.example.model.ConfigurationProperties;
 import com.schemawizard.migration.SW001FirstMigration;
 import com.schemawizard.migration.SW002SecondMigration;
 import com.schemawizard.migration.SW003ThirdMigration;
@@ -15,7 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClassesDeclaredMigrationServiceTest {
 
     private final DeclaredMigrationService classesDeclaredMigrationService
-            = new ClassesDeclaredMigrationService("com.schemawizard.migration");
+            = new ClassesDeclaredMigrationService(
+            ConfigurationProperties.builder()
+                    .migrationsPackage("com.schemawizard.migration")
+                    .build()
+    );
 
     @Test
     void serviceShouldReturnCorrectMigrations() {
@@ -35,19 +40,19 @@ public class ClassesDeclaredMigrationServiceTest {
     private List<DeclaredMigration> expectedMigrations() {
         DeclaredMigration migration1 = new DeclaredMigration(
                 1,
-                "FirstMigration",
+                "first migration",
                 SW001FirstMigration.class
         );
 
         DeclaredMigration migration2 = new DeclaredMigration(
                 2,
-                "SecondMigration",
+                "some long custom migration description",
                 SW002SecondMigration.class
         );
 
         DeclaredMigration migration3 = new DeclaredMigration(
                 3,
-                "ThirdMigration",
+                "third migration",
                 SW003ThirdMigration.class
         );
 
