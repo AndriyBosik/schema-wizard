@@ -86,20 +86,20 @@ public class YamlContext {
             }
 
             public static class Migration {
-                private List<String> packages = new ArrayList<>();
+                private String packageName;
 
-                public List<String> getPackages() {
-                    return packages;
+                public String getPackageName() {
+                    return packageName;
                 }
 
-                public void setPackages(List<String> packages) {
-                    this.packages = packages;
+                public void setPackageName(String packageName) {
+                    this.packageName = packageName;
                 }
             }
 
             public static class LoggingItem {
                 private String item;
-                private String logLevel;
+                private String level;
                 private String enabled;
 
                 public String getItem() {
@@ -110,12 +110,12 @@ public class YamlContext {
                     this.item = item;
                 }
 
-                public String getLogLevel() {
-                    return logLevel;
+                public String getLevel() {
+                    return level;
                 }
 
-                public void setLogLevel(String logLevel) {
-                    this.logLevel = logLevel;
+                public void setLevel(String level) {
+                    this.level = level;
                 }
 
                 public String getEnabled() {
