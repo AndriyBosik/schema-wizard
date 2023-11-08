@@ -7,20 +7,20 @@ public class ConfigurationProperties {
     private final String connectionUrl;
     private final String username;
     private final String password;
-    private final List<String> packages;
+    private final String migrationsPackage;
     private final List<LoggingItem> logging;
 
     public ConfigurationProperties(
             String connectionUrl,
             String username,
             String password,
-            List<String> packages,
+            String migrationsPackage,
             List<LoggingItem> logging
     ) {
         this.connectionUrl = connectionUrl;
         this.username = username;
         this.password = password;
-        this.packages = packages;
+        this.migrationsPackage = migrationsPackage;
         this.logging = logging;
     }
 
@@ -36,8 +36,8 @@ public class ConfigurationProperties {
         return password;
     }
 
-    public List<String> getPackages() {
-        return packages;
+    public String getMigrationsPackage() {
+        return migrationsPackage;
     }
 
     public List<LoggingItem> getLogging() {
@@ -50,12 +50,12 @@ public class ConfigurationProperties {
 
     public static class LoggingItem {
         private final String item;
-        private final String logLevel;
+        private final String level;
         private final boolean enabled;
 
-        public LoggingItem(String item, String logLevel, boolean enabled) {
+        public LoggingItem(String item, String level, boolean enabled) {
             this.item = item;
-            this.logLevel = logLevel;
+            this.level = level;
             this.enabled = enabled;
         }
 
@@ -63,8 +63,8 @@ public class ConfigurationProperties {
             return item;
         }
 
-        public String getLogLevel() {
-            return logLevel;
+        public String getLevel() {
+            return level;
         }
 
         public boolean isEnabled() {
@@ -76,7 +76,7 @@ public class ConfigurationProperties {
         private String connectionUrl;
         private String username;
         private String password;
-        private List<String> packages = new ArrayList<>();
+        private String migrationsPackage;
         private List<LoggingItem> logging = new ArrayList<>();
 
         private PropertyConfigurationBuilder() {
@@ -97,8 +97,8 @@ public class ConfigurationProperties {
             return this;
         }
 
-        public PropertyConfigurationBuilder packages(List<String> packages) {
-            this.packages = packages;
+        public PropertyConfigurationBuilder migrationsPackage(String migrationsPackage) {
+            this.migrationsPackage = migrationsPackage;
             return this;
         }
 
@@ -108,7 +108,7 @@ public class ConfigurationProperties {
         }
 
         public ConfigurationProperties build() {
-            return new ConfigurationProperties(connectionUrl, username, password, packages, logging);
+            return new ConfigurationProperties(connectionUrl, username, password, migrationsPackage, logging);
         }
     }
 }

@@ -64,14 +64,11 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
     }
 
     private ConfigurationProperties mapConfigurationProperties(YamlContext context) {
-        List<String> migrationPackages = context.getSchema().getWizard().getMigration().getPackages().stream()
-                .map(propertyParser::parseStringValue)
-                .collect(Collectors.toList());
 
         List<ConfigurationProperties.LoggingItem> logging = context.getSchema().getWizard().getLogging().stream()
                 .map(item -> new ConfigurationProperties.LoggingItem(
                         propertyParser.parseStringValue(item.getItem()),
-                        propertyParser.parseStringValue(item.getLogLevel()),
+                        propertyParser.parseStringValue(item.getLevel()),
                         propertyParser.parseBooleanValue(item.getEnabled())))
                 .collect(Collectors.toList());
 
@@ -79,7 +76,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
                 .connectionUrl(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl()))
                 .username(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getUsername()))
                 .password(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getPassword()))
-                .packages(migrationPackages)
+                .migrationsPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getMigration().getPackageName()))
                 .logging(logging)
                 .build();
     }
