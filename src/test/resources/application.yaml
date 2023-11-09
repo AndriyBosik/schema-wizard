@@ -5,7 +5,7 @@ schema:
       username: postgres
       password: postgres
     migration:
-      packageName: com.example.db.migration
+      package-name: com.example.db.migration
     logging:
       - item: upgrade
         log-level: ${UPGRADE_LOG_LEVEL:TRACE}
