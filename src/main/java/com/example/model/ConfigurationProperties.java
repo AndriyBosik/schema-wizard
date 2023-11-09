@@ -50,12 +50,12 @@ public class ConfigurationProperties {
 
     public static class LoggingItem {
         private final String item;
-        private final String level;
+        private final String logLevel;
         private final boolean enabled;
 
-        public LoggingItem(String item, String level, boolean enabled) {
+        public LoggingItem(String item, String logLevel, boolean enabled) {
             this.item = item;
-            this.level = level;
+            this.logLevel = logLevel;
             this.enabled = enabled;
         }
 
@@ -63,8 +63,8 @@ public class ConfigurationProperties {
             return item;
         }
 
-        public String getLevel() {
-            return level;
+        public String getLogLevel() {
+            return logLevel;
         }
 
         public boolean isEnabled() {

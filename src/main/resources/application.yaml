@@ -1,15 +1,15 @@
 schema:
   wizard:
     database:
-      connectionUrl: jdbc:postgresql://${DS_HOST:default}:${DS_PORT:5432}/${DS_DATABASE:changeMe}?reWriteBatchedInserts=true
+      connection-url: jdbc:postgresql://${DS_HOST:default}:${DS_PORT:5432}/${DS_DATABASE:changeMe}?reWriteBatchedInserts=true
       username: postgres
       password: postgres
     migration:
       packageName: com.example.db.migration
     logging:
       - item: upgrade
-        level: ${UPGRADE_LOG_LEVEL:TRACE}
+        log-level: ${UPGRADE_LOG_LEVEL:TRACE}
         enabled: true
       - item: downgrade
-        level: WARN
+        log-level: WARN
         enabled: ${DOWNGRADE_LOG_ENABLED:false}

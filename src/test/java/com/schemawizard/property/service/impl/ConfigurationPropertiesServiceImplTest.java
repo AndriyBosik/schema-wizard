@@ -1,10 +1,10 @@
 package com.schemawizard.property.service.impl;
 
 import com.example.model.ConfigurationProperties;
+import com.example.property.service.impl.CamelCasePropertyUtils;
 import com.example.property.service.impl.ConfigurationPropertiesServiceImpl;
 import com.example.property.service.impl.PropertyParserImpl;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ConfigurationPropertiesServiceImplTest {
 
     private final ConfigurationPropertiesServiceImpl configurationPropertiesService
-            = new ConfigurationPropertiesServiceImpl(new PropertyUtils(), new PropertyParserImpl());
+            = new ConfigurationPropertiesServiceImpl(new CamelCasePropertyUtils(), new PropertyParserImpl());
 
     @Test
     void propertiesServiceShouldReturnCorrectProperties() {
@@ -34,7 +34,7 @@ public class ConfigurationPropertiesServiceImplTest {
         assertEquals(expectedProperties.getLogging().size(), actualProperties.getLogging().size());
         for(int i = 0; i < expectedProperties.getLogging().size(); i++) {
             assertEquals(expectedProperties.getLogging().get(i).getItem(), actualProperties.getLogging().get(i).getItem());
-            assertEquals(expectedProperties.getLogging().get(i).getLevel(), actualProperties.getLogging().get(i).getLevel());
+            assertEquals(expectedProperties.getLogging().get(i).getLogLevel(), actualProperties.getLogging().get(i).getLogLevel());
             assertEquals(expectedProperties.getLogging().get(i).isEnabled(), actualProperties.getLogging().get(i).isEnabled());
         }
     }

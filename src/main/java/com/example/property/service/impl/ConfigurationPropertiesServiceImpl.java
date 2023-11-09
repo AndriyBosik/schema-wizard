@@ -68,7 +68,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
         List<ConfigurationProperties.LoggingItem> logging = context.getSchema().getWizard().getLogging().stream()
                 .map(item -> new ConfigurationProperties.LoggingItem(
                         propertyParser.parseStringValue(item.getItem()),
-                        propertyParser.parseStringValue(item.getLevel()),
+                        propertyParser.parseStringValue(item.getLogLevel()),
                         propertyParser.parseBooleanValue(item.getEnabled())))
                 .collect(Collectors.toList());
 
