@@ -99,7 +99,7 @@ public class YamlContext {
 
             public static class LoggingItem {
                 private String item;
-                private String level;
+                private String logLevel;
                 private String enabled;
 
                 public String getItem() {
@@ -110,12 +110,12 @@ public class YamlContext {
                     this.item = item;
                 }
 
-                public String getLevel() {
-                    return level;
+                public String getLogLevel() {
+                    return logLevel;
                 }
 
-                public void setLevel(String level) {
-                    this.level = level;
+                public void setLogLevel(String logLevel) {
+                    this.logLevel = logLevel;
                 }
 
                 public String getEnabled() {

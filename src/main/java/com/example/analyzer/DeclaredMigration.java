@@ -2,7 +2,7 @@ package com.example.analyzer;
 
 import com.example.migration.Migration;
 
-public class DeclaredMigration implements Comparable<DeclaredMigration> {
+public class DeclaredMigration {
     private final int version;
     private final String description;
     private final Class<? extends Migration> migrationClass;
@@ -23,10 +23,5 @@ public class DeclaredMigration implements Comparable<DeclaredMigration> {
 
     public Class<? extends Migration> getMigrationClass() {
         return migrationClass;
-    }
-
-    @Override
-    public int compareTo(DeclaredMigration declaredMigration) {
-        return Integer.compare(version, declaredMigration.getVersion());
     }
 }
