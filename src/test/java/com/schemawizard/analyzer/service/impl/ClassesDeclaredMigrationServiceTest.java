@@ -7,6 +7,7 @@ import com.example.model.ConfigurationProperties;
 import com.schemawizard.migration.SW001FirstMigration;
 import com.schemawizard.migration.SW002SecondMigration;
 import com.schemawizard.migration.SW003ThirdMigration;
+import com.schemawizard.migration.inner.SW004ForthMigration;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -56,6 +57,12 @@ public class ClassesDeclaredMigrationServiceTest {
                 SW003ThirdMigration.class
         );
 
-        return List.of(migration1, migration2, migration3);
+        DeclaredMigration migration4 = new DeclaredMigration(
+                4,
+                "forth migration",
+                SW004ForthMigration.class
+        );
+
+        return List.of(migration1, migration2, migration3, migration4);
     }
 }

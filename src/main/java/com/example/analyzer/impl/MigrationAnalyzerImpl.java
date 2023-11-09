@@ -3,13 +3,13 @@ package com.example.analyzer.impl;
 
 import com.example.analyzer.*;
 import com.example.analyzer.exception.MigrationAnalyzerException;
+import com.example.analyzer.service.AppliedMigrationsService;
 import com.example.analyzer.service.DeclaredMigrationService;
 import com.example.migration.Migration;
-import com.example.analyzer.service.AppliedMigrationsService;
-import com.example.analyzer.AppliedMigration;
+import com.example.utils.ReflectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -48,7 +48,7 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
         }
 
         return declaredMigrationsMap.values().stream()
-                .sorted()
+                .sorted(Comparator.comparing(DeclaredMigration::getVersion))
                 .map(this::declaredMigrationToMigrationData)
                 .collect(Collectors.toList());
     }
@@ -56,29 +56,24 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     private MigrationData declaredMigrationToMigrationData(DeclaredMigration declaredMigration) {
         var migrationClass = declaredMigration.getMigrationClass();
         checkDbMigrationClass(migrationClass);
-        try {
-            Migration dbMigration = migrationClass.getConstructor().newInstance();
-            return new MigrationData(
-                    declaredMigration.getVersion(),
-                    declaredMigration.getDescription(),
-                    dbMigration
-            );
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new MigrationAnalyzerException(e.getMessage(), e);
-        }
+        Migration dbMigration = ReflectionUtils.invokeConstructor(migrationClass);
+        return new MigrationData(
+                declaredMigration.getVersion(),
+                declaredMigration.getDescription(),
+                dbMigration
+        );
     }
 
     private void checkDbMigrationClass(Class<? extends Migration> dbMigrationClass) {
         var constructors = dbMigrationClass.getDeclaredConstructors();
         if (constructors.length != 1) {
-            throw new MigrationAnalyzerException(dbMigrationClass.getName() + "should have only one public constructor without params");
+            throw new MigrationAnalyzerException(dbMigrationClass.getName() + " should have only one public constructor without params");
         }
         if(!Modifier.isPublic(constructors[0].getModifiers())) {
-            throw new MigrationAnalyzerException(dbMigrationClass.getName() + "constructor should be 'public'");
+            throw new MigrationAnalyzerException(dbMigrationClass.getName() + " constructor should be 'public'");
         }
         if(constructors[0].getParameters().length != 0) {
-            throw new MigrationAnalyzerException(dbMigrationClass.getName() + "constructor shouldn't have params");
+            throw new MigrationAnalyzerException(dbMigrationClass.getName() + " constructor shouldn't have params");
         }
     }
 }
