@@ -12,6 +12,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.dao.Constants.APPLIED_ON;
+import static com.example.dao.Constants.DESCRIPTION;
+import static com.example.dao.Constants.ID;
+import static com.example.dao.Constants.VERSION;
+
 public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
 
     private final ConnectionHolder connectionHolder;
@@ -40,9 +45,9 @@ public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
     private AppliedMigration extractMigrationFromRs(ResultSet rs) throws SQLException {
 
         return new AppliedMigration(
-                rs.getInt("id"),
-                rs.getInt("version"),
-                rs.getString("description"),
-                rs.getTimestamp("applied_on").toLocalDateTime());
+                rs.getInt(ID),
+                rs.getInt(VERSION),
+                rs.getString(DESCRIPTION),
+                rs.getTimestamp(APPLIED_ON).toLocalDateTime());
     }
 }
