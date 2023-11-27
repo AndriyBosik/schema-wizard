@@ -1,2 +1,3 @@
-rootProject.name = 'schema-wizard'
+rootProject.name = "schema-wizard"
 
+include 'schema-wizard-core'
