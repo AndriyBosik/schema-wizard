@@ -30,6 +30,15 @@ public class ErrorMessage {
     public static final String NOT_EXISTENT_FILE_FORMAT =
             "File %s does not exist";
 
+    public static final String INVALID_DATABASE_PROVIDER_FORMAT =
+            "Invalid database provider for connection URL: %s";
+
+    public static final String NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT =
+            "No query factory found for database provider: %s";
+
+    public static final String MULTIPLE_OPERATION_RESOLVERS_FORMAT =
+            "These resolvers use the same operation type: %s %s";
+
     private ErrorMessage() {
     }
 }

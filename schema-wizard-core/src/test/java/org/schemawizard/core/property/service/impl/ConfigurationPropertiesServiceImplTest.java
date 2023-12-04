@@ -1,14 +1,10 @@
 package org.schemawizard.core.property.service.impl;
 
-import org.schemawizard.core.model.ConfigurationProperties;
-import org.schemawizard.core.property.service.impl.CamelCasePropertyUtils;
-import org.schemawizard.core.property.service.impl.ConfigurationPropertiesServiceImpl;
-import org.schemawizard.core.property.service.impl.PropertyParserImpl;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
+import org.schemawizard.core.model.ConfigurationProperties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ConfigurationPropertiesServiceImplTest {
 
@@ -23,19 +19,11 @@ public class ConfigurationPropertiesServiceImplTest {
                 "postgres",
                 "postgres",
                 "org.schemawizard.core.db.migration",
-                List.of(
-                        new ConfigurationProperties.LoggingItem("upgrade", "TRACE", true),
-                        new ConfigurationProperties.LoggingItem("downgrade", "WARN", false)
-                )
+                true
         );
         assertEquals(expectedProperties.getUsername(), actualProperties.getUsername());
         assertEquals(expectedProperties.getPassword(), actualProperties.getPassword());
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
-        assertEquals(expectedProperties.getLogging().size(), actualProperties.getLogging().size());
-        for(int i = 0; i < expectedProperties.getLogging().size(); i++) {
-            assertEquals(expectedProperties.getLogging().get(i).getItem(), actualProperties.getLogging().get(i).getItem());
-            assertEquals(expectedProperties.getLogging().get(i).getLogLevel(), actualProperties.getLogging().get(i).getLogLevel());
-            assertEquals(expectedProperties.getLogging().get(i).isEnabled(), actualProperties.getLogging().get(i).isEnabled());
-        }
+        assertFalse(expectedProperties.isLogGeneratedSql());
     }
 }

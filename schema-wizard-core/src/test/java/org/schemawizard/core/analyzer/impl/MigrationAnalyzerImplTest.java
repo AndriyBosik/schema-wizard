@@ -6,6 +6,7 @@ import org.schemawizard.core.analyzer.*;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
+import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.migration.SW001FirstMigration;
 import org.schemawizard.core.migration.SW002SecondMigration;
 import org.schemawizard.core.migration.SW003ThirdMigration;

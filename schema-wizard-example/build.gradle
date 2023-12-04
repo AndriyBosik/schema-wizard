@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    postgresqlVersion = '42.6.0'
+}
+
+dependencies {
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation project(':schema-wizard-core')
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,27 +1,33 @@
 package org.schemawizard.core.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.schemawizard.core.metadata.DatabaseProvider;
 
 public class ConfigurationProperties {
+    private final DatabaseProvider databaseProvider;
     private final String connectionUrl;
     private final String username;
     private final String password;
     private final String migrationsPackage;
-    private final List<LoggingItem> logging;
+    private final boolean logGeneratedSql;
 
     public ConfigurationProperties(
+            DatabaseProvider databaseProvider,
             String connectionUrl,
             String username,
             String password,
             String migrationsPackage,
-            List<LoggingItem> logging
+            boolean logGeneratedSql
     ) {
+        this.databaseProvider = databaseProvider;
         this.connectionUrl = connectionUrl;
         this.username = username;
         this.password = password;
         this.migrationsPackage = migrationsPackage;
-        this.logging = logging;
+        this.logGeneratedSql = logGeneratedSql;
+    }
+
+    public DatabaseProvider getDatabaseProvider() {
+        return databaseProvider;
     }
 
     public String getConnectionUrl() {
@@ -40,46 +46,28 @@ public class ConfigurationProperties {
         return migrationsPackage;
     }
 
-    public List<LoggingItem> getLogging() {
-        return logging;
+    public boolean isLogGeneratedSql() {
+        return logGeneratedSql;
     }
 
     public static PropertyConfigurationBuilder builder() {
         return new PropertyConfigurationBuilder();
     }
 
-    public static class LoggingItem {
-        private final String item;
-        private final String logLevel;
-        private final boolean enabled;
-
-        public LoggingItem(String item, String logLevel, boolean enabled) {
-            this.item = item;
-            this.logLevel = logLevel;
-            this.enabled = enabled;
-        }
-
-        public String getItem() {
-            return item;
-        }
-
-        public String getLogLevel() {
-            return logLevel;
-        }
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-    }
-
     public static class PropertyConfigurationBuilder {
+        private DatabaseProvider databaseProvider;
         private String connectionUrl;
         private String username;
         private String password;
         private String migrationsPackage;
-        private List<LoggingItem> logging = new ArrayList<>();
+        private boolean logGeneratedSql;
 
         private PropertyConfigurationBuilder() {
+        }
+
+        public PropertyConfigurationBuilder databaseProvider(DatabaseProvider databaseProvider) {
+            this.databaseProvider = databaseProvider;
+            return this;
         }
 
         public PropertyConfigurationBuilder connectionUrl(String connectionUrl) {
@@ -102,13 +90,19 @@ public class ConfigurationProperties {
             return this;
         }
 
-        public PropertyConfigurationBuilder logging(List<LoggingItem> logging) {
-            this.logging = logging;
+        public PropertyConfigurationBuilder logGeneratedSql(boolean logGeneratedSql) {
+            this.logGeneratedSql = logGeneratedSql;
             return this;
         }
 
         public ConfigurationProperties build() {
-            return new ConfigurationProperties(connectionUrl, username, password, migrationsPackage, logging);
+            return new ConfigurationProperties(
+                    databaseProvider,
+                    connectionUrl,
+                    username,
+                    password,
+                    migrationsPackage,
+                    logGeneratedSql);
         }
     }
 }

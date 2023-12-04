@@ -6,10 +6,5 @@ schema:
       password: postgres
     migration:
       package-name: com.example.db.migration
-    logging:
-      - item: upgrade
-        log-level: ${UPGRADE_LOG_LEVEL:TRACE}
-        enabled: true
-      - item: downgrade
-        log-level: WARN
-        enabled: ${DOWNGRADE_LOG_ENABLED:false}
+    log:
+      sql-query: false

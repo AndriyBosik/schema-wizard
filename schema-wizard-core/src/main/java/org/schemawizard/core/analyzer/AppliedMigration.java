@@ -3,7 +3,6 @@ package org.schemawizard.core.analyzer;
 import java.time.LocalDateTime;
 
 public class AppliedMigration {
-
     private final Integer id;
     private final Integer version;
     private final String description;

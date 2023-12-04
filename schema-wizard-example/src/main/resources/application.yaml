@@ -1,0 +1,10 @@
+schema:
+  wizard:
+    database:
+      connection-url: jdbc:postgresql://${DS_HOST:localhost}:${DS_PORT:5432}/${DS_DATABASE:sw-example}
+      username: postgres
+      password: postgres
+    migration:
+      package-name: com.example.migration
+    log:
+      sql-query: ${LOG_GENERATED_SQL:true}

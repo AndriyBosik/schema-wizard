@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class HistoryTableCreatorImpl implements HistoryTableCreator {
-
     private final Logger log = LoggerFactory.getLogger(HistoryTableCreatorImpl.class);
     private final ConnectionHolder connectionHolder;
     private final HistoryTableQueryFactory historyTableQueryFactory;
