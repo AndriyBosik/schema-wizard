@@ -13,6 +13,7 @@ import org.schemawizard.core.migration.operation.AddUniqueOperation;
 import org.schemawizard.core.migration.operation.CreateTableOperation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
 import org.schemawizard.core.migration.service.OperationService;
+import org.schemawizard.core.utils.StringUtils;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -34,13 +35,14 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
 
     @Override
     public MigrationInfo resolve(CreateTableOperation operation) {
+        String constraints = buildConstraints(operation);
         return new MigrationInfo(
                 String.format(
-                        "%s %s (%s, %s)",
+                        "%s %s (%s%s)",
                         SqlClause.CREATE_TABLE,
                         operationService.buildTable(operation),
                         buildColumnsDefinitions(operation),
-                        buildConstraints(operation)));
+                        StringUtils.isBlank(constraints) ? "" : (", " + constraints)));
     }
 
     private String buildColumnsDefinitions(CreateTableOperation operation) {
