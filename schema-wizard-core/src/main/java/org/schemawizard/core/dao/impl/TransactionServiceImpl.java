@@ -1,8 +1,8 @@
-package org.schemawizard.core.service.impl;
+package org.schemawizard.core.dao.impl;
 
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.exception.MigrationApplicationException;
-import org.schemawizard.core.service.TransactionService;
+import org.schemawizard.core.dao.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

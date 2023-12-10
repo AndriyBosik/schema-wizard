@@ -18,7 +18,7 @@ public class ClassesDeclaredMigrationServiceTest {
     private final DeclaredMigrationService classesDeclaredMigrationService
             = new ClassesDeclaredMigrationService(
             ConfigurationProperties.builder()
-                    .migrationsPackage("com.schemawizard.migration")
+                    .migrationsPackage("org.schemawizard.core.migration")
                     .build()
     );
 

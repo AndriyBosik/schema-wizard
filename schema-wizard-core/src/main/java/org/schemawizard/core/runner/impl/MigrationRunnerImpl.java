@@ -6,6 +6,8 @@ import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
 import org.schemawizard.core.callback.AfterQueryExecutionCallback;
 import org.schemawizard.core.callback.BeforeQueryExecutionCallback;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
+import org.schemawizard.core.dao.TransactionService;
+import org.schemawizard.core.exception.MigrationApplicationException;
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.model.MigrationInfo;
@@ -13,7 +15,6 @@ import org.schemawizard.core.migration.operation.CompositeOperation;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.runner.MigrationRunner;
-import org.schemawizard.core.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
             fillPreparedStatement(data, preparedStatement);
             preparedStatement.execute();
         } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            throw new MigrationApplicationException(exception.getMessage(), exception);
         }
         afterQueryCallbacks.forEach(callback -> callback.handle(data));
     }
@@ -106,7 +107,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
         try {
             statement.execute(sql);
         } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            throw new MigrationApplicationException(exception.getMessage(), exception);
         }
     }
 
@@ -116,7 +117,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
             statement.setString(2, item.getDescription());
             statement.addBatch();
         } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            throw new MigrationApplicationException(exception.getMessage(), exception);
         }
     }
 }

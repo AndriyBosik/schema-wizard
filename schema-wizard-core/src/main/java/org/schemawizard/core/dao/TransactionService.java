@@ -1,4 +1,4 @@
-package org.schemawizard.core.service;
+package org.schemawizard.core.dao;
 
 import java.sql.Connection;
 import java.util.function.Function;

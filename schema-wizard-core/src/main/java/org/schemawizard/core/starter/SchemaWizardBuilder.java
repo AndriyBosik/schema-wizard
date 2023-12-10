@@ -13,7 +13,9 @@ import org.schemawizard.core.callback.QueryGeneratedCallback;
 import org.schemawizard.core.callback.impl.QueryLoggerCallback;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
+import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
+import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.di.DiContainer;
 import org.schemawizard.core.exception.InvalidConfigurationException;
 import org.schemawizard.core.metadata.DatabaseProvider;
@@ -62,8 +64,6 @@ import org.schemawizard.core.property.service.impl.ConfigurationPropertiesServic
 import org.schemawizard.core.property.service.impl.PropertyParserImpl;
 import org.schemawizard.core.runner.MigrationRunner;
 import org.schemawizard.core.runner.impl.MigrationRunnerImpl;
-import org.schemawizard.core.service.TransactionService;
-import org.schemawizard.core.service.impl.TransactionServiceImpl;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.util.AbstractMap;
