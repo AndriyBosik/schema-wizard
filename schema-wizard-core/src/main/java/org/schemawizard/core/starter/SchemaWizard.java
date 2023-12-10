@@ -1,18 +1,19 @@
 package org.schemawizard.core.starter;
 
-import org.schemawizard.core.migration.operation.resolver.OperationResolver;
+import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.runner.MigrationRunner;
-
-import java.util.List;
 
 public class SchemaWizard {
     private final MigrationRunner migrationRunner;
+    private final MigrationAnalyzer migrationAnalyzer;
 
-    public SchemaWizard(MigrationRunner migrationRunner) {
+    public SchemaWizard(MigrationRunner migrationRunner, MigrationAnalyzer migrationAnalyzer) {
         this.migrationRunner = migrationRunner;
+        this.migrationAnalyzer = migrationAnalyzer;
     }
 
     public void up() {
-        migrationRunner.upgrade();
+        var upgradeMigrations = migrationAnalyzer.analyze();
+        migrationRunner.upgrade(upgradeMigrations);
     }
 }

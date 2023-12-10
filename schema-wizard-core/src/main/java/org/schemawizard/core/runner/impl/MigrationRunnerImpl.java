@@ -1,6 +1,5 @@
 package org.schemawizard.core.runner.impl;
 
-import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
 import org.schemawizard.core.callback.AfterQueryExecutionCallback;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 public class MigrationRunnerImpl implements MigrationRunner {
     private final Logger log = LoggerFactory.getLogger(HistoryTableCreatorImpl.class);
 
-    private final MigrationAnalyzer migrationAnalyzer;
     private final OperationResolverService operationResolverService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
     private final TransactionService transactionService;
@@ -36,14 +34,12 @@ public class MigrationRunnerImpl implements MigrationRunner {
     private final List<AfterQueryExecutionCallback> afterQueryCallbacks;
 
     public MigrationRunnerImpl(
-            MigrationAnalyzer migrationAnalyzer,
             OperationResolverService operationResolverService,
             HistoryTableQueryFactory historyTableQueryFactory,
             TransactionService transactionService,
             List<BeforeQueryExecutionCallback> beforeQueryCallbacks,
             List<AfterQueryExecutionCallback> afterQueryCallbacks
     ) {
-        this.migrationAnalyzer = migrationAnalyzer;
         this.operationResolverService = operationResolverService;
         this.historyTableQueryFactory = historyTableQueryFactory;
         this.transactionService = transactionService;
@@ -52,10 +48,9 @@ public class MigrationRunnerImpl implements MigrationRunner {
     }
 
     @Override
-    public void upgrade() {
-        List<MigrationData> migrationData = migrationAnalyzer.analyze();
+    public void upgrade(List<MigrationData> upgradeMigrations) {
         MigrationContext context = new MigrationContext();
-        upgrade(migrationData, context);
+        upgrade(upgradeMigrations, context);
     }
 
     private List<Operation> getOperations(MigrationData data, MigrationContext context) {
