@@ -25,6 +25,7 @@ public class SW005CreateExampleTable implements Migration {
 
                             public ColumnBuilder details() {
                                 return new JsonColumnBuilder("details");
+//                                return ColumnUtils.json("details").apply(factory);
                             }
                         })
                 .build();
