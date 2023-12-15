@@ -1,18 +1,14 @@
 package org.schemawizard.core.dao.impl;
 
 import org.schemawizard.core.dao.ConnectionHolder;
-import org.schemawizard.core.exception.MigrationApplicationException;
 import org.schemawizard.core.dao.TransactionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.schemawizard.core.exception.MigrationApplicationException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Function;
 
 public class TransactionServiceImpl implements TransactionService {
-    private final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
-
     private final ConnectionHolder connectionHolder;
 
     public TransactionServiceImpl(ConnectionHolder connectionHolder) {
@@ -21,6 +17,14 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public <T> T doWithinTransaction(Function<Connection, T> action) {
+        try {
+            return apply(action);
+        } catch (SQLException exception) {
+            throw new MigrationApplicationException(exception.getMessage(), exception);
+        }
+    }
+
+    private <T> T apply(Function<Connection, T> action) throws SQLException {
         Connection connection = connectionHolder.getConnection();
         try {
             connection.setAutoCommit(false);
@@ -28,18 +32,10 @@ public class TransactionServiceImpl implements TransactionService {
             connection.commit();
             return result;
         } catch (Exception exception) {
-            try {
-                connection.rollback();
-            } catch (SQLException sqlException) {
-                throw new MigrationApplicationException(sqlException.getMessage(), sqlException);
-            }
+            connection.rollback();
             throw new MigrationApplicationException(exception.getMessage(), exception);
         } finally {
-            try {
-                connection.close();
-            } catch (SQLException sqlException) {
-                log.warn("Unable to close database connection", sqlException);
-            }
+            connection.close();
         }
     }
 }
