@@ -14,6 +14,7 @@ import org.schemawizard.core.callback.impl.QueryLoggerCallback;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
+import org.schemawizard.core.dao.impl.OracleHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.di.DiContainer;
@@ -177,6 +178,9 @@ public class SchemaWizardBuilder {
     private static Class<? extends HistoryTableQueryFactory> getHistoryTableQueryFactoryClass(DatabaseProvider provider) {
         if (provider == DatabaseProvider.POSTGRESQL) {
             return PostgresHistoryTableQueryFactory.class;
+        }
+        if (provider == DatabaseProvider.ORACLE) {
+            return OracleHistoryTableQueryFactory.class;
         }
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT,

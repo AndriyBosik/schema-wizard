@@ -27,6 +27,7 @@ public class ConfigurationPropertiesServiceImplTest {
         assertEquals(expectedProperties.getUsername(), actualProperties.getUsername());
         assertEquals(expectedProperties.getPassword(), actualProperties.getPassword());
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
+        assertEquals(expectedProperties.getMigrationsPackage(), actualProperties.getMigrationsPackage());
         assertFalse(expectedProperties.isLogGeneratedSql());
     }
 }

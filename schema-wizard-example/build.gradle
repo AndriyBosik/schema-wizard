@@ -11,10 +11,12 @@ repositories {
 
 ext {
     postgresqlVersion = '42.6.0'
+    oracleDbVersion = '23.3.0.23.09'
 }
 
 dependencies {
     implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation "com.oracle.database.jdbc:ojdbc11:${oracleDbVersion}"
     implementation project(':schema-wizard-core')
 
     testImplementation platform('org.junit:junit-bom:5.9.1')

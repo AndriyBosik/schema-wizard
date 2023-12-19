@@ -1,17 +1,17 @@
-package com.example.migration;
+package org.schemawizard.core.migration;
 
-import org.schemawizard.core.migration.Migration;
+import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.builder.operation.CreateTable;
 import org.schemawizard.core.migration.builder.operation.DropTable;
 import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.operation.Operation;
 
+@SWName("some long custom migration description")
 public class SW002CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder(
-                "SCHEMAWIZARD",
                         "posts",
                         factory -> new Object() {
                             public ColumnBuilder id() {
@@ -33,7 +33,7 @@ public class SW002CreatePostsTable implements Migration {
                 .ifNotExists()
                 .primaryKey("pk_posts", table -> table.id())
                 .foreignKey(fk -> fk.column(table -> table.userId())
-                        .foreignSchema("SCHEMAWIZARD")
+                        .foreignSchema("public")
                         .foreignTable("users")
                         .foreignColumn("id"))
                 .build();
@@ -41,6 +41,6 @@ public class SW002CreatePostsTable implements Migration {
 
     @Override
     public Operation down(MigrationContext context) {
-        return DropTable.builder("SCHEMAWIZARD", "posts").build();
+        return DropTable.builder("public", "posts").build();
     }
 }

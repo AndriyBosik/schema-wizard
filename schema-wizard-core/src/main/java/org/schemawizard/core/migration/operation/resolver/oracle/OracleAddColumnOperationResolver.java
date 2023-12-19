@@ -31,7 +31,7 @@ public class OracleAddColumnOperationResolver implements OperationResolver<AddCo
                         "%s %s %s %s",
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
-                        SqlClause.ADD_COLUMN,
+                        SqlClause.ADD,
                         operationService.buildColumnDefinition(operation, columnTypeFactory)));
     }
 }

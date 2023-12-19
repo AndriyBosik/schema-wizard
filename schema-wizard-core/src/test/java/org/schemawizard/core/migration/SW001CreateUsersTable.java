@@ -1,17 +1,15 @@
-package com.example.migration;
+package org.schemawizard.core.migration;
 
-import org.schemawizard.core.migration.annotation.SWName;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
-import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.operation.CreateTable;
 import org.schemawizard.core.migration.builder.operation.DropTable;
+import org.schemawizard.core.migration.model.MigrationContext;
+import org.schemawizard.core.migration.operation.Operation;
 
 import java.util.List;
 
-@SWName("Create users table")
 public class SW001CreateUsersTable implements Migration {
+
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder(

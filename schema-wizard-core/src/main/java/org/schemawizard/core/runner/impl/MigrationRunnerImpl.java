@@ -110,7 +110,6 @@ public class MigrationRunnerImpl implements MigrationRunner {
         try {
             statement.setInt(1, item.getVersion());
             statement.setString(2, item.getDescription());
-            statement.addBatch();
         } catch (SQLException exception) {
             throw new MigrationApplicationException(exception.getMessage(), exception);
         }

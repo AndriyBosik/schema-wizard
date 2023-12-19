@@ -5,6 +5,6 @@ schema:
       username: postgres
       password: postgres
     migration:
-      package-name: com.example.db.migration
+      package-name: org.schemawizard.core.db.migration
     log:
       sql-query: false

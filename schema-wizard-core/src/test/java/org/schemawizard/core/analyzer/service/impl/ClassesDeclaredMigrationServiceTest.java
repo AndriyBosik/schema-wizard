@@ -3,10 +3,10 @@ package org.schemawizard.core.analyzer.service.impl;
 import org.junit.jupiter.api.Test;
 import org.schemawizard.core.analyzer.DeclaredMigration;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
-import org.schemawizard.core.migration.SW001FirstMigration;
-import org.schemawizard.core.migration.SW002SecondMigration;
-import org.schemawizard.core.migration.SW003ThirdMigration;
-import org.schemawizard.core.migration.inner.SW004ForthMigration;
+import org.schemawizard.core.migration.SW001CreateUsersTable;
+import org.schemawizard.core.migration.SW002CreatePostsTable;
+import org.schemawizard.core.migration.SW003CompositeMigration;
+import org.schemawizard.core.migration.inner.SW004NativeExample;
 import org.schemawizard.core.model.ConfigurationProperties;
 
 import java.util.List;
@@ -40,26 +40,26 @@ public class ClassesDeclaredMigrationServiceTest {
     private List<DeclaredMigration> expectedMigrations() {
         DeclaredMigration migration1 = new DeclaredMigration(
                 1,
-                "first migration",
-                SW001FirstMigration.class
+                "create users table",
+                SW001CreateUsersTable.class
         );
 
         DeclaredMigration migration2 = new DeclaredMigration(
                 2,
                 "some long custom migration description",
-                SW002SecondMigration.class
+                SW002CreatePostsTable.class
         );
 
         DeclaredMigration migration3 = new DeclaredMigration(
                 3,
-                "third migration",
-                SW003ThirdMigration.class
+                "composite migration",
+                SW003CompositeMigration.class
         );
 
         DeclaredMigration migration4 = new DeclaredMigration(
                 4,
-                "forth migration",
-                SW004ForthMigration.class
+                "native example",
+                SW004NativeExample.class
         );
 
         return List.of(migration1, migration2, migration3, migration4);

@@ -39,7 +39,7 @@ public class OracleAddColumnsOperationResolver implements OperationResolver<AddC
     private String buildColumnsDefinitions(AddColumnsOperation operation) {
         return operation.getColumns().stream()
                 .map(columnOperation -> operationService.buildColumnDefinition(columnOperation, columnTypeFactory))
-                .map(definition -> String.format("%s %s", SqlClause.ADD_COLUMN, definition))
+                .map(definition -> String.format("%s %s", SqlClause.ADD, definition))
                 .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
     }
 }

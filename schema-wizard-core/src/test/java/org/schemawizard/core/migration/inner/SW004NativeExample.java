@@ -1,4 +1,4 @@
-package com.example.migration;
+package org.schemawizard.core.migration.inner;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.operation.DropColumns;
@@ -11,13 +11,13 @@ public class SW004NativeExample implements Migration {
     public Operation up(MigrationContext context) {
         return NativeQuery.builder()
                 .file("db/migration/initial-up.sql")
-                .sql("alter table SCHEMAWIZARD.posts add column1 text not null")
+                .sql("alter table public.posts add column if not exists column1 text not null")
                 .build();
     }
 
     @Override
     public Operation down(MigrationContext context) {
-        return DropColumns.builder("SCHEMAWIZARD", "posts")
+        return DropColumns.builder("public", "posts")
                 .columns("column0", "column1")
                 .build();
     }
