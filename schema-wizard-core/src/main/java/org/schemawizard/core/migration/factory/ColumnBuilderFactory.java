@@ -14,6 +14,10 @@ public class ColumnBuilderFactory {
         this.table = table;
     }
 
+    public GenericColumnBuilder generic() {
+        return GenericColumnBuilder.builder(schema, table);
+    }
+
     public GenericColumnBuilder generic(String name) {
         return GenericColumnBuilder.builder(schema, table, name);
     }
