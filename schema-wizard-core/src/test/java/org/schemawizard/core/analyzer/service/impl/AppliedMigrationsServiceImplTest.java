@@ -2,7 +2,6 @@ package org.schemawizard.core.analyzer.service.impl;
 
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.AppliedMigration;
-import org.schemawizard.core.analyzer.service.impl.AppliedMigrationsServiceImpl;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.model.ConfigurationProperties;

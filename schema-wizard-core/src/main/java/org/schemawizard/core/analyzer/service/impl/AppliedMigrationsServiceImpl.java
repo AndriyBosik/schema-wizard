@@ -37,13 +37,12 @@ public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
                 migrations.add(extractMigrationFromRs(rs));
             }
             return migrations;
-        } catch (SQLException e) {
-            throw new MigrationAnalyzerException(e.getMessage(), e);
+        } catch (SQLException exception) {
+            throw new MigrationAnalyzerException(exception.getMessage(), exception);
         }
     }
 
     private AppliedMigration extractMigrationFromRs(ResultSet rs) throws SQLException {
-
         return new AppliedMigration(
                 rs.getInt(ID),
                 rs.getInt(VERSION),

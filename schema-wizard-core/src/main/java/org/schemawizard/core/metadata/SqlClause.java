@@ -7,6 +7,7 @@ public class SqlClause {
     public static final String ALTER_TABLE = "ALTER TABLE";
     public static final String DROP_TABLE = "DROP TABLE";
     public static final String ADD_COLUMN = "ADD COLUMN";
+    public static final String ADD = "ADD";
     public static final String DROP_COLUMN = "DROP COLUMN";
     public static final String DROP = "DROP";
     public static final String PRIMARY_KEY = "PRIMARY KEY";

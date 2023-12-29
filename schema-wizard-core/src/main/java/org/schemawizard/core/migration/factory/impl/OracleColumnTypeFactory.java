@@ -16,7 +16,7 @@ public class OracleColumnTypeFactory implements ColumnTypeFactory {
         } else if (PlainColumnType.INTEGER.equalsIgnoreCase(type)) {
             return "INTEGER";
         } else if (PlainColumnType.BOOLEAN.equalsIgnoreCase(type)) {
-            return "BOOLEAN";
+            return "NUMBER(1)";
         }
         return type;
     }

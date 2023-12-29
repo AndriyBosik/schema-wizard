@@ -5,7 +5,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class GenericColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private String type;
     private Integer minLength;
     private Integer maxLength;
@@ -20,8 +20,17 @@ public class GenericColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static GenericColumnBuilder builder(String schema, String table) {
+        return new GenericColumnBuilder(schema, table, null);
+    }
+
     public static GenericColumnBuilder builder(String schema, String table, String name) {
         return new GenericColumnBuilder(schema, table, name);
+    }
+
+    public GenericColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public GenericColumnBuilder type(String type) {

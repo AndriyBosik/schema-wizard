@@ -1,6 +1,8 @@
 package org.schemawizard.core.property.service.impl;
 
 import org.schemawizard.core.exception.InvalidConfigurationPropertiesLocation;
+import org.schemawizard.core.exception.InvalidConfigurationException;
+import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.property.model.YamlContext;
@@ -16,8 +18,6 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConfigurationPropertiesServiceImpl implements ConfigurationPropertiesService {
     private final static String DEFAULT_LOCATION = "application.yaml";
@@ -64,20 +64,26 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
     }
 
     private ConfigurationProperties mapConfigurationProperties(YamlContext context) {
-
-        List<ConfigurationProperties.LoggingItem> logging = context.getSchema().getWizard().getLogging().stream()
-                .map(item -> new ConfigurationProperties.LoggingItem(
-                        propertyParser.parseStringValue(item.getItem()),
-                        propertyParser.parseStringValue(item.getLogLevel()),
-                        propertyParser.parseBooleanValue(item.getEnabled())))
-                .collect(Collectors.toList());
-
+        String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         return ConfigurationProperties.builder()
-                .connectionUrl(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl()))
+                .databaseProvider(mapDatabaseProvider(connectionUrl))
+                .connectionUrl(connectionUrl)
                 .username(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getUsername()))
                 .password(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getPassword()))
                 .migrationsPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getMigration().getPackageName()))
-                .logging(logging)
+                .logGeneratedSql(propertyParser.parseBooleanValue(context.getSchema().getWizard().getLog().getSqlQuery()))
                 .build();
+    }
+
+    private DatabaseProvider mapDatabaseProvider(String connectionUrl) {
+        String lowerCaseConnectionUrl = connectionUrl.toLowerCase();
+        if (lowerCaseConnectionUrl.startsWith("jdbc:postgresql:")) {
+            return DatabaseProvider.POSTGRESQL;
+        } else if (lowerCaseConnectionUrl.startsWith("jdbc:oracle:")) {
+            return DatabaseProvider.ORACLE;
+        }
+        throw new InvalidConfigurationException(String.format(
+                ErrorMessage.INVALID_DATABASE_PROVIDER_FORMAT,
+                connectionUrl));
     }
 }

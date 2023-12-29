@@ -5,6 +5,7 @@ import org.schemawizard.core.analyzer.*;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
+import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.utils.ReflectionUtils;
 

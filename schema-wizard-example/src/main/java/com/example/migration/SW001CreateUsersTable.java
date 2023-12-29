@@ -1,4 +1,4 @@
-package org.schemawizard.core.usage;
+package com.example.migration;
 
 import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.migration.model.MigrationContext;
@@ -15,7 +15,7 @@ public class SW001CreateUsersTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder(
-                        "example",
+                        "SCHEMAWIZARD",
                         "users",
                         factory -> new Object() {
                             public ColumnBuilder id() {
@@ -51,7 +51,7 @@ public class SW001CreateUsersTable implements Migration {
 
     @Override
     public Operation down(MigrationContext context) {
-        return DropTable.builder("example", "users")
+        return DropTable.builder("SCHEMAWIZARD", "users")
                 .ifExists()
                 .build();
     }

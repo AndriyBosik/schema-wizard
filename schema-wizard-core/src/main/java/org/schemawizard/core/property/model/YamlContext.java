@@ -1,9 +1,6 @@
 package org.schemawizard.core.property.model;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class YamlContext {
     private Schema schema = new Schema();
 
@@ -29,7 +26,7 @@ public class YamlContext {
         public static class Wizard {
             private Database database = new Database();
             private Migration migration = new Migration();
-            private List<LoggingItem> logging = new ArrayList<>();
+            private Log log = new Log();
 
             public Database getDatabase() {
                 return database;
@@ -47,12 +44,12 @@ public class YamlContext {
                 this.migration = migration;
             }
 
-            public List<LoggingItem> getLogging() {
-                return logging;
+            public Log getLog() {
+                return log;
             }
 
-            public void setLogging(List<LoggingItem> logging) {
-                this.logging = logging;
+            public void setLog(Log log) {
+                this.log = log;
             }
 
             public static class Database {
@@ -97,33 +94,15 @@ public class YamlContext {
                 }
             }
 
-            public static class LoggingItem {
-                private String item;
-                private String logLevel;
-                private String enabled;
+            public static class Log {
+                private String sqlQuery;
 
-                public String getItem() {
-                    return item;
+                public String getSqlQuery() {
+                    return sqlQuery;
                 }
 
-                public void setItem(String item) {
-                    this.item = item;
-                }
-
-                public String getLogLevel() {
-                    return logLevel;
-                }
-
-                public void setLogLevel(String logLevel) {
-                    this.logLevel = logLevel;
-                }
-
-                public String getEnabled() {
-                    return enabled;
-                }
-
-                public void setEnabled(String enabled) {
-                    this.enabled = enabled;
+                public void setSqlQuery(String sqlQuery) {
+                    this.sqlQuery = sqlQuery;
                 }
             }
         }

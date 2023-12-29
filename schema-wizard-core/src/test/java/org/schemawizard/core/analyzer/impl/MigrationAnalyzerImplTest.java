@@ -6,9 +6,10 @@ import org.schemawizard.core.analyzer.*;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
-import org.schemawizard.core.migration.SW001FirstMigration;
-import org.schemawizard.core.migration.SW002SecondMigration;
-import org.schemawizard.core.migration.SW003ThirdMigration;
+import org.schemawizard.core.analyzer.AppliedMigration;
+import org.schemawizard.core.migration.SW001CreateUsersTable;
+import org.schemawizard.core.migration.SW002CreatePostsTable;
+import org.schemawizard.core.migration.SW003CompositeMigration;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,7 +41,7 @@ public class MigrationAnalyzerImplTest {
         MigrationData thirdMigrationData = new MigrationData(
                 3,
                 "ThirdMigration",
-                new SW003ThirdMigration()
+                new SW003CompositeMigration()
         );
 
         var expectedMigrations = List.of(thirdMigrationData);
@@ -76,13 +77,13 @@ public class MigrationAnalyzerImplTest {
         DeclaredMigration migration1 = new DeclaredMigration(
                 1,
                 "FirstMigration",
-                SW001FirstMigration.class
+                SW001CreateUsersTable.class
         );
 
         DeclaredMigration migration2 = new DeclaredMigration(
                 2,
                 "SecondMigration",
-                SW002SecondMigration.class
+                SW002CreatePostsTable.class
         );
 
         return List.of(migration1, migration2);
@@ -117,19 +118,19 @@ public class MigrationAnalyzerImplTest {
         DeclaredMigration migration1 = new DeclaredMigration(
                 1,
                 "FirstMigration",
-                SW001FirstMigration.class
+                SW001CreateUsersTable.class
         );
 
         DeclaredMigration migration2 = new DeclaredMigration(
                 2,
                 "SecondMigration",
-                SW002SecondMigration.class
+                SW002CreatePostsTable.class
         );
 
         DeclaredMigration migration3 = new DeclaredMigration(
                 3,
                 "ThirdMigration",
-                SW003ThirdMigration.class
+                SW003CompositeMigration.class
         );
 
         return List.of(migration1, migration2, migration3);
@@ -169,7 +170,7 @@ public class MigrationAnalyzerImplTest {
         DeclaredMigration declaredMigration = new DeclaredMigration(
                 2,
                 "Migration Description 1",
-                SW002SecondMigration.class
+                SW002CreatePostsTable.class
         );
 
         when(appliedMigrationsService.getAppliedMigrations()).thenReturn(List.of(appliedMigration));

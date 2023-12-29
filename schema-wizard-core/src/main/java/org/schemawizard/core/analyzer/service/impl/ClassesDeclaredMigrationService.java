@@ -28,7 +28,6 @@ public class ClassesDeclaredMigrationService implements DeclaredMigrationService
 
     @Override
     public List<DeclaredMigration> getDeclaredMigrations() {
-
         Reflections reflections = new Reflections(configurationProperties.getMigrationsPackage());
         var migrationClasses = reflections.get(SubTypes.of(Migration.class).asClass());
         return migrationClasses.stream()
