@@ -1,20 +1,24 @@
 package org.schemawizard.core.analyzer.impl;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.schemawizard.core.analyzer.HistoryTableCreator;
-import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.model.ConfigurationProperties;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HistoryTableCreatorImplTest {
 
     private static final String SELECT_TABLE_SQL = "SELECT table_name " +
@@ -44,7 +48,14 @@ public class HistoryTableCreatorImplTest {
     }
 
     @Test
-    public void historyTableCreatorShouldCreateTable() {
+    @Order(1)
+    void isHistoryTableExistShouldReturnFalseIfTableNotExist() {
+        assertFalse(historyTableCreator.isHistoryTableExist());
+    }
+
+    @Test
+    @Order(2)
+    void createTableIfNotExistShouldCreateTable() {
         historyTableCreator.createTableIfNotExist();
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
             statement.execute(SELECT_TABLE_SQL);
@@ -52,5 +63,11 @@ public class HistoryTableCreatorImplTest {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    @Order(3)
+    void isHistoryTableExistShouldReturnTrueIfTableExist() {
+        assertTrue(historyTableCreator.isHistoryTableExist());
     }
 }

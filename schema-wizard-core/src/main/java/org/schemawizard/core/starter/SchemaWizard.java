@@ -13,7 +13,12 @@ public class SchemaWizard {
     }
 
     public void up() {
-        var upgradeMigrations = migrationAnalyzer.analyze();
+        var upgradeMigrations = migrationAnalyzer.upgradeAnalyze();
         migrationRunner.upgrade(upgradeMigrations);
+    }
+
+    public void down(Integer version) {
+        var downgradeMigrations = migrationAnalyzer.downgradeAnalyze(version);
+        migrationRunner.downgrade(downgradeMigrations);
     }
 }

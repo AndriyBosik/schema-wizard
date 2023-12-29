@@ -34,4 +34,14 @@ public class HistoryTableCreatorImpl implements HistoryTableCreator {
             throw new MigrationAnalyzerException("Error creating migration history table: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public boolean isHistoryTableExist() {
+        try (Statement statement = connectionHolder.getConnection().createStatement()) {
+            statement.execute(historyTableQueryFactory.getSelectTableSql());
+            return statement.getResultSet().next();
+        } catch (SQLException e) {
+            throw new MigrationAnalyzerException(e.getMessage(), e);
+        }
+    }
 }

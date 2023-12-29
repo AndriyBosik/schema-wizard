@@ -16,7 +16,7 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
                         + "%s INTEGER NOT NULL, "
                         + "%s TEXT NOT NULL, "
                         + "%s TIMESTAMP NOT NULL DEFAULT now()"
-                        + ");",
+                        + ")",
                 MIGRATION_TABLE_NAME, ID, VERSION, DESCRIPTION, APPLIED_ON);
     }
 
@@ -25,16 +25,24 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
         return String.format("SELECT table_name "
                         + "FROM information_schema.tables "
                         + "WHERE table_type='BASE TABLE' "
-                        + "AND table_name='%s';",
+                        + "AND table_name='%s'",
                 MIGRATION_TABLE_NAME);
     }
 
     @Override
     public String getSelectMigrationsSql() {
         return String.format("SELECT %s, %s, %s, %s "
-                        + "FROM %s order by version;",
+                        + "FROM %s order by version",
                 ID, VERSION, DESCRIPTION, APPLIED_ON,
                 MIGRATION_TABLE_NAME);
+    }
+
+    @Override
+    public String getSelectMigrationsStartedFromSql() {
+        return String.format("SELECT %s, %s, %s, %s "
+                        + "FROM %s WHERE %s >= ? ORDER BY VERSION DESC",
+                ID, VERSION, DESCRIPTION, APPLIED_ON,
+                MIGRATION_TABLE_NAME, VERSION);
     }
 
     @Override
@@ -44,5 +52,13 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
                 MIGRATION_TABLE_NAME,
                 VERSION,
                 DESCRIPTION);
+    }
+
+    @Override
+    public String getDeleteMigrationHistoryRowQuery() {
+        return String.format(
+                "DELETE FROM %s WHERE %s = ?",
+                MIGRATION_TABLE_NAME,
+                VERSION);
     }
 }

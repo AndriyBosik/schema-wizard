@@ -1,5 +1,6 @@
 package org.schemawizard.core.analyzer.service.impl;
 
+import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.dao.ConnectionHolder;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class AppliedMigrationsServiceImplTest {
@@ -56,9 +58,9 @@ public class AppliedMigrationsServiceImplTest {
     }
 
     @Test
-    void migrationDaoShouldReturnMigrations() throws SQLException {
+    void getAppliedMigrationsShouldReturnAllMigrations() throws SQLException {
         createMigrationsTable();
-        List<AppliedMigration> expectedMigrations = createExpectedMigrations();
+        List<AppliedMigration> expectedMigrations = createAllMigrations();
         saveMigrationsToDb(expectedMigrations);
         var actualMigrations = appliedMigrationsService.getAppliedMigrations();
         assertEquals(actualMigrations.size(), expectedMigrations.size());
@@ -71,6 +73,33 @@ public class AppliedMigrationsServiceImplTest {
             assertEquals(expectedMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS),
                     actualMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS));
         }
+        deleteMigrationTable();
+    }
+
+    @Test
+    void getMigrationsStartedFromShouldReturnCorrectMigrations() throws SQLException {
+        createMigrationsTable();
+        List<AppliedMigration> allMigrations = createAllMigrations();
+        saveMigrationsToDb(allMigrations);
+        List<AppliedMigration> expectedMigrations = allMigrations.subList(2, allMigrations.size());
+        List<AppliedMigration> actualMigrations = appliedMigrationsService.getMigrationsStartedFrom(3);
+        assertEquals(actualMigrations.size(), expectedMigrations.size());
+        for(int i = 0; i < expectedMigrations.size(); i++) {
+            AppliedMigration actualMigration = actualMigrations.get(i);
+            AppliedMigration expectedMigration = expectedMigrations.get(i);
+            assertNotNull(actualMigration.getId());
+            assertEquals(expectedMigration.getVersion(), actualMigration.getVersion());
+            assertEquals(expectedMigration.getDescription(), actualMigration.getDescription());
+            assertEquals(expectedMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS),
+                    actualMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS));
+        }
+        deleteMigrationTable();
+    }
+
+    @Test
+    void getMigrationsStartedFromShouldThrowExceptionIfNoMigrationHistoryTable() {
+        assertThrows(MigrationAnalyzerException.class,
+                () -> appliedMigrationsService.getMigrationsStartedFrom(3));
     }
 
     private void createMigrationsTable() throws SQLException {
@@ -79,7 +108,7 @@ public class AppliedMigrationsServiceImplTest {
         }
     }
 
-    private List<AppliedMigration> createExpectedMigrations() {
+    private List<AppliedMigration> createAllMigrations() {
         List<AppliedMigration> migrations = new ArrayList<>();
 
         AppliedMigration migration1 = new AppliedMigration(
@@ -96,8 +125,24 @@ public class AppliedMigrationsServiceImplTest {
                 LocalDateTime.now()
         );
 
+        AppliedMigration migration3 = new AppliedMigration(
+                3,
+                3,
+                "test3",
+                LocalDateTime.now()
+        );
+
+        AppliedMigration migration4 = new AppliedMigration(
+                4,
+                4,
+                "test4",
+                LocalDateTime.now()
+        );
+
         migrations.add(migration1);
         migrations.add(migration2);
+        migrations.add(migration3);
+        migrations.add(migration4);
 
         return migrations;
     }
@@ -110,6 +155,12 @@ public class AppliedMigrationsServiceImplTest {
                 ps.setTimestamp(3, Timestamp.valueOf(migration.getAppliedOn()));
                 ps.executeUpdate();
             }
+        }
+    }
+
+    private void deleteMigrationTable() throws SQLException {
+        try (Statement st = connectionHolder.getConnection().createStatement()) {
+            st.executeUpdate("DROP TABLE IF EXISTS migration_history");
         }
     }
 }
