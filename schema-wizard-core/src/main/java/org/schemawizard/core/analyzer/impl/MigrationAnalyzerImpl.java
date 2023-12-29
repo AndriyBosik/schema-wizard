@@ -13,6 +13,8 @@ import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,26 +32,51 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     }
 
     @Override
-    public List<MigrationData> analyze() {
+    public List<MigrationData> upgradeAnalyze() {
         historyTableCreator.createTableIfNotExist();
         var appliedMigrations = appliedMigrationsService.getAppliedMigrations();
-        Map<Integer, DeclaredMigration> declaredMigrationsMap = declaredMigrationService.getDeclaredMigrations()
-                .stream()
-                .collect(Collectors.toMap(
-                                DeclaredMigration::getVersion,
-                                Function.identity(),
-                                (first, second) -> {
-                                    throw new MigrationAnalyzerException("Multiple migrations with version " + first.getVersion() + " were found");
-                                }));
+        Map<Integer, DeclaredMigration> versionDeclaredMigrationsMap = createVersionDeclaredMigrationMap();
         for (AppliedMigration migration: appliedMigrations) {
-            if (!declaredMigrationsMap.containsKey(migration.getVersion())) {
+            if (!versionDeclaredMigrationsMap.containsKey(migration.getVersion())) {
                 throw new MigrationAnalyzerException("Migration with version " + migration.getVersion() + " was not found");
             }
-            declaredMigrationsMap.remove(migration.getVersion());
+            versionDeclaredMigrationsMap.remove(migration.getVersion());
         }
 
-        return declaredMigrationsMap.values().stream()
+        return versionDeclaredMigrationsMap.values().stream()
                 .sorted(Comparator.comparing(DeclaredMigration::getVersion))
+                .map(this::declaredMigrationToMigrationData)
+                .collect(Collectors.toList());
+    }
+
+    private Map<Integer, DeclaredMigration> createVersionDeclaredMigrationMap() {
+        return declaredMigrationService.getDeclaredMigrations()
+                .stream()
+                .collect(Collectors.toMap(
+                        DeclaredMigration::getVersion,
+                        Function.identity(),
+                        (first, second) -> {
+                            throw new MigrationAnalyzerException("Multiple migrations with version " + first.getVersion() + " were found");
+                        }));
+    }
+
+    @Override
+    public List<MigrationData> downgradeAnalyze(Integer migrationVersion) {
+        if (!historyTableCreator.isHistoryTableExist()) {
+            throw new  MigrationAnalyzerException("No migrations has been found, run upgrade first");
+        }
+        var appliedMigrationsToDowngrade = appliedMigrationsService.getMigrationsStartedFrom(migrationVersion);
+        if (appliedMigrationsToDowngrade.isEmpty()
+                || !Objects.equals(appliedMigrationsToDowngrade.get(appliedMigrationsToDowngrade.size() - 1).getVersion(),
+                migrationVersion)) {
+            throw new MigrationAnalyzerException("Migration with version: " + migrationVersion + " has not been found");
+        }
+        Map<Integer, DeclaredMigration> declaredMigrationsMap = createVersionDeclaredMigrationMap();
+        return appliedMigrationsToDowngrade.stream()
+                .map(appliedMigration ->
+                        Optional.ofNullable(declaredMigrationsMap.get(appliedMigration.getVersion()))
+                                .orElseThrow(() -> new MigrationAnalyzerException(
+                                        "Declared migration with version " + appliedMigration.getVersion() + " was not found")))
                 .map(this::declaredMigrationToMigrationData)
                 .collect(Collectors.toList());
     }

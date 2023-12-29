@@ -6,6 +6,7 @@ import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,6 +33,23 @@ public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
             statement.execute(historyTableQueryFactory.getSelectMigrationsSql());
             var rs = statement.getResultSet();
+            List<AppliedMigration> migrations = new ArrayList<>();
+            while (rs.next()) {
+                migrations.add(extractMigrationFromRs(rs));
+            }
+            return migrations;
+        } catch (SQLException exception) {
+            throw new MigrationAnalyzerException(exception.getMessage(), exception);
+        }
+    }
+
+    @Override
+    public List<AppliedMigration> getMigrationsStartedFrom(Integer downgradeMigrationVersion) {
+        try (PreparedStatement ps = connectionHolder.getConnection()
+                .prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSql())) {
+            ps.setInt(1, downgradeMigrationVersion);
+            ps.execute();
+            var rs = ps.getResultSet();
             List<AppliedMigration> migrations = new ArrayList<>();
             while (rs.next()) {
                 migrations.add(extractMigrationFromRs(rs));

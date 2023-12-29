@@ -36,11 +36,27 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     }
 
     @Override
+    public String getSelectMigrationsStartedFromSql() {
+        return String.format("SELECT %s, %s, %s, %s "
+                        + "FROM %s WHERE %s >= ? ORDER BY VERSION DESC",
+                ID, VERSION, DESCRIPTION, APPLIED_ON,
+                MIGRATION_TABLE_NAME, VERSION);
+    }
+
+    @Override
     public String getInsertMigrationHistoryRowQuery() {
         return String.format(
                 "INSERT INTO %s (%s, %s) VALUES (?, ?)",
                 MIGRATION_TABLE_NAME,
                 VERSION,
                 DESCRIPTION);
+    }
+
+    @Override
+    public String getDeleteMigrationHistoryRowQuery() {
+        return String.format(
+                "DELETE FROM %s WHERE %s = ?",
+                MIGRATION_TABLE_NAME,
+                VERSION);
     }
 }

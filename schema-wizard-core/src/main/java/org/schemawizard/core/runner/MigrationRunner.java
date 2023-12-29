@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface MigrationRunner {
     void upgrade(List<MigrationData> upgradeMigrations);
+
+    void downgrade(List<MigrationData> downgradeMigrations);
 }

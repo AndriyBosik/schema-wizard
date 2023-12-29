@@ -3,5 +3,7 @@ package org.schemawizard.core.analyzer;
 import java.util.List;
 
 public interface MigrationAnalyzer {
-    List<MigrationData> analyze();
+    List<MigrationData> upgradeAnalyze();
+
+    List<MigrationData> downgradeAnalyze(Integer version);
 }

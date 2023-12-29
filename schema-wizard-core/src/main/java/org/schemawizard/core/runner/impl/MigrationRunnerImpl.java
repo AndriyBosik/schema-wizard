@@ -53,10 +53,20 @@ public class MigrationRunnerImpl implements MigrationRunner {
         upgrade(upgradeMigrations, context);
     }
 
-    private List<Operation> getOperations(MigrationData data, MigrationContext context) {
+    @Override
+    public void downgrade(List<MigrationData> downgradeMigrations) {
+        MigrationContext context = new MigrationContext();
+        downgrade(downgradeMigrations, context);
+    }
+
+    private Operation getUpgradeOperation(MigrationData data, MigrationContext context) {
         Migration migration = data.getMigration();
-        Operation operation = migration.up(context);
-        return unfold(operation);
+        return migration.up(context);
+    }
+
+    private Operation getDowngradeOperation(MigrationData data, MigrationContext context) {
+        Migration migration = data.getMigration();
+        return migration.down(context);
     }
 
     public List<Operation> unfold(Operation operation) {
@@ -72,30 +82,50 @@ public class MigrationRunnerImpl implements MigrationRunner {
 
     private void upgrade(List<MigrationData> data, MigrationContext context) {
         transactionService.doWithinTransaction(connection -> {
-            for (MigrationData item : data) {
-                apply(connection, item, context);
+            try (PreparedStatement ps = connection.prepareStatement(historyTableQueryFactory.getInsertMigrationHistoryRowQuery())) {
+                for (MigrationData item : data) {
+                    beforeQueryCallbacks.forEach(callback -> callback.handle(item));
+                    Operation operation = getUpgradeOperation(item, context);
+                    apply(connection, operation);
+                    fillInsertMigrationRowPreparedStatement(item, ps);
+                    ps.execute();
+                    afterQueryCallbacks.forEach(callback -> callback.handle(item));
+                }
+            } catch (SQLException e) {
+                throw new MigrationApplicationException(e.getMessage(), e);
             }
             return null;
         });
     }
 
-    private void apply(Connection connection, MigrationData data, MigrationContext context) {
-        List<Operation> operations = getOperations(data, context);
-        beforeQueryCallbacks.forEach(callback -> callback.handle(data));
-        try (
-                Statement statement = connection.createStatement();
-                PreparedStatement preparedStatement = connection.prepareStatement(historyTableQueryFactory.getInsertMigrationHistoryRowQuery())
-        ) {
+    private void downgrade(List<MigrationData> data, MigrationContext context) {
+        transactionService.doWithinTransaction(connection -> {
+            try (PreparedStatement ps = connection.prepareStatement(historyTableQueryFactory.getDeleteMigrationHistoryRowQuery())) {
+                for (MigrationData item : data) {
+                    beforeQueryCallbacks.forEach(callback -> callback.handle(item));
+                    Operation operation = getDowngradeOperation(item, context);
+                    apply(connection, operation);
+                    fillDeleteMigrationRowPreparedStatement(item, ps);
+                    ps.execute();
+                    afterQueryCallbacks.forEach(callback -> callback.handle(item));
+                }
+            } catch (SQLException e) {
+                throw new MigrationApplicationException(e.getMessage(), e);
+            }
+            return null;
+        });
+    }
+
+    private void apply(Connection connection, Operation operation) {
+        List<Operation> operations = unfold(operation);
+        try (Statement statement = connection.createStatement()) {
             operations.stream()
                     .map(operationResolverService::resolve)
                     .map(MigrationInfo::getSql)
                     .forEach(sql -> executeStatement(statement, sql));
-            fillPreparedStatement(data, preparedStatement);
-            preparedStatement.execute();
         } catch (SQLException exception) {
             throw new MigrationApplicationException(exception.getMessage(), exception);
         }
-        afterQueryCallbacks.forEach(callback -> callback.handle(data));
     }
 
     private void executeStatement(Statement statement, String sql) {
@@ -106,12 +136,12 @@ public class MigrationRunnerImpl implements MigrationRunner {
         }
     }
 
-    private void fillPreparedStatement(MigrationData item, PreparedStatement statement) {
-        try {
-            statement.setInt(1, item.getVersion());
-            statement.setString(2, item.getDescription());
-        } catch (SQLException exception) {
-            throw new MigrationApplicationException(exception.getMessage(), exception);
-        }
+    private void fillInsertMigrationRowPreparedStatement(MigrationData item, PreparedStatement ps) throws SQLException {
+        ps.setInt(1, item.getVersion());
+        ps.setString(2, item.getDescription());
+    }
+
+    private void fillDeleteMigrationRowPreparedStatement(MigrationData item, PreparedStatement ps) throws SQLException {
+        ps.setInt(1, item.getVersion());
     }
 }

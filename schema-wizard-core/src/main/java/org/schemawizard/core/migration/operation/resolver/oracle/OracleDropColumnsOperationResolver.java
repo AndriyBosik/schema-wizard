@@ -23,9 +23,10 @@ public class OracleDropColumnsOperationResolver implements OperationResolver<Dro
     public MigrationInfo resolve(DropColumnsOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "%s %s (%s)",
+                        "%s %s %s (%s)",
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
+                        SqlClause.DROP,
                         buildCommaSeparatedColumns(operation)));
     }
 
