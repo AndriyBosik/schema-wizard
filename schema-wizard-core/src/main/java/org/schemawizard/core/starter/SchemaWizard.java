@@ -17,7 +17,7 @@ public class SchemaWizard {
         migrationRunner.upgrade(upgradeMigrations);
     }
 
-    public void down(Integer version) {
+    public void down(int version) {
         var downgradeMigrations = migrationAnalyzer.downgradeAnalyze(version);
         migrationRunner.downgrade(downgradeMigrations);
     }

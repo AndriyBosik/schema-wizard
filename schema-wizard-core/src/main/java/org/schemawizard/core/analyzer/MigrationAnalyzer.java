@@ -5,5 +5,5 @@ import java.util.List;
 public interface MigrationAnalyzer {
     List<MigrationData> upgradeAnalyze();
 
-    List<MigrationData> downgradeAnalyze(Integer version);
+    List<MigrationData> downgradeAnalyze(int version);
 }

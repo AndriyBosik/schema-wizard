@@ -81,7 +81,7 @@ public class AppliedMigrationsServiceImplTest {
         createMigrationsTable();
         List<AppliedMigration> allMigrations = createAllMigrations();
         saveMigrationsToDb(allMigrations);
-        List<AppliedMigration> expectedMigrations = allMigrations.subList(2, allMigrations.size());
+        List<AppliedMigration> expectedMigrations = List.of(allMigrations.get(3), allMigrations.get(2));
         List<AppliedMigration> actualMigrations = appliedMigrationsService.getMigrationsStartedFrom(3);
         assertEquals(actualMigrations.size(), expectedMigrations.size());
         for(int i = 0; i < expectedMigrations.size(); i++) {
