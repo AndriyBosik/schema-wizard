@@ -7,7 +7,6 @@ import org.schemawizard.core.callback.BeforeQueryExecutionCallback;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.exception.MigrationApplicationException;
-import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.model.MigrationInfo;
 import org.schemawizard.core.migration.operation.CompositeOperation;
@@ -50,23 +49,58 @@ public class MigrationRunnerImpl implements MigrationRunner {
     @Override
     public void upgrade(List<MigrationData> upgradeMigrations) {
         MigrationContext context = new MigrationContext();
-        upgrade(upgradeMigrations, context);
+        apply(upgradeMigrations, context, new UpgradeMigrationRunnerStrategy());
     }
 
     @Override
     public void downgrade(List<MigrationData> downgradeMigrations) {
         MigrationContext context = new MigrationContext();
-        downgrade(downgradeMigrations, context);
+        apply(downgradeMigrations, context, new DowngradeMigrationRunnerStrategy());
     }
 
-    private Operation getUpgradeOperation(MigrationData data, MigrationContext context) {
-        Migration migration = data.getMigration();
-        return migration.up(context);
+    private interface MigrationRunnerStrategy {
+        String getQuery();
+
+        Operation getOperation(MigrationData migrationData, MigrationContext context);
+
+        void fillPreparedStatement(MigrationData data, PreparedStatement ps) throws SQLException;
     }
 
-    private Operation getDowngradeOperation(MigrationData data, MigrationContext context) {
-        Migration migration = data.getMigration();
-        return migration.down(context);
+    private class UpgradeMigrationRunnerStrategy implements MigrationRunnerStrategy {
+        @Override
+        public String getQuery() {
+            return historyTableQueryFactory.getInsertMigrationHistoryRowQuery();
+        }
+
+        @Override
+        public Operation getOperation(MigrationData data, MigrationContext context) {
+            return data.getMigration()
+                    .up(context);
+        }
+
+        @Override
+        public void fillPreparedStatement(MigrationData data, PreparedStatement ps) throws SQLException {
+            ps.setInt(1, data.getVersion());
+            ps.setString(2, data.getDescription());
+        }
+    }
+
+    class DowngradeMigrationRunnerStrategy implements MigrationRunnerStrategy {
+        @Override
+        public String getQuery() {
+            return historyTableQueryFactory.getDeleteMigrationHistoryRowQuery();
+        }
+
+        @Override
+        public Operation getOperation(MigrationData data, MigrationContext context) {
+            return data.getMigration()
+                    .down(context);
+        }
+
+        @Override
+        public void fillPreparedStatement(MigrationData data, PreparedStatement ps) throws SQLException {
+            ps.setInt(1, data.getVersion());
+        }
     }
 
     public List<Operation> unfold(Operation operation) {
@@ -80,32 +114,14 @@ public class MigrationRunnerImpl implements MigrationRunner {
         return List.of(operation);
     }
 
-    private void upgrade(List<MigrationData> data, MigrationContext context) {
+    private void apply(List<MigrationData> data, MigrationContext context, MigrationRunnerStrategy strategy) {
         transactionService.doWithinTransaction(connection -> {
-            try (PreparedStatement ps = connection.prepareStatement(historyTableQueryFactory.getInsertMigrationHistoryRowQuery())) {
+            try (PreparedStatement ps = connection.prepareStatement(strategy.getQuery())) {
                 for (MigrationData item : data) {
                     beforeQueryCallbacks.forEach(callback -> callback.handle(item));
-                    Operation operation = getUpgradeOperation(item, context);
+                    Operation operation = strategy.getOperation(item, context);
                     apply(connection, operation);
-                    fillInsertMigrationRowPreparedStatement(item, ps);
-                    ps.execute();
-                    afterQueryCallbacks.forEach(callback -> callback.handle(item));
-                }
-            } catch (SQLException e) {
-                throw new MigrationApplicationException(e.getMessage(), e);
-            }
-            return null;
-        });
-    }
-
-    private void downgrade(List<MigrationData> data, MigrationContext context) {
-        transactionService.doWithinTransaction(connection -> {
-            try (PreparedStatement ps = connection.prepareStatement(historyTableQueryFactory.getDeleteMigrationHistoryRowQuery())) {
-                for (MigrationData item : data) {
-                    beforeQueryCallbacks.forEach(callback -> callback.handle(item));
-                    Operation operation = getDowngradeOperation(item, context);
-                    apply(connection, operation);
-                    fillDeleteMigrationRowPreparedStatement(item, ps);
+                    strategy.fillPreparedStatement(item, ps);
                     ps.execute();
                     afterQueryCallbacks.forEach(callback -> callback.handle(item));
                 }
@@ -134,14 +150,5 @@ public class MigrationRunnerImpl implements MigrationRunner {
         } catch (SQLException exception) {
             throw new MigrationApplicationException(exception.getMessage(), exception);
         }
-    }
-
-    private void fillInsertMigrationRowPreparedStatement(MigrationData item, PreparedStatement ps) throws SQLException {
-        ps.setInt(1, item.getVersion());
-        ps.setString(2, item.getDescription());
-    }
-
-    private void fillDeleteMigrationRowPreparedStatement(MigrationData item, PreparedStatement ps) throws SQLException {
-        ps.setInt(1, item.getVersion());
     }
 }

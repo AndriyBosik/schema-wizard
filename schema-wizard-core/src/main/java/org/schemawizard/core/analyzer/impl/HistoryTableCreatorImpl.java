@@ -36,7 +36,7 @@ public class HistoryTableCreatorImpl implements HistoryTableCreator {
     }
 
     @Override
-    public boolean isHistoryTableExist() {
+    public boolean historyTableExists() {
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
             statement.execute(historyTableQueryFactory.getSelectTableSql());
             return statement.getResultSet().next();

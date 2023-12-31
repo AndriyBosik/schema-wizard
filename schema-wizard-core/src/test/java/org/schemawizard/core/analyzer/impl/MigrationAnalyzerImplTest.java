@@ -186,7 +186,7 @@ public class MigrationAnalyzerImplTest {
 
     @Test
     void downgradeAnalyzeShouldReturnAllMigrationsStartedFrom() {
-        when(historyTableCreator.isHistoryTableExist()).thenReturn(true);
+        when(historyTableCreator.historyTableExists()).thenReturn(true);
 
         var appliedMigrationsDescOrder = createTwoAppliedMigrationDescOrder();
         when(appliedMigrationsService.getMigrationsStartedFrom(2)).thenReturn(appliedMigrationsDescOrder);
@@ -230,7 +230,7 @@ public class MigrationAnalyzerImplTest {
 
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfHistoryTableDoesNotExist() {
-        when(historyTableCreator.isHistoryTableExist()).thenReturn(false);
+        when(historyTableCreator.historyTableExists()).thenReturn(false);
         assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
     }
 
@@ -260,7 +260,7 @@ public class MigrationAnalyzerImplTest {
 
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfNoDeclaredMigrationTheSameVersionAsApplied() {
-        when(historyTableCreator.isHistoryTableExist()).thenReturn(true);
+        when(historyTableCreator.historyTableExists()).thenReturn(true);
         List<AppliedMigration> appliedMigrations = createTwoAppliedMigrationDescOrder();
         List<DeclaredMigration> declaredMigrations = createTwoDeclaredMigrations();
         when(appliedMigrationsService.getMigrationsStartedFrom(2)).thenReturn(appliedMigrations);
@@ -270,14 +270,14 @@ public class MigrationAnalyzerImplTest {
 
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfNoMigrationsStartedFromVersion() {
-        when(historyTableCreator.isHistoryTableExist()).thenReturn(true);
+        when(historyTableCreator.historyTableExists()).thenReturn(true);
         when(appliedMigrationsService.getMigrationsStartedFrom(2)).thenReturn(List.of());
         assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
     }
 
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfNoAppliedMigrationWithVersionToDowngrade() {
-        when(historyTableCreator.isHistoryTableExist()).thenReturn(true);
+        when(historyTableCreator.historyTableExists()).thenReturn(true);
         List<AppliedMigration> appliedMigrations = createTwoAppliedMigrationDescOrder();
         when(appliedMigrationsService.getMigrationsStartedFrom(1)).thenReturn(appliedMigrations);
         assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(1));

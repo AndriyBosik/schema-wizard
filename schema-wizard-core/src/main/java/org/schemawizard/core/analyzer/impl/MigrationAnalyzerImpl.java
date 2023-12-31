@@ -1,11 +1,14 @@
 package org.schemawizard.core.analyzer.impl;
 
 
-import org.schemawizard.core.analyzer.*;
+import org.schemawizard.core.analyzer.AppliedMigration;
+import org.schemawizard.core.analyzer.DeclaredMigration;
+import org.schemawizard.core.analyzer.HistoryTableCreator;
+import org.schemawizard.core.analyzer.MigrationAnalyzer;
+import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
-import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.utils.ReflectionUtils;
 
@@ -13,7 +16,6 @@ import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,14 +63,13 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     }
 
     @Override
-    public List<MigrationData> downgradeAnalyze(Integer migrationVersion) {
-        if (!historyTableCreator.isHistoryTableExist()) {
+    public List<MigrationData> downgradeAnalyze(int migrationVersion) {
+        if (!historyTableCreator.historyTableExists()) {
             throw new  MigrationAnalyzerException("No migrations has been found, run upgrade first");
         }
         var appliedMigrationsToDowngrade = appliedMigrationsService.getMigrationsStartedFrom(migrationVersion);
         if (appliedMigrationsToDowngrade.isEmpty()
-                || !Objects.equals(appliedMigrationsToDowngrade.get(appliedMigrationsToDowngrade.size() - 1).getVersion(),
-                migrationVersion)) {
+                || appliedMigrationsToDowngrade.get(appliedMigrationsToDowngrade.size() - 1).getVersion() != migrationVersion) {
             throw new MigrationAnalyzerException("Migration with version: " + migrationVersion + " has not been found");
         }
         Map<Integer, DeclaredMigration> declaredMigrationsMap = createVersionDeclaredMigrationMap();

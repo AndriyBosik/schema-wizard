@@ -44,7 +44,7 @@ public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
     }
 
     @Override
-    public List<AppliedMigration> getMigrationsStartedFrom(Integer downgradeMigrationVersion) {
+    public List<AppliedMigration> getMigrationsStartedFrom(int downgradeMigrationVersion) {
         try (PreparedStatement ps = connectionHolder.getConnection()
                 .prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSql())) {
             ps.setInt(1, downgradeMigrationVersion);

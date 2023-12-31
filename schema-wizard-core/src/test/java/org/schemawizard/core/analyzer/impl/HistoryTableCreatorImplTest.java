@@ -50,7 +50,7 @@ public class HistoryTableCreatorImplTest {
     @Test
     @Order(1)
     void isHistoryTableExistShouldReturnFalseIfTableNotExist() {
-        assertFalse(historyTableCreator.isHistoryTableExist());
+        assertFalse(historyTableCreator.historyTableExists());
     }
 
     @Test
@@ -68,6 +68,6 @@ public class HistoryTableCreatorImplTest {
     @Test
     @Order(3)
     void isHistoryTableExistShouldReturnTrueIfTableExist() {
-        assertTrue(historyTableCreator.isHistoryTableExist());
+        assertTrue(historyTableCreator.historyTableExists());
     }
 }
