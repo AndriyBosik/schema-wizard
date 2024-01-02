@@ -82,7 +82,7 @@ public class AppliedMigrationsServiceImplTest {
         List<AppliedMigration> allMigrations = createAllMigrations();
         saveMigrationsToDb(allMigrations);
         List<AppliedMigration> expectedMigrations = List.of(allMigrations.get(3), allMigrations.get(2));
-        List<AppliedMigration> actualMigrations = appliedMigrationsService.getMigrationsStartedFrom(3);
+        List<AppliedMigration> actualMigrations = appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(3);
         assertEquals(actualMigrations.size(), expectedMigrations.size());
         for(int i = 0; i < expectedMigrations.size(); i++) {
             AppliedMigration actualMigration = actualMigrations.get(i);
@@ -99,7 +99,7 @@ public class AppliedMigrationsServiceImplTest {
     @Test
     void getMigrationsStartedFromShouldThrowExceptionIfNoMigrationHistoryTable() {
         assertThrows(MigrationAnalyzerException.class,
-                () -> appliedMigrationsService.getMigrationsStartedFrom(3));
+                () -> appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(3));
     }
 
     private void createMigrationsTable() throws SQLException {

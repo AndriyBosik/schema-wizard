@@ -38,9 +38,13 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     @Override
     public String getSelectMigrationsStartedFromSql() {
         return String.format("SELECT %s, %s, %s, %s "
-                        + "FROM %s WHERE %s >= ? ORDER BY VERSION DESC",
+                        + "FROM %s WHERE %s >= " +
+                        "(SELECT %s FROM %s WHERE %s = ?)" +
+                        "ORDER BY %s DESC",
                 ID, VERSION, DESCRIPTION, APPLIED_ON,
-                MIGRATION_TABLE_NAME, VERSION);
+                MIGRATION_TABLE_NAME, ID,
+                ID, MIGRATION_TABLE_NAME, VERSION,
+                ID);
     }
 
     @Override

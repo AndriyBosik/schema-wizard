@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 public class MigrationRunnerImpl implements MigrationRunner {
     private final Logger log = LoggerFactory.getLogger(HistoryTableCreatorImpl.class);
+    private final MigrationRunnerStrategy upgradeStrategy = new UpgradeMigrationRunnerStrategy();
+    private final MigrationRunnerStrategy downgradeStrategy = new DowngradeMigrationRunnerStrategy();
 
     private final OperationResolverService operationResolverService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
@@ -49,13 +51,13 @@ public class MigrationRunnerImpl implements MigrationRunner {
     @Override
     public void upgrade(List<MigrationData> upgradeMigrations) {
         MigrationContext context = new MigrationContext();
-        apply(upgradeMigrations, context, new UpgradeMigrationRunnerStrategy());
+        execute(upgradeMigrations, context, upgradeStrategy);
     }
 
     @Override
     public void downgrade(List<MigrationData> downgradeMigrations) {
         MigrationContext context = new MigrationContext();
-        apply(downgradeMigrations, context, new DowngradeMigrationRunnerStrategy());
+        execute(downgradeMigrations, context, downgradeStrategy);
     }
 
     private interface MigrationRunnerStrategy {
@@ -85,7 +87,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
         }
     }
 
-    class DowngradeMigrationRunnerStrategy implements MigrationRunnerStrategy {
+    private class DowngradeMigrationRunnerStrategy implements MigrationRunnerStrategy {
         @Override
         public String getQuery() {
             return historyTableQueryFactory.getDeleteMigrationHistoryRowQuery();
@@ -103,7 +105,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
         }
     }
 
-    public List<Operation> unfold(Operation operation) {
+    private List<Operation> unfold(Operation operation) {
         if (operation instanceof CompositeOperation) {
             CompositeOperation compositeOperation = (CompositeOperation) operation;
             return compositeOperation.getOperations().stream()
@@ -114,13 +116,13 @@ public class MigrationRunnerImpl implements MigrationRunner {
         return List.of(operation);
     }
 
-    private void apply(List<MigrationData> data, MigrationContext context, MigrationRunnerStrategy strategy) {
+    private void execute(List<MigrationData> data, MigrationContext context, MigrationRunnerStrategy strategy) {
         transactionService.doWithinTransaction(connection -> {
             try (PreparedStatement ps = connection.prepareStatement(strategy.getQuery())) {
                 for (MigrationData item : data) {
                     beforeQueryCallbacks.forEach(callback -> callback.handle(item));
                     Operation operation = strategy.getOperation(item, context);
-                    apply(connection, operation);
+                    execute(connection, operation);
                     strategy.fillPreparedStatement(item, ps);
                     ps.execute();
                     afterQueryCallbacks.forEach(callback -> callback.handle(item));
@@ -132,7 +134,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
         });
     }
 
-    private void apply(Connection connection, Operation operation) {
+    private void execute(Connection connection, Operation operation) {
         List<Operation> operations = unfold(operation);
         try (Statement statement = connection.createStatement()) {
             operations.stream()
