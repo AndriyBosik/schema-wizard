@@ -67,9 +67,8 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
         if (!historyTableCreator.historyTableExists()) {
             throw new  MigrationAnalyzerException("No migrations has been found, run upgrade first");
         }
-        var appliedMigrationsToDowngrade = appliedMigrationsService.getMigrationsStartedFrom(migrationVersion);
-        if (appliedMigrationsToDowngrade.isEmpty()
-                || appliedMigrationsToDowngrade.get(appliedMigrationsToDowngrade.size() - 1).getVersion() != migrationVersion) {
+        var appliedMigrationsToDowngrade = appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(migrationVersion);
+        if (!migrationWithVersionExists(migrationVersion, appliedMigrationsToDowngrade)) {
             throw new MigrationAnalyzerException("Migration with version: " + migrationVersion + " has not been found");
         }
         Map<Integer, DeclaredMigration> declaredMigrationsMap = createVersionDeclaredMigrationMap();
@@ -80,6 +79,11 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
                                         "Declared migration with version " + appliedMigration.getVersion() + " was not found")))
                 .map(this::declaredMigrationToMigrationData)
                 .collect(Collectors.toList());
+    }
+
+    private boolean migrationWithVersionExists(int migrationVersion, List<AppliedMigration> appliedMigrationsToDowngrade) {
+        return !appliedMigrationsToDowngrade.isEmpty()
+                && appliedMigrationsToDowngrade.get(appliedMigrationsToDowngrade.size() - 1).getVersion() == migrationVersion;
     }
 
     private MigrationData declaredMigrationToMigrationData(DeclaredMigration declaredMigration) {
