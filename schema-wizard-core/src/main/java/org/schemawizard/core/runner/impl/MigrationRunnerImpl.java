@@ -12,6 +12,7 @@ import org.schemawizard.core.migration.model.MigrationInfo;
 import org.schemawizard.core.migration.operation.CompositeOperation;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.service.OperationResolverService;
+import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.runner.MigrationRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
     private final OperationResolverService operationResolverService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
     private final TransactionService transactionService;
+    private final ConfigurationProperties properties;
     private final List<BeforeQueryExecutionCallback> beforeQueryCallbacks;
     private final List<AfterQueryExecutionCallback> afterQueryCallbacks;
 
@@ -38,12 +40,14 @@ public class MigrationRunnerImpl implements MigrationRunner {
             OperationResolverService operationResolverService,
             HistoryTableQueryFactory historyTableQueryFactory,
             TransactionService transactionService,
+            ConfigurationProperties properties,
             List<BeforeQueryExecutionCallback> beforeQueryCallbacks,
             List<AfterQueryExecutionCallback> afterQueryCallbacks
     ) {
         this.operationResolverService = operationResolverService;
         this.historyTableQueryFactory = historyTableQueryFactory;
         this.transactionService = transactionService;
+        this.properties = properties;
         this.beforeQueryCallbacks = beforeQueryCallbacks;
         this.afterQueryCallbacks = afterQueryCallbacks;
     }
@@ -84,6 +88,7 @@ public class MigrationRunnerImpl implements MigrationRunner {
         public void fillPreparedStatement(MigrationData data, PreparedStatement ps) throws SQLException {
             ps.setInt(1, data.getVersion());
             ps.setString(2, data.getDescription());
+            ps.setString(3, properties.getContext());
         }
     }
 

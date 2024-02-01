@@ -67,6 +67,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         return ConfigurationProperties.builder()
                 .databaseProvider(mapDatabaseProvider(connectionUrl))
+                .context(propertyParser.parseStringValue(context.getSchema().getWizard().getContext()))
                 .connectionUrl(connectionUrl)
                 .username(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getUsername()))
                 .password(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getPassword()))

@@ -7,7 +7,9 @@ public interface HistoryTableQueryFactory {
 
     String getSelectMigrationsSql();
 
-    String getSelectMigrationsStartedFromSql();
+    String getSelectMigrationsStartedFromSqlOrderByIdDesc();
+
+    String getSelectLastMigrationsByContext();
 
     String getInsertMigrationHistoryRowQuery();
 

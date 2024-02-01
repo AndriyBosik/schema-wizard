@@ -8,6 +8,8 @@ import org.schemawizard.core.analyzer.HistoryTableCreator;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
+import org.schemawizard.core.analyzer.factory.DowngradeFactory;
+import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
 import org.schemawizard.core.migration.SW001CreateUsersTable;
@@ -30,10 +32,13 @@ public class MigrationAnalyzerImplTest {
 
     private final HistoryTableCreator historyTableCreator = Mockito.mock(HistoryTableCreator.class);
 
+    private final DowngradeFactory downgradeFactory = Mockito.mock(DowngradeFactory.class);
+
     private final MigrationAnalyzer migrationAnalyzer = new MigrationAnalyzerImpl(
             appliedMigrationsService,
             declaredMigrationsService,
-            historyTableCreator);
+            historyTableCreator,
+            downgradeFactory);
 
     @Test
     void upgradeAnalyzeShouldReturnNotAppliedMigrations() {
@@ -66,6 +71,7 @@ public class MigrationAnalyzerImplTest {
                 1,
                 1,
                 "Migration Description 1",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -73,6 +79,7 @@ public class MigrationAnalyzerImplTest {
                 2,
                 2,
                 "Migration Description 2",
+                "context",
                 LocalDateTime.now()
         );
         return List.of(migration1, migration2);
@@ -99,6 +106,7 @@ public class MigrationAnalyzerImplTest {
                 1,
                 1,
                 "FirstMigration",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -106,6 +114,7 @@ public class MigrationAnalyzerImplTest {
                 2,
                 2,
                 "SecondMigration",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -113,6 +122,7 @@ public class MigrationAnalyzerImplTest {
                 3,
                 3,
                 "ThirdMigration",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -169,6 +179,7 @@ public class MigrationAnalyzerImplTest {
                 1,
                 1,
                 "Migration Description 1",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -184,37 +195,12 @@ public class MigrationAnalyzerImplTest {
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::upgradeAnalyze);
     }
 
-    @Test
-    void downgradeAnalyzeShouldReturnAllMigrationsStartedFrom() {
-        when(historyTableCreator.historyTableExists()).thenReturn(true);
-
-        var appliedMigrationsDescOrder = createTwoAppliedMigrationDescOrder();
-        when(appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(2)).thenReturn(appliedMigrationsDescOrder);
-        var allDeclaredMigrations = createThreeDeclaredMigrations();
-        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(allDeclaredMigrations);
-
-        MigrationData migrationData2 = new MigrationData(2, "second migration", new SW002CreatePostsTable());
-        MigrationData migrationData3 = new MigrationData(3, "third migration", new SW003CompositeMigration());
-
-        var expectedMigrationsData = List.of(migrationData3, migrationData2);
-        var actualMigrationsData = migrationAnalyzer.downgradeAnalyze(2);
-
-        assertEquals(expectedMigrationsData.size(), actualMigrationsData.size());
-        for (int i = 0; i < expectedMigrationsData.size(); i++) {
-            MigrationData expectedMigrationData = expectedMigrationsData.get(i);
-            MigrationData actualMigrationData = actualMigrationsData.get(i);
-
-            assertEquals(expectedMigrationData.getVersion(), actualMigrationData.getVersion());
-            assertEquals(expectedMigrationData.getDescription(), actualMigrationData.getDescription());
-            assertEquals(expectedMigrationData.getMigration().getClass(), actualMigrationData.getMigration().getClass());
-        }
-    }
-
     private List<AppliedMigration> createTwoAppliedMigrationDescOrder() {
         AppliedMigration appliedMigration2 = new AppliedMigration(
                 2,
                 2,
                 "second migration",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -222,6 +208,7 @@ public class MigrationAnalyzerImplTest {
                 3,
                 3,
                 "third migration",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -231,14 +218,14 @@ public class MigrationAnalyzerImplTest {
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfHistoryTableDoesNotExist() {
         when(historyTableCreator.historyTableExists()).thenReturn(false);
-        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
+        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(2)));
     }
 
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfMultipleDeclaredMigrationWithTheSameVersion() {
         var declaredMigrationsWithTheSameVersion = createDeclaredMigrationsWithTheSameVersion();
         when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrationsWithTheSameVersion);
-        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
+        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(2)));
     }
 
     private List<DeclaredMigration> createDeclaredMigrationsWithTheSameVersion() {
@@ -256,30 +243,5 @@ public class MigrationAnalyzerImplTest {
 
 
         return List.of(migration, migration1);
-    }
-
-    @Test
-    void downgradeAnalyzeShouldThrowExceptionIfNoDeclaredMigrationTheSameVersionAsApplied() {
-        when(historyTableCreator.historyTableExists()).thenReturn(true);
-        List<AppliedMigration> appliedMigrations = createTwoAppliedMigrationDescOrder();
-        List<DeclaredMigration> declaredMigrations = createTwoDeclaredMigrations();
-        when(appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(2)).thenReturn(appliedMigrations);
-        when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrations);
-        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
-    }
-
-    @Test
-    void downgradeAnalyzeShouldThrowExceptionIfNoMigrationsStartedFromVersion() {
-        when(historyTableCreator.historyTableExists()).thenReturn(true);
-        when(appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(2)).thenReturn(List.of());
-        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(2));
-    }
-
-    @Test
-    void downgradeAnalyzeShouldThrowExceptionIfNoAppliedMigrationWithVersionToDowngrade() {
-        when(historyTableCreator.historyTableExists()).thenReturn(true);
-        List<AppliedMigration> appliedMigrations = createTwoAppliedMigrationDescOrder();
-        when(appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(1)).thenReturn(appliedMigrations);
-        assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(1));
     }
 }

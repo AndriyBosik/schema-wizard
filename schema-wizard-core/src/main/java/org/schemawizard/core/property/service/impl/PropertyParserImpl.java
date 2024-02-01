@@ -36,7 +36,8 @@ public class PropertyParserImpl implements PropertyParser {
         if (propertyValueLastIndex > plainValueStartFrom) {
             value.append(propertyValue, plainValueStartFrom, propertyValue.length());
         }
-        return value.toString();
+        String finalValue = value.toString().strip();
+        return StringUtils.isBlank(finalValue) ? null : finalValue;
     }
 
     @Override

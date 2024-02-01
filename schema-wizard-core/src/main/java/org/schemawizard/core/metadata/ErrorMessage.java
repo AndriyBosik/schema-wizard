@@ -39,6 +39,15 @@ public class ErrorMessage {
     public static final String MULTIPLE_OPERATION_RESOLVERS_FORMAT =
             "These resolvers use the same operation type: %s %s";
 
+    public static final String UNABLE_TO_RESOLVE_DOWNGRADE_PARAMETERS_CLASS_TEMPLATE =
+            "Unable to resolve downgrade parameters class: %s";
+
+    public static final String MIGRATION_WITH_VERSION_WAS_NOT_FOUND_TEMPLATE =
+            "Migration with version %s was not found";
+
+    public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
+            "The context %s is invalid - no migrations were found to downgrade";
+
     private ErrorMessage() {
     }
 }

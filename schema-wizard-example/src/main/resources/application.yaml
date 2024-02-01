@@ -1,5 +1,6 @@
 schema:
   wizard:
+    context: ${SW_CONTEXT:}
     database:
       connection-url: jdbc:postgresql://${DS_HOST:localhost}:${DS_PORT:5432}/${DS_DATABASE:sw-example}
       username: postgres

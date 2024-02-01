@@ -1,6 +1,8 @@
 package org.schemawizard.core.starter;
 
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
+import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
+import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.runner.MigrationRunner;
 
 public class SchemaWizard {
@@ -18,7 +20,12 @@ public class SchemaWizard {
     }
 
     public void down(int version) {
-        var downgradeMigrations = migrationAnalyzer.downgradeAnalyze(version);
+        var downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(version));
+        migrationRunner.downgrade(downgradeMigrations);
+    }
+
+    public void down(String context) {
+        var downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new ContextDowngradeStrategyParameters(context));
         migrationRunner.downgrade(downgradeMigrations);
     }
 }

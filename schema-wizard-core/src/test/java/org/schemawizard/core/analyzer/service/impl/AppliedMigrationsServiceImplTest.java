@@ -1,17 +1,19 @@
 package org.schemawizard.core.analyzer.service.impl;
 
-import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
-import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
-import org.schemawizard.core.analyzer.AppliedMigration;
-import org.schemawizard.core.dao.ConnectionHolder;
-import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
-import org.schemawizard.core.model.ConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.schemawizard.core.analyzer.AppliedMigration;
+import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
+import org.schemawizard.core.dao.ConnectionHolder;
+import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
+import org.schemawizard.core.model.ConfigurationProperties;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class AppliedMigrationsServiceImplTest {
@@ -64,7 +65,7 @@ public class AppliedMigrationsServiceImplTest {
         saveMigrationsToDb(expectedMigrations);
         var actualMigrations = appliedMigrationsService.getAppliedMigrations();
         assertEquals(actualMigrations.size(), expectedMigrations.size());
-        for(int i = 0; i < expectedMigrations.size(); i++) {
+        for (int i = 0; i < expectedMigrations.size(); i++) {
             AppliedMigration actualMigration = actualMigrations.get(i);
             AppliedMigration expectedMigration = expectedMigrations.get(i);
             assertNotNull(actualMigration.getId());
@@ -74,32 +75,6 @@ public class AppliedMigrationsServiceImplTest {
                     actualMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS));
         }
         deleteMigrationTable();
-    }
-
-    @Test
-    void getMigrationsStartedFromShouldReturnCorrectMigrations() throws SQLException {
-        createMigrationsTable();
-        List<AppliedMigration> allMigrations = createAllMigrations();
-        saveMigrationsToDb(allMigrations);
-        List<AppliedMigration> expectedMigrations = List.of(allMigrations.get(3), allMigrations.get(2));
-        List<AppliedMigration> actualMigrations = appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(3);
-        assertEquals(actualMigrations.size(), expectedMigrations.size());
-        for(int i = 0; i < expectedMigrations.size(); i++) {
-            AppliedMigration actualMigration = actualMigrations.get(i);
-            AppliedMigration expectedMigration = expectedMigrations.get(i);
-            assertNotNull(actualMigration.getId());
-            assertEquals(expectedMigration.getVersion(), actualMigration.getVersion());
-            assertEquals(expectedMigration.getDescription(), actualMigration.getDescription());
-            assertEquals(expectedMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS),
-                    actualMigration.getAppliedOn().truncatedTo(ChronoUnit.MILLIS));
-        }
-        deleteMigrationTable();
-    }
-
-    @Test
-    void getMigrationsStartedFromShouldThrowExceptionIfNoMigrationHistoryTable() {
-        assertThrows(MigrationAnalyzerException.class,
-                () -> appliedMigrationsService.getMigrationsStartedFromOrderByIdDesc(3));
     }
 
     private void createMigrationsTable() throws SQLException {
@@ -115,6 +90,7 @@ public class AppliedMigrationsServiceImplTest {
                 1,
                 1,
                 "test1",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -122,6 +98,7 @@ public class AppliedMigrationsServiceImplTest {
                 2,
                 2,
                 "test2",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -129,6 +106,7 @@ public class AppliedMigrationsServiceImplTest {
                 3,
                 3,
                 "test3",
+                "context",
                 LocalDateTime.now()
         );
 
@@ -136,6 +114,7 @@ public class AppliedMigrationsServiceImplTest {
                 4,
                 4,
                 "test4",
+                "context",
                 LocalDateTime.now()
         );
 

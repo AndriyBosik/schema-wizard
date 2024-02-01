@@ -17,6 +17,7 @@ public class ConfigurationPropertiesServiceImplTest {
         ConfigurationProperties actualProperties = configurationPropertiesService.getProperties();
         ConfigurationProperties expectedProperties = new ConfigurationProperties(
                 DatabaseProvider.POSTGRESQL,
+                "context",
                 "jdbc:postgresql://default:5432/changeMe?reWriteBatchedInserts=true",
                 "postgres",
                 "postgres",
@@ -24,6 +25,7 @@ public class ConfigurationPropertiesServiceImplTest {
                 false
         );
         assertEquals(expectedProperties.getDatabaseProvider(), actualProperties.getDatabaseProvider());
+        assertEquals(expectedProperties.getContext(), actualProperties.getContext());
         assertEquals(expectedProperties.getUsername(), actualProperties.getUsername());
         assertEquals(expectedProperties.getPassword(), actualProperties.getPassword());
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
