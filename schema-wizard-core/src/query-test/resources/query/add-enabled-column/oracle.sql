@@ -1,0 +1,1 @@
+ALTER TABLE users ADD enabled NUMBER(1) NOT NULL
