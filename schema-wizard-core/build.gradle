@@ -70,4 +70,12 @@ test {
 
 queryTest {
     useJUnitPlatform()
+    afterTest { descriptor, result ->
+        logger.info "Executing test ${descriptor.name} [${descriptor.className}] with result: ${result.resultType}"
+    }
+    afterSuite { descriptor, result ->
+        if (!descriptor.parent) {
+            logger.info "${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+        }
+    }
 }

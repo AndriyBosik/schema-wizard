@@ -1,0 +1,23 @@
+name: Testing queries
+
+on: [push]
+
+jobs:
+  postgresql_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: "PostgreSql: Test Queries"
+        env:
+          PROVIDER: POSTGRESQL
+        run: sh ./gradlew :schema-wizard-core:queryTest --info
+  oracle_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: "Oracle: Test Queries"
+        env:
+          PROVIDER: ORACLE
+        run: sh ./gradlew :schema-wizard-core:queryTest --info
