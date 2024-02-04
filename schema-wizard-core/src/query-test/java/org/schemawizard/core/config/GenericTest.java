@@ -1,5 +1,6 @@
 package org.schemawizard.core.config;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.schemawizard.core.di.DiContainer;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.migration.annotation.Provider;
@@ -46,20 +47,25 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class GenericTest {
     protected final OperationResolverService operationResolverService;
-    protected final DatabaseProvider provider;
+    protected final Set<DatabaseProvider> supportedProviders;
 
     protected GenericTest() {
-        this(TestContext.getProvider());
+        this(Set.of(DatabaseProvider.ORACLE, DatabaseProvider.POSTGRESQL));
     }
 
     protected GenericTest(DatabaseProvider provider) {
-        this.provider = provider;
+        this(Set.of(provider));
+    }
+
+    protected GenericTest(Set<DatabaseProvider> supportedProviders) {
+        this.supportedProviders = supportedProviders;
         ConfigurationProperties properties = ConfigurationProperties.builder()
-                .databaseProvider(this.provider)
+                .databaseProvider(TestContext.getProvider())
                 .build();
 
         DiContainer container = new DiContainer();
@@ -97,7 +103,7 @@ public class GenericTest {
                         OracleDropTableOperationResolver.class,
                         OracleDropUniqueOperationResolver.class).stream()
                 .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
-                .filter(pair -> pair.getValue() == this.provider || pair.getValue() == DatabaseProvider.MULTI)
+                .filter(pair -> pair.getValue() == TestContext.getProvider() || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey)
                 .forEach(resolver -> container.register(OperationResolver.class, resolver));
 
@@ -106,8 +112,14 @@ public class GenericTest {
         this.operationResolverService = container.resolve(OperationResolverService.class);
     }
 
+    @BeforeEach
+    public void beforeEach() {
+        assumeTrue(supportedProviders.contains(TestContext.getProvider()));
+    }
+
     protected void assertQuery(String type, String actual) {
-        File file = IOUtils.getResourceFile(String.format("query/%s/%s.sql", type, getQueryFileName()));
+        String path = String.format("query/%s/%s.sql", type, getQueryFileName());
+        File file = IOUtils.getResourceFile(path);
         String content = IOUtils.getContent(file);
 
         assertEquals(content, actual);
@@ -122,13 +134,13 @@ public class GenericTest {
     }
 
     private String getQueryFileName() {
-        switch (this.provider) {
+        switch (TestContext.getProvider()) {
             case POSTGRESQL:
                 return "postgresql";
             case ORACLE:
                 return "oracle";
             default:
-                throw new IllegalArgumentException("Unknown directory for database provider: " + this.provider);
+                throw new IllegalArgumentException("Unknown directory for database provider: " + TestContext.getProvider());
         }
     }
 }

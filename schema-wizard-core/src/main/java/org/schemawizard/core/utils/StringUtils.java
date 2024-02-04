@@ -5,7 +5,7 @@ public class StringUtils {
     }
 
     public static boolean isBlank(String value) {
-        return value == null || value.strip().isBlank();
+        return value == null || value.isBlank();
     }
 
     public static String strip(String value) {
