@@ -2,6 +2,8 @@ package org.schemawizard.core.starter;
 
 import org.schemawizard.core.analyzer.HistoryTableCreator;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
+import org.schemawizard.core.analyzer.factory.DowngradeFactory;
+import org.schemawizard.core.analyzer.factory.impl.DowngradeFactoryImpl;
 import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
 import org.schemawizard.core.analyzer.impl.MigrationAnalyzerImpl;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
@@ -131,6 +133,7 @@ public class SchemaWizardBuilder {
                 .map(Map.Entry::getKey)
                 .forEach(resolver -> container.register(OperationResolver.class, resolver));
 
+        container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
         container.register(AppliedMigrationsService.class, AppliedMigrationsServiceImpl.class);

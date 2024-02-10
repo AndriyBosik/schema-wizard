@@ -4,6 +4,7 @@ import org.schemawizard.core.metadata.DatabaseProvider;
 
 public class ConfigurationProperties {
     private final DatabaseProvider databaseProvider;
+    private final String context;
     private final String connectionUrl;
     private final String username;
     private final String password;
@@ -12,6 +13,7 @@ public class ConfigurationProperties {
 
     public ConfigurationProperties(
             DatabaseProvider databaseProvider,
+            String context,
             String connectionUrl,
             String username,
             String password,
@@ -19,6 +21,7 @@ public class ConfigurationProperties {
             boolean logGeneratedSql
     ) {
         this.databaseProvider = databaseProvider;
+        this.context = context;
         this.connectionUrl = connectionUrl;
         this.username = username;
         this.password = password;
@@ -28,6 +31,10 @@ public class ConfigurationProperties {
 
     public DatabaseProvider getDatabaseProvider() {
         return databaseProvider;
+    }
+
+    public String getContext() {
+        return context;
     }
 
     public String getConnectionUrl() {
@@ -56,6 +63,7 @@ public class ConfigurationProperties {
 
     public static class PropertyConfigurationBuilder {
         private DatabaseProvider databaseProvider;
+        private String context;
         private String connectionUrl;
         private String username;
         private String password;
@@ -67,6 +75,11 @@ public class ConfigurationProperties {
 
         public PropertyConfigurationBuilder databaseProvider(DatabaseProvider databaseProvider) {
             this.databaseProvider = databaseProvider;
+            return this;
+        }
+
+        public PropertyConfigurationBuilder context(String context) {
+            this.context = context;
             return this;
         }
 
@@ -98,6 +111,7 @@ public class ConfigurationProperties {
         public ConfigurationProperties build() {
             return new ConfigurationProperties(
                     databaseProvider,
+                    context,
                     connectionUrl,
                     username,
                     password,

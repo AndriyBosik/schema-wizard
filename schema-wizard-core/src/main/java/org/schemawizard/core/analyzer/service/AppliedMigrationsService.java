@@ -7,5 +7,5 @@ import java.util.List;
 public interface AppliedMigrationsService {
     List<AppliedMigration> getAppliedMigrations();
 
-    List<AppliedMigration> getMigrationsStartedFromOrderByIdDesc(int downgradeMigrationVersion);
+    List<AppliedMigration> getMigrationsByDowngradeStrategy(DowngradeStrategy strategy);
 }

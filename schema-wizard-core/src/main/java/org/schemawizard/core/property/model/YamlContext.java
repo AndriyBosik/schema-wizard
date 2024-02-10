@@ -24,9 +24,18 @@ public class YamlContext {
         }
 
         public static class Wizard {
+            private String context;
             private Database database = new Database();
             private Migration migration = new Migration();
             private Log log = new Log();
+
+            public String getContext() {
+                return context;
+            }
+
+            public void setContext(String context) {
+                this.context = context;
+            }
 
             public Database getDatabase() {
                 return database;
