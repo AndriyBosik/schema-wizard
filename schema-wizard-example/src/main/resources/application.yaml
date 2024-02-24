@@ -7,6 +7,8 @@ schema:
       password: root
     migration:
       package-name: com.example.migration
+    extension:
+      package-name: com.example.extension
     log:
       sql-query: ${LOG_GENERATED_SQL:true}
     defaults:
