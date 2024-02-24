@@ -80,6 +80,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
                 .username(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getUsername()))
                 .password(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getPassword()))
                 .migrationsPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getMigration().getPackageName()))
+                .extensionPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getExtension().getPackageName()))
                 .logGeneratedSql(propertyParser.parseBooleanValue(context.getSchema().getWizard().getLog().getSqlQuery()))
                 .defaults(defaults)
                 .build();

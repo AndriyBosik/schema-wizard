@@ -10,6 +10,7 @@ public class ConfigurationProperties {
     private final String username;
     private final String password;
     private final String migrationsPackage;
+    private final String extensionPackage;
     private final boolean logGeneratedSql;
 
     private final Defaults defaults;
@@ -21,6 +22,7 @@ public class ConfigurationProperties {
             String username,
             String password,
             String migrationsPackage,
+            String extensionPackage,
             boolean logGeneratedSql,
             Defaults defaults
     ) {
@@ -30,6 +32,7 @@ public class ConfigurationProperties {
         this.username = username;
         this.password = password;
         this.migrationsPackage = migrationsPackage;
+        this.extensionPackage = extensionPackage;
         this.logGeneratedSql = logGeneratedSql;
         this.defaults = defaults;
     }
@@ -62,6 +65,10 @@ public class ConfigurationProperties {
         return migrationsPackage;
     }
 
+    public String getExtensionPackage() {
+        return extensionPackage;
+    }
+
     public boolean isLogGeneratedSql() {
         return logGeneratedSql;
     }
@@ -77,6 +84,7 @@ public class ConfigurationProperties {
         private String username;
         private String password;
         private String migrationsPackage;
+        private String extensionPackage;
         private boolean logGeneratedSql;
 
         private Defaults defaults;
@@ -118,6 +126,11 @@ public class ConfigurationProperties {
             return this;
         }
 
+        public PropertyConfigurationBuilder extensionPackage(String extensionPackage) {
+            this.extensionPackage = extensionPackage;
+            return this;
+        }
+
         public PropertyConfigurationBuilder logGeneratedSql(boolean logGeneratedSql) {
             this.logGeneratedSql = logGeneratedSql;
             return this;
@@ -131,6 +144,7 @@ public class ConfigurationProperties {
                     username,
                     password,
                     migrationsPackage,
+                    extensionPackage,
                     logGeneratedSql,
                     defaults);
         }

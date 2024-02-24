@@ -52,7 +52,7 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
                         "FROM %s mh " +
                         "LEFT JOIN break_row ON TRUE " +
-                        "WHERE break_row.%s IS NOT NULL AND %s >= break_row.%s " +
+                        "WHERE break_row.%s IS NOT NULL AND mh.%s >= break_row.%s " +
                         "ORDER BY %s DESC",
                 ID, MIGRATION_TABLE_NAME, VERSION,
                 ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,

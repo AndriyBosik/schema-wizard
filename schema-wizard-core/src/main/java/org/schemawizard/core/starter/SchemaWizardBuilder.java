@@ -1,5 +1,6 @@
 package org.schemawizard.core.starter;
 
+import org.reflections.Reflections;
 import org.schemawizard.core.analyzer.HistoryTableCreator;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
@@ -10,7 +11,8 @@ import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
 import org.schemawizard.core.analyzer.service.impl.AppliedMigrationsServiceImpl;
 import org.schemawizard.core.analyzer.service.impl.ClassesDeclaredMigrationService;
-import org.schemawizard.core.callback.Callback;
+import org.schemawizard.core.callback.AfterQueryExecutionCallback;
+import org.schemawizard.core.callback.BeforeQueryExecutionCallback;
 import org.schemawizard.core.callback.QueryGeneratedCallback;
 import org.schemawizard.core.callback.impl.QueryLoggerCallback;
 import org.schemawizard.core.dao.ConnectionHolder;
@@ -29,32 +31,6 @@ import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
-import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryFileOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryRawOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleCreateTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlCreateTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropUniqueOperationResolver;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
@@ -71,12 +47,12 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.util.AbstractMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 public class SchemaWizardBuilder {
     private final DiContainer container;
     private final ConfigurationProperties properties;
+
+    private static final String SW_BASE_PACKAGE_NAME = "org.schemawizard.core";
 
     private SchemaWizardBuilder(
             DiContainer container,
@@ -101,38 +77,6 @@ public class SchemaWizardBuilder {
 
         DatabaseProvider provider = properties.getDatabaseProvider();
 
-        Set.of(
-                        MultiNativeQueryFileOperationResolver.class,
-                        MultiNativeQueryRawOperationResolver.class,
-                        PostgreSqlAddColumnOperationResolver.class,
-                        PostgreSqlAddColumnsOperationResolver.class,
-                        PostgreSqlAddForeignKeyOperationResolver.class,
-                        PostgreSqlAddPrimaryKeyOperationResolver.class,
-                        PostgreSqlAddUniqueOperationResolver.class,
-                        PostgreSqlCreateTableOperationResolver.class,
-                        PostgreSqlDropColumnOperationResolver.class,
-                        PostgreSqlDropColumnsOperationResolver.class,
-                        PostgreSqlDropForeignKeyOperationResolver.class,
-                        PostgreSqlDropPrimaryKeyOperationResolver.class,
-                        PostgreSqlDropTableOperationResolver.class,
-                        PostgreSqlDropUniqueOperationResolver.class,
-                        OracleAddColumnOperationResolver.class,
-                        OracleAddColumnsOperationResolver.class,
-                        OracleAddForeignKeyOperationResolver.class,
-                        OracleAddPrimaryKeyOperationResolver.class,
-                        OracleAddUniqueOperationResolver.class,
-                        OracleCreateTableOperationResolver.class,
-                        OracleDropColumnOperationResolver.class,
-                        OracleDropColumnsOperationResolver.class,
-                        OracleDropForeignKeyOperationResolver.class,
-                        OracleDropPrimaryKeyOperationResolver.class,
-                        OracleDropTableOperationResolver.class,
-                        OracleDropUniqueOperationResolver.class).stream()
-                .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
-                .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
-                .map(Map.Entry::getKey)
-                .forEach(resolver -> container.register(OperationResolver.class, resolver));
-
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
@@ -148,22 +92,31 @@ public class SchemaWizardBuilder {
         if (properties.isLogGeneratedSql()) {
             container.register(QueryGeneratedCallback.class, QueryLoggerCallback.class);
         }
+        Reflections basePackageReflections = new Reflections(SW_BASE_PACKAGE_NAME);
+        registerResolvers(basePackageReflections, container, provider);
+
+        if (properties.getExtensionPackage() != null) {
+            Reflections extencionPackageReflections = new Reflections(properties.getExtensionPackage());
+            registerResolvers(extencionPackageReflections, container, provider);
+
+            var beforeQueryCallbacks = extencionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class);
+            beforeQueryCallbacks.forEach(callback -> container.register(BeforeQueryExecutionCallback.class, callback));
+
+            var afterQueryCallbacks = extencionPackageReflections.getSubTypesOf(AfterQueryExecutionCallback.class);
+            afterQueryCallbacks.forEach(callback -> container.register(AfterQueryExecutionCallback.class, callback));
+        }
 
         return new SchemaWizardBuilder(container, properties);
     }
 
-    public SchemaWizardBuilder registerResolver(Class<? extends OperationResolver<?>> resolverClass) {
-        DatabaseProvider resolverProvider = parserDatabaseProviderFromClass(resolverClass);
-        DatabaseProvider propertiesProvider = properties.getDatabaseProvider();
-        if (Objects.equals(resolverProvider, propertiesProvider) || Objects.equals(resolverProvider, DatabaseProvider.MULTI)) {
-            container.register(OperationResolver.class, resolverClass);
-        }
-        return this;
-    }
-
-    public <T extends Callback, R extends T> SchemaWizardBuilder registerCallback(Class<T> baseType, Class<R> instanceType) {
-        container.register(baseType, instanceType);
-        return this;
+    @SuppressWarnings("unchecked")
+    private static void registerResolvers(Reflections reflections, DiContainer container, DatabaseProvider provider) {
+        reflections.getSubTypesOf(OperationResolver.class).stream()
+                .map(resolver -> new AbstractMap.SimpleEntry<>(
+                        resolver, parserDatabaseProviderFromClass((Class<? extends OperationResolver<?>>) resolver)))
+                .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
+                .map(Map.Entry::getKey)
+                .forEach(resolver -> container.register(OperationResolver.class, resolver));
     }
 
     public SchemaWizard build() {

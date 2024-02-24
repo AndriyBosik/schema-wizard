@@ -24,6 +24,7 @@ public class ConfigurationPropertiesServiceImplTest {
                 "postgres",
                 "postgres",
                 "org.schemawizard.core.db.migration",
+                "org.schemawizard.core.migration.operation.resolver",
                 false,
             new Defaults(new Text(31))
         );

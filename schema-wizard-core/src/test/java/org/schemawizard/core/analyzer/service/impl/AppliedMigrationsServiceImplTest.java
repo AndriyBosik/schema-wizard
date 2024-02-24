@@ -35,6 +35,7 @@ public class AppliedMigrationsServiceImplTest {
                     + "id SERIAL PRIMARY KEY, "
                     + "version INTEGER NOT NULL, "
                     + "description TEXT NOT NULL, "
+                    + "context TEXT, "
                     + "applied_on TIMESTAMP NOT NULL DEFAULT now()"
                     + ")";
 
