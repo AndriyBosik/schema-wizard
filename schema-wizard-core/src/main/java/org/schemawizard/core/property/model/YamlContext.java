@@ -27,6 +27,7 @@ public class YamlContext {
             private String context;
             private Database database = new Database();
             private Migration migration = new Migration();
+            private Extension extension = new Extension();
             private Log log = new Log();
             private Defaults defaults = new Defaults();
 
@@ -60,6 +61,14 @@ public class YamlContext {
 
             public void setMigration(Migration migration) {
                 this.migration = migration;
+            }
+
+            public Extension getExtension() {
+                return extension;
+            }
+
+            public void setExtension(Extension extension) {
+                this.extension = extension;
             }
 
             public Log getLog() {
@@ -101,6 +110,18 @@ public class YamlContext {
             }
 
             public static class Migration {
+                private String packageName;
+
+                public String getPackageName() {
+                    return packageName;
+                }
+
+                public void setPackageName(String packageName) {
+                    this.packageName = packageName;
+                }
+            }
+
+            public static class Extension {
                 private String packageName;
 
                 public String getPackageName() {
