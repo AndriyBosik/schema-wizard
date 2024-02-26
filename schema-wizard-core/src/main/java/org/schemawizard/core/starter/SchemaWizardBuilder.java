@@ -96,13 +96,13 @@ public class SchemaWizardBuilder {
         registerResolvers(basePackageReflections, container, provider);
 
         if (properties.getExtensionPackage() != null) {
-            Reflections extencionPackageReflections = new Reflections(properties.getExtensionPackage());
-            registerResolvers(extencionPackageReflections, container, provider);
+            Reflections extensionPackageReflections = new Reflections(properties.getExtensionPackage());
+            registerResolvers(extensionPackageReflections, container, provider);
 
-            extencionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class)
+            extensionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class)
                     .forEach(callback -> container.register(BeforeQueryExecutionCallback.class, callback));
 
-            extencionPackageReflections.getSubTypesOf(AfterQueryExecutionCallback.class)
+            extensionPackageReflections.getSubTypesOf(AfterQueryExecutionCallback.class)
                     .forEach(callback -> container.register(AfterQueryExecutionCallback.class, callback));
         }
 
