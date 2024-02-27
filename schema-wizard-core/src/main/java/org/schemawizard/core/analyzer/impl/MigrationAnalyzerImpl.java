@@ -3,7 +3,7 @@ package org.schemawizard.core.analyzer.impl;
 
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.DeclaredMigration;
-import org.schemawizard.core.analyzer.HistoryTableCreator;
+import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
@@ -30,24 +30,24 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
     private final Logger log = LoggerFactory.getLogger(MigrationAnalyzerImpl.class);
     private final AppliedMigrationsService appliedMigrationsService;
     private final DeclaredMigrationService declaredMigrationService;
-    private final HistoryTableCreator historyTableCreator;
+    private final HistoryTable historyTable;
     private final DowngradeFactory downgradeFactory;
 
     public MigrationAnalyzerImpl(
             AppliedMigrationsService appliedMigrationsService,
             DeclaredMigrationService declaredMigrationService,
-            HistoryTableCreator historyTableCreator,
+            HistoryTable historyTable,
             DowngradeFactory downgradeFactory
     ) {
         this.appliedMigrationsService = appliedMigrationsService;
         this.declaredMigrationService = declaredMigrationService;
-        this.historyTableCreator = historyTableCreator;
+        this.historyTable = historyTable;
         this.downgradeFactory = downgradeFactory;
     }
 
     @Override
     public List<MigrationData> upgradeAnalyze() {
-        historyTableCreator.createTableIfNotExist();
+        historyTable.lockForMigrationExecution();
         var appliedMigrations = appliedMigrationsService.getAppliedMigrations();
         Map<Integer, DeclaredMigration> versionDeclaredMigrationsMap = createVersionDeclaredMigrationMap();
         for (AppliedMigration migration : appliedMigrations) {
@@ -65,7 +65,7 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
 
     @Override
     public List<MigrationData> downgradeAnalyze(DowngradeStrategyParameters parameters) {
-        if (!historyTableCreator.historyTableExists()) {
+        if (!historyTable.exists()) {
             throw new MigrationAnalyzerException("No migrations has been found, run upgrade first");
         }
         DowngradeStrategy strategy = downgradeFactory.getInstance(parameters);

@@ -14,4 +14,10 @@ public interface HistoryTableQueryFactory {
     String getInsertMigrationHistoryRowQuery();
 
     String getDeleteMigrationHistoryRowQuery();
+
+    String getLockForMigrationExecutionSql();
+
+    String getAcquireAdvisoryLockSql();
+
+    String getReleaseAdvisoryLockSql();
 }

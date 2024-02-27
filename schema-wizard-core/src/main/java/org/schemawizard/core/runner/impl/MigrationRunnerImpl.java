@@ -1,7 +1,6 @@
 package org.schemawizard.core.runner.impl;
 
 import org.schemawizard.core.analyzer.MigrationData;
-import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
 import org.schemawizard.core.callback.AfterQueryExecutionCallback;
 import org.schemawizard.core.callback.BeforeQueryExecutionCallback;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
@@ -14,8 +13,6 @@ import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.runner.MigrationRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MigrationRunnerImpl implements MigrationRunner {
-    private final Logger log = LoggerFactory.getLogger(HistoryTableCreatorImpl.class);
     private final MigrationRunnerStrategy upgradeStrategy = new UpgradeMigrationRunnerStrategy();
     private final MigrationRunnerStrategy downgradeStrategy = new DowngradeMigrationRunnerStrategy();
 

@@ -20,7 +20,6 @@ import static org.schemawizard.core.dao.Constants.ID;
 import static org.schemawizard.core.dao.Constants.VERSION;
 
 public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
-
     private final ConnectionHolder connectionHolder;
     private final HistoryTableQueryFactory historyTableQueryFactory;
 

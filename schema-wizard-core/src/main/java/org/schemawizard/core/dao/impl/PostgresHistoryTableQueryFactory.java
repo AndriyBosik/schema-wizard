@@ -10,6 +10,9 @@ import static org.schemawizard.core.dao.Constants.MIGRATION_TABLE_NAME;
 import static org.schemawizard.core.dao.Constants.VERSION;
 
 public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactory {
+    private final static String METADATA_TABLE_NAME = "information_schema.tables";
+    private final static int LOCK_NUMBER = 11111111;
+
     @Override
     public String getCreateMigrationHistoryTableSql() {
         return String.format("CREATE TABLE IF NOT EXISTS %s ("
@@ -31,9 +34,10 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
     @Override
     public String getSelectTableSql() {
         return String.format("SELECT table_name "
-                        + "FROM information_schema.tables "
+                        + "FROM %s "
                         + "WHERE table_type='BASE TABLE' "
                         + "AND table_name='%s'",
+                METADATA_TABLE_NAME,
                 MIGRATION_TABLE_NAME);
     }
 
@@ -94,5 +98,26 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
                 "DELETE FROM %s WHERE %s = ?",
                 MIGRATION_TABLE_NAME,
                 VERSION);
+    }
+
+    @Override
+    public String getLockForMigrationExecutionSql() {
+        return String.format(
+                "LOCK TABLE %s IN EXCLUSIVE MODE",
+                MIGRATION_TABLE_NAME);
+    }
+
+    @Override
+    public String getAcquireAdvisoryLockSql() {
+        return String.format(
+                "SELECT pg_advisory_lock(%s)",
+                LOCK_NUMBER);
+    }
+
+    @Override
+    public String getReleaseAdvisoryLockSql() {
+        return String.format(
+                "SELECT pg_advisory_unlock(%s)",
+                LOCK_NUMBER);
     }
 }
