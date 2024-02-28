@@ -5,5 +5,5 @@ public interface HistoryTable {
 
     boolean exists();
 
-    void lockForMigrationExecution();
+    void lockForExecution();
 }

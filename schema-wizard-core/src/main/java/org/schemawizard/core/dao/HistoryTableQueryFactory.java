@@ -15,7 +15,7 @@ public interface HistoryTableQueryFactory {
 
     String getDeleteMigrationHistoryRowQuery();
 
-    String getLockForMigrationExecutionSql();
+    String getLockForExecutionSql();
 
     String getAcquireAdvisoryLockSql();
 

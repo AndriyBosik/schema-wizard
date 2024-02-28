@@ -101,7 +101,7 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
     }
 
     @Override
-    public String getLockForMigrationExecutionSql() {
+    public String getLockForExecutionSql() {
         return String.format(
                 "LOCK TABLE %s IN EXCLUSIVE MODE",
                 MIGRATION_TABLE_NAME);

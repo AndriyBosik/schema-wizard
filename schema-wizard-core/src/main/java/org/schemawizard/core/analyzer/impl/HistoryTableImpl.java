@@ -51,9 +51,9 @@ public class HistoryTableImpl implements HistoryTable {
     }
 
     @Override
-    public void lockForMigrationExecution() {
+    public void lockForExecution() {
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
-            statement.executeUpdate(historyTableQueryFactory.getLockForMigrationExecutionSql());
+            statement.executeUpdate(historyTableQueryFactory.getLockForExecutionSql());
         } catch (SQLException exception) {
             throw new MigrationAnalyzerException(
                     String.format(

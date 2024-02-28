@@ -47,7 +47,7 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
 
     @Override
     public List<MigrationData> upgradeAnalyze() {
-        historyTable.lockForMigrationExecution();
+        historyTable.lockForExecution();
         var appliedMigrations = appliedMigrationsService.getAppliedMigrations();
         Map<Integer, DeclaredMigration> versionDeclaredMigrationsMap = createVersionDeclaredMigrationMap();
         for (AppliedMigration migration : appliedMigrations) {
@@ -68,6 +68,7 @@ public class MigrationAnalyzerImpl implements MigrationAnalyzer {
         if (!historyTable.exists()) {
             throw new MigrationAnalyzerException("No migrations has been found, run upgrade first");
         }
+        historyTable.lockForExecution();
         DowngradeStrategy strategy = downgradeFactory.getInstance(parameters);
         var appliedMigrationsToDowngrade = appliedMigrationsService.getMigrationsByDowngradeStrategy(strategy);
         if (appliedMigrationsToDowngrade.isEmpty()) {

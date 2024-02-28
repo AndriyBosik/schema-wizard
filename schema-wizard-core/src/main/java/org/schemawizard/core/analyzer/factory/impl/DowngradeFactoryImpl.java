@@ -11,7 +11,6 @@ import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.metadata.ErrorMessage;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -45,10 +44,7 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
         return new DowngradeStrategy() {
             @Override
             public <T> T apply(Function<PreparedStatement, T> action) {
-                try (
-                        Connection connection = connectionHolder.getConnection();
-                        PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSqlOrderByIdDesc())
-                ) {
+                try (PreparedStatement statement = connectionHolder.getConnection().prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSqlOrderByIdDesc())) {
                     statement.setInt(1, parameters.getVersion());
                     return action.apply(statement);
                 } catch (SQLException exception) {
@@ -67,10 +63,7 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
         return new DowngradeStrategy() {
             @Override
             public <T> T apply(Function<PreparedStatement, T> action) {
-                try (
-                        Connection connection = connectionHolder.getConnection();
-                        PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByContext())
-                ) {
+                try (PreparedStatement statement = connectionHolder.getConnection().prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByContext())) {
                     statement.setString(1, parameters.getContext());
                     statement.setString(2, parameters.getContext());
                     return action.apply(statement);

@@ -12,7 +12,7 @@ import static org.schemawizard.core.dao.Constants.VERSION;
 public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory {
     private final static String METADATA_TABLE_NAME = "USER_TABLES";
     private final static String MIGRATION_HISTORY_TABLE_CREATION_LOCK_NAME = "SCHEMAWIZARD_LOCK";
-    private final static String MIGRATION_EXECUTION_LOCK_NAME = "SCHEMAWIZARD_EXECUTION_LOCK";
+    private final static String EXECUTION_LOCK_NAME = "SCHEMAWIZARD_EXECUTION_LOCK";
 
     @Override
     public String getCreateMigrationHistoryTableSql() {
@@ -102,7 +102,7 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     }
 
     @Override
-    public String getLockForMigrationExecutionSql() {
+    public String getLockForExecutionSql() {
         return String.format(
                 "DECLARE\n" +
                         "  l_lock_handle VARCHAR2(128);\n" +
@@ -111,7 +111,7 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
                         "  DBMS_LOCK.ALLOCATE_UNIQUE('%s', l_lock_handle);\n" +
                         "  l_result := DBMS_LOCK.REQUEST(l_lock_handle, DBMS_LOCK.X_MODE);\n" +
                         "END;",
-                MIGRATION_EXECUTION_LOCK_NAME);
+                EXECUTION_LOCK_NAME);
     }
 
     @Override
