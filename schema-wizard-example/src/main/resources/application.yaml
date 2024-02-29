@@ -1,10 +1,13 @@
 schema:
   wizard:
     database:
-      connection-url: jdbc:postgresql://${DS_HOST:localhost}:${DS_PORT:5432}/${DS_DATABASE:sw-example}
+      connection-url: jdbc:postgresql://${DS_HOST:localhost}:${DS_PORT:5432}/${DS_DATABASE:schema_wizard}
       username: postgres
-      password: postgres
+      password: root
     migration:
       package-name: com.example.migration
     log:
       sql-query: ${LOG_GENERATED_SQL:true}
+    defaults:
+      text:
+        max-length: ${DEFAULT_MAX_LENGTH:255}

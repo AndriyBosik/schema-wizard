@@ -3,6 +3,8 @@ package org.schemawizard.core.property.service.impl;
 import org.junit.jupiter.api.Test;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.model.defaults.Defaults;
+import org.schemawizard.core.model.defaults.Text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,13 +23,16 @@ public class ConfigurationPropertiesServiceImplTest {
                 "postgres",
                 "postgres",
                 "org.schemawizard.core.db.migration",
-                false
+                false,
+            new Defaults(new Text(31))
         );
         assertEquals(expectedProperties.getDatabaseProvider(), actualProperties.getDatabaseProvider());
         assertEquals(expectedProperties.getUsername(), actualProperties.getUsername());
         assertEquals(expectedProperties.getPassword(), actualProperties.getPassword());
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
         assertEquals(expectedProperties.getMigrationsPackage(), actualProperties.getMigrationsPackage());
+        assertEquals(expectedProperties.getDefaults().getText().getDefaultLength(),
+            actualProperties.getDefaults().getText().getDefaultLength());
         assertFalse(expectedProperties.isLogGeneratedSql());
     }
 }

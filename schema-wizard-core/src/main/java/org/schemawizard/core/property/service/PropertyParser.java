@@ -4,4 +4,6 @@ public interface PropertyParser {
     String parseStringValue(String propertyValue);
 
     boolean parseBooleanValue(String value);
+
+    Integer parseLongValue(String value);
 }

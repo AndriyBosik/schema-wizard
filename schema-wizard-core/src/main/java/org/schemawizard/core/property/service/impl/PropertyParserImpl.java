@@ -7,6 +7,7 @@ import org.schemawizard.core.utils.StringUtils;
 
 public class PropertyParserImpl implements PropertyParser {
     private final static String ENVIRONMENT_START_SUBSTRING = "${";
+    private final static String ENVIRONMENT_FINISH_SUBSTRING = "}";
     private final static String SEMICOLON = ":";
 
     @Override
@@ -43,6 +44,12 @@ public class PropertyParserImpl implements PropertyParser {
     public boolean parseBooleanValue(String value) {
         String stringValue = parseStringValue(value);
         return Boolean.parseBoolean(stringValue);
+    }
+
+    @Override
+    public Integer parseLongValue(String value) {
+        String stringValue = parseStringValue(value);
+        return Integer.parseInt(stringValue);
     }
 
     private int findBalancedBrace(String propertyValue, int envStart) {

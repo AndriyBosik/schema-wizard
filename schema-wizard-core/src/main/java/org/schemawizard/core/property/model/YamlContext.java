@@ -27,6 +27,15 @@ public class YamlContext {
             private Database database = new Database();
             private Migration migration = new Migration();
             private Log log = new Log();
+            private Defaults defaults = new Defaults();
+
+            public Defaults getDefaults() {
+                return defaults;
+            }
+
+            public void setDefaults(Defaults defaults) {
+                this.defaults = defaults;
+            }
 
             public Database getDatabase() {
                 return database;
@@ -103,6 +112,31 @@ public class YamlContext {
 
                 public void setSqlQuery(String sqlQuery) {
                     this.sqlQuery = sqlQuery;
+                }
+            }
+
+            public static class Defaults {
+
+                private Text text = new Text();
+
+                public Text getText() {
+                    return text;
+                }
+
+                public void setText(Text text) {
+                    this.text = text;
+                }
+
+                public static class Text {
+                    private String maxLength;
+
+                    public String getMaxLength() {
+                        return maxLength;
+                    }
+
+                    public void setMaxLength(String maxLength) {
+                        this.maxLength = maxLength;
+                    }
                 }
             }
         }

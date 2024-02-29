@@ -1,6 +1,7 @@
 package org.schemawizard.core.model;
 
 import org.schemawizard.core.metadata.DatabaseProvider;
+import org.schemawizard.core.model.defaults.Defaults;
 
 public class ConfigurationProperties {
     private final DatabaseProvider databaseProvider;
@@ -10,13 +11,16 @@ public class ConfigurationProperties {
     private final String migrationsPackage;
     private final boolean logGeneratedSql;
 
+    private final Defaults defaults;
+
     public ConfigurationProperties(
             DatabaseProvider databaseProvider,
             String connectionUrl,
             String username,
             String password,
             String migrationsPackage,
-            boolean logGeneratedSql
+            boolean logGeneratedSql,
+            Defaults defaults
     ) {
         this.databaseProvider = databaseProvider;
         this.connectionUrl = connectionUrl;
@@ -24,6 +28,11 @@ public class ConfigurationProperties {
         this.password = password;
         this.migrationsPackage = migrationsPackage;
         this.logGeneratedSql = logGeneratedSql;
+        this.defaults = defaults;
+    }
+
+    public Defaults getDefaults() {
+        return defaults;
     }
 
     public DatabaseProvider getDatabaseProvider() {
@@ -62,7 +71,13 @@ public class ConfigurationProperties {
         private String migrationsPackage;
         private boolean logGeneratedSql;
 
+        private Defaults defaults;
+
         private PropertyConfigurationBuilder() {
+        }
+        public PropertyConfigurationBuilder defaults(Defaults defaults) {
+            this.defaults = defaults;
+            return this;
         }
 
         public PropertyConfigurationBuilder databaseProvider(DatabaseProvider databaseProvider) {
@@ -102,7 +117,8 @@ public class ConfigurationProperties {
                     username,
                     password,
                     migrationsPackage,
-                    logGeneratedSql);
+                    logGeneratedSql,
+                    defaults);
         }
     }
 }

@@ -8,3 +8,6 @@ schema:
       package-name: org.schemawizard.core.db.migration
     log:
       sql-query: false
+    defaults:
+      text:
+        max-length: ${DEFAULT_MAX_LENGTH:31}
