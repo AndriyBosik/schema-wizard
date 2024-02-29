@@ -6,6 +6,7 @@ import org.schemawizard.core.exception.MigrationApplicationException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TransactionServiceImpl implements TransactionService {
@@ -20,6 +21,18 @@ public class TransactionServiceImpl implements TransactionService {
     public <T> T doWithinTransaction(Function<Connection, T> action) {
         try {
             return apply(action);
+        } catch (SQLException exception) {
+            throw new MigrationApplicationException(exception.getMessage(), exception);
+        }
+    }
+
+    @Override
+    public void doWithinTransaction(Consumer<Connection> action) {
+        try {
+            apply(connection -> {
+                action.accept(connection);
+                return null;
+            });
         } catch (SQLException exception) {
             throw new MigrationApplicationException(exception.getMessage(), exception);
         }

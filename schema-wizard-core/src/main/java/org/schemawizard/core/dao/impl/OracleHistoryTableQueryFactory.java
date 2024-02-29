@@ -54,7 +54,7 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
         return String.format("WITH break_row AS (" +
                         "SELECT id FROM %s WHERE %s = ?) " +
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
-                        "FROM %s " +
+                        "FROM %s mh " +
                         "LEFT JOIN break_row ON (1 = 1) " +
                         "WHERE break_row.%s IS NOT NULL AND mh.%s >= break_row.%s " +
                         "ORDER BY %s DESC",

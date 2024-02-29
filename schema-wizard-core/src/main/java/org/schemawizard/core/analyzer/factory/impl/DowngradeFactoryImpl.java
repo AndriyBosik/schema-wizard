@@ -7,8 +7,8 @@ import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.DowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.DowngradeStrategy;
-import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
+import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.metadata.ErrorMessage;
 
 import java.sql.PreparedStatement;
@@ -16,14 +16,14 @@ import java.sql.SQLException;
 import java.util.function.Function;
 
 public class DowngradeFactoryImpl implements DowngradeFactory {
-    private final ConnectionHolder connectionHolder;
+    private final TransactionService transactionService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
 
     public DowngradeFactoryImpl(
-            ConnectionHolder connectionHolder,
+            TransactionService transactionService,
             HistoryTableQueryFactory historyTableQueryFactory
     ) {
-        this.connectionHolder = connectionHolder;
+        this.transactionService = transactionService;
         this.historyTableQueryFactory = historyTableQueryFactory;
     }
 
@@ -44,12 +44,14 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
         return new DowngradeStrategy() {
             @Override
             public <T> T apply(Function<PreparedStatement, T> action) {
-                try (PreparedStatement statement = connectionHolder.getConnection().prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSqlOrderByIdDesc())) {
-                    statement.setInt(1, parameters.getVersion());
-                    return action.apply(statement);
-                } catch (SQLException exception) {
-                    throw new MigrationAnalyzerException(exception.getMessage(), exception);
-                }
+                return transactionService.doWithinTransaction(connection -> {
+                    try (PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectMigrationsStartedFromSqlOrderByIdDesc())) {
+                        statement.setInt(1, parameters.getVersion());
+                        return action.apply(statement);
+                    } catch (SQLException exception) {
+                        throw new MigrationAnalyzerException(exception.getMessage(), exception);
+                    }
+                });
             }
 
             @Override
@@ -63,13 +65,15 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
         return new DowngradeStrategy() {
             @Override
             public <T> T apply(Function<PreparedStatement, T> action) {
-                try (PreparedStatement statement = connectionHolder.getConnection().prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByContext())) {
-                    statement.setString(1, parameters.getContext());
-                    statement.setString(2, parameters.getContext());
-                    return action.apply(statement);
-                } catch (SQLException exception) {
-                    throw new MigrationAnalyzerException(exception.getMessage(), exception);
-                }
+                return transactionService.doWithinTransaction(connection -> {
+                    try (PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByContext())) {
+                        statement.setString(1, parameters.getContext());
+                        statement.setString(2, parameters.getContext());
+                        return action.apply(statement);
+                    } catch (SQLException exception) {
+                        throw new MigrationAnalyzerException(exception.getMessage(), exception);
+                    }
+                });
             }
 
             @Override

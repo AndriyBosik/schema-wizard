@@ -4,8 +4,8 @@ import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DowngradeStrategy;
-import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
+import org.schemawizard.core.dao.TransactionService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,27 +20,29 @@ import static org.schemawizard.core.dao.Constants.ID;
 import static org.schemawizard.core.dao.Constants.VERSION;
 
 public class AppliedMigrationsServiceImpl implements AppliedMigrationsService {
-    private final ConnectionHolder connectionHolder;
+    private final TransactionService transactionService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
 
-    public AppliedMigrationsServiceImpl(ConnectionHolder connectionHolder, HistoryTableQueryFactory historyTableQueryFactory) {
-        this.connectionHolder = connectionHolder;
+    public AppliedMigrationsServiceImpl(TransactionService transactionService, HistoryTableQueryFactory historyTableQueryFactory) {
+        this.transactionService = transactionService;
         this.historyTableQueryFactory = historyTableQueryFactory;
     }
 
     @Override
     public List<AppliedMigration> getAppliedMigrations() {
-        try (Statement statement = connectionHolder.getConnection().createStatement()) {
-            statement.execute(historyTableQueryFactory.getSelectMigrationsSql());
-            var rs = statement.getResultSet();
-            List<AppliedMigration> migrations = new ArrayList<>();
-            while (rs.next()) {
-                migrations.add(extractMigrationFromRs(rs));
+        return transactionService.doWithinTransaction(connection -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(historyTableQueryFactory.getSelectMigrationsSql());
+                var rs = statement.getResultSet();
+                List<AppliedMigration> migrations = new ArrayList<>();
+                while (rs.next()) {
+                    migrations.add(extractMigrationFromRs(rs));
+                }
+                return migrations;
+            } catch (SQLException exception) {
+                throw new MigrationAnalyzerException(exception.getMessage(), exception);
             }
-            return migrations;
-        } catch (SQLException exception) {
-            throw new MigrationAnalyzerException(exception.getMessage(), exception);
-        }
+        });
     }
 
     @Override

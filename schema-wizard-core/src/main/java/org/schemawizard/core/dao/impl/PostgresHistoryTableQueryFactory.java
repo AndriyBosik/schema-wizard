@@ -57,7 +57,7 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
                         "FROM %s mh " +
                         "LEFT JOIN break_row ON TRUE " +
                         "WHERE break_row.%s IS NOT NULL AND mh.%s >= break_row.%s " +
-                        "ORDER BY %s DESC",
+                        "ORDER BY mh.%s DESC",
                 ID, MIGRATION_TABLE_NAME, VERSION,
                 ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
                 MIGRATION_TABLE_NAME,
