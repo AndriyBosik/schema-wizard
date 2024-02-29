@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.dao.ConnectionHolder;
+import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
+import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -46,8 +48,10 @@ public class AppliedMigrationsServiceImplTest {
                     .password(postgres.getPassword())
                     .build());
 
+    private final TransactionService transactionService = new TransactionServiceImpl(connectionHolder);
+
     private final AppliedMigrationsService appliedMigrationsService = new AppliedMigrationsServiceImpl(
-            connectionHolder, new PostgresHistoryTableQueryFactory());
+            transactionService, new PostgresHistoryTableQueryFactory());
 
     @BeforeAll
     static void setUp() {
