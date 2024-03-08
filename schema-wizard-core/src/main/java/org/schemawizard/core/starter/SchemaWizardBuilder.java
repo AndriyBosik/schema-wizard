@@ -41,6 +41,7 @@ import org.schemawizard.core.migration.operation.resolver.oracle.OracleCreateTab
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnsOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropConstraintOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropForeignKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropPrimaryKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropTableOperationResolver;
@@ -57,6 +58,7 @@ import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlC
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnsOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropConstraintOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropForeignKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropPrimaryKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropTableOperationResolver;
@@ -128,6 +130,7 @@ public class SchemaWizardBuilder {
                         PostgreSqlRenameTableOperationResolver.class,
                         PostgreSqlAddCheckOperationResolver.class,
                         PostgreSqlDropCheckOperationResolver.class,
+                        PostgreSqlDropConstraintOperationResolver.class,
                         OracleAddColumnOperationResolver.class,
                         OracleAddColumnsOperationResolver.class,
                         OracleAddForeignKeyOperationResolver.class,
@@ -143,7 +146,8 @@ public class SchemaWizardBuilder {
                         OracleRenameColumnOperationResolver.class,
                         OracleRenameTableOperationResolver.class,
                         OracleAddCheckOperationResolver.class,
-                        OracleDropCheckOperationResolver.class).stream()
+                        OracleDropCheckOperationResolver.class,
+                        OracleDropConstraintOperationResolver.class).stream()
                 .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
                 .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey)
