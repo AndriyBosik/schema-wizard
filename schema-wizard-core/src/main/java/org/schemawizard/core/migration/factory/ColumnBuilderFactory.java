@@ -1,10 +1,12 @@
 package org.schemawizard.core.migration.factory;
 
 import org.schemawizard.core.migration.builder.column.BoolColumnBuilder;
+import org.schemawizard.core.migration.builder.column.DateColumnBuilder;
 import org.schemawizard.core.migration.builder.column.DecimalColumnBuilder;
 import org.schemawizard.core.migration.builder.column.GenericColumnBuilder;
 import org.schemawizard.core.migration.builder.column.IntegerColumnBuilder;
 import org.schemawizard.core.migration.builder.column.TextColumnBuilder;
+import org.schemawizard.core.migration.builder.column.TimestampColumnBuilder;
 
 public class ColumnBuilderFactory {
     private final String schema;
@@ -53,5 +55,13 @@ public class ColumnBuilderFactory {
 
     public DecimalColumnBuilder newDecimal(String name) {
         return DecimalColumnBuilder.builder(schema, table, name);
+    }
+
+    public DateColumnBuilder newDate(String name) {
+        return DateColumnBuilder.builder(schema, table, name);
+    }
+
+    public TimestampColumnBuilder newTimestamp(String name) {
+        return TimestampColumnBuilder.builder(schema, table, name);
     }
 }
