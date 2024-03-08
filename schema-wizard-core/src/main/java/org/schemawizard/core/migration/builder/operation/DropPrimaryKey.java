@@ -7,6 +7,7 @@ public class DropPrimaryKey implements OperationBuilder {
     private final String schema;
     private final String table;
     private String name;
+    private boolean ifExists = false;
 
     private DropPrimaryKey(String schema, String table) {
         this.schema = schema;
@@ -26,11 +27,17 @@ public class DropPrimaryKey implements OperationBuilder {
         return this;
     }
 
+    public DropPrimaryKey ifExists() {
+        this.ifExists = true;
+        return this;
+    }
+
     @Override
     public Operation build() {
         return new DropPrimaryKeyOperation(
                 schema,
                 table,
-                name);
+                name,
+                ifExists);
     }
 }

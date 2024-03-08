@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users ADD COLUMN first_name VARCHAR(200) NULL

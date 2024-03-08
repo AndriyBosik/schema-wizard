@@ -54,22 +54,21 @@ public class TransactionServiceImpl implements TransactionService {
         Connection connection = connectionHolder.getConnection();
         openedTransactions.set(openedTransactions.get() + 1);
         try {
-            if (openedTransactions.get() == 1) {
-                connection.setAutoCommit(false);
-            }
+            connection.setAutoCommit(false);
             T result = action.apply(connection);
-            if (openedTransactions.get() == 1) {
+            openedTransactions.set(openedTransactions.get() - 1);
+            if (openedTransactions.get() == 0) {
                 connection.commit();
             }
             return result;
         } catch (Exception exception) {
+            openedTransactions.set(0);
             connection.rollback();
-            throw exception;
+            throw new MigrationApplicationException(exception.getMessage(), exception);
         } finally {
-            if (openedTransactions.get() == 1) {
+            if (openedTransactions.get() == 0) {
                 connection.close();
             }
-            openedTransactions.set(openedTransactions.get() - 1);
         }
     }
 }

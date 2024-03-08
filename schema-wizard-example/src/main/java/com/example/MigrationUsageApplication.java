@@ -5,9 +5,16 @@ import org.schemawizard.core.starter.SchemaWizardBuilder;
 
 public class MigrationUsageApplication {
     public static void main(String[] args) throws InterruptedException {
-        SchemaWizard schemaWizard = SchemaWizardBuilder.init().build();
+        SchemaWizard first = SchemaWizardBuilder.init().build();
+        SchemaWizard second = SchemaWizardBuilder.init().build();
 
-        schemaWizard.up();
-//        schemaWizard.downByContext("migrations-experience");
+        Thread firstThread = new Thread(first::up);
+        Thread secondThread = new Thread(second::up);
+
+        firstThread.start();
+        secondThread.start();
+
+        firstThread.join();
+        secondThread.join();
     }
 }

@@ -13,6 +13,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
     private Integer scale;
     private boolean nullable;
     private String sqlDefault;
+    private boolean ifNotExists = false;
 
     private GenericColumnBuilder(String schema, String table, String name) {
         this.schema = schema;
@@ -68,6 +69,11 @@ public class GenericColumnBuilder implements ColumnBuilder {
         return this;
     }
 
+    public GenericColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
+        return this;
+    }
+
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
@@ -80,6 +86,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
                 precision,
                 scale,
                 nullable,
-                sqlDefault);
+                sqlDefault,
+                ifNotExists);
     }
 }

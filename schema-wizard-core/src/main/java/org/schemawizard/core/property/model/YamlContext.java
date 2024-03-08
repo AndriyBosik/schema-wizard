@@ -30,7 +30,6 @@ public class YamlContext {
             private Extension extension = new Extension();
             private Log log = new Log();
             private Defaults defaults = new Defaults();
-            private NamingStrategy namingStrategy = new NamingStrategy();
 
             public Defaults getDefaults() {
                 return defaults;
@@ -78,14 +77,6 @@ public class YamlContext {
 
             public void setLog(Log log) {
                 this.log = log;
-            }
-
-            public NamingStrategy getNamingStrategy() {
-                return namingStrategy;
-            }
-
-            public void setNamingStrategy(NamingStrategy namingStrategy) {
-                this.namingStrategy = namingStrategy;
             }
 
             public static class Database {
@@ -175,30 +166,6 @@ public class YamlContext {
 
                     public void setMaxLength(String maxLength) {
                         this.maxLength = maxLength;
-                    }
-                }
-            }
-
-            public static class NamingStrategy {
-                private Column column;
-
-                public Column getColumn() {
-                    return column;
-                }
-
-                public void setColumn(Column column) {
-                    this.column = column;
-                }
-
-                public static class Column {
-                    private String type;
-
-                    public String getType() {
-                        return type;
-                    }
-
-                    public void setType(String type) {
-                        this.type = type;
                     }
                 }
             }

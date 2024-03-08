@@ -1,7 +1,6 @@
 package org.schemawizard.core.property.service.impl;
 
 import org.junit.jupiter.api.Test;
-import org.schemawizard.core.metadata.ColumnNamingStrategy;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.model.defaults.Defaults;
@@ -27,8 +26,7 @@ public class ConfigurationPropertiesServiceImplTest {
                 "org.schemawizard.core.db.migration",
                 "org.schemawizard.core.migration.operation.resolver",
                 false,
-                ColumnNamingStrategy.SNAKE_CASE,
-                new Defaults(new Text(31))
+            new Defaults(new Text(31))
         );
         assertEquals(expectedProperties.getDatabaseProvider(), actualProperties.getDatabaseProvider());
         assertEquals(expectedProperties.getContext(), actualProperties.getContext());
@@ -37,7 +35,7 @@ public class ConfigurationPropertiesServiceImplTest {
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
         assertEquals(expectedProperties.getMigrationsPackage(), actualProperties.getMigrationsPackage());
         assertEquals(expectedProperties.getDefaults().getText().getDefaultLength(),
-                actualProperties.getDefaults().getText().getDefaultLength());
+            actualProperties.getDefaults().getText().getDefaultLength());
         assertFalse(expectedProperties.isLogGeneratedSql());
     }
 }

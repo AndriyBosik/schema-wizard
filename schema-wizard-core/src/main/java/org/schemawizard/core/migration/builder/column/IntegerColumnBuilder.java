@@ -6,9 +6,10 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class IntegerColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private String name;
+    private final String name;
     private boolean nullable = true;
     private Integer defaultValue;
+    private boolean ifNotExists = false;
 
     private IntegerColumnBuilder(String schema, String table, String name) {
         this.schema = schema;
@@ -16,17 +17,8 @@ public class IntegerColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
-    public static IntegerColumnBuilder builder(String schema, String table) {
-        return builder(schema, table, null);
-    }
-
     public static IntegerColumnBuilder builder(String schema, String table, String name) {
         return new IntegerColumnBuilder(schema, table, name);
-    }
-
-    public IntegerColumnBuilder name(String name) {
-        this.name = name;
-        return this;
     }
 
     public IntegerColumnBuilder nullable(boolean nullable) {
@@ -36,6 +28,11 @@ public class IntegerColumnBuilder implements ColumnBuilder {
 
     public IntegerColumnBuilder defaultValue(int defaultValue) {
         this.defaultValue = defaultValue;
+        return this;
+    }
+
+    public IntegerColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
         return this;
     }
 
@@ -51,6 +48,7 @@ public class IntegerColumnBuilder implements ColumnBuilder {
                 null,
                 null,
                 nullable,
-                defaultValue == null ? null : String.valueOf(defaultValue));
+                defaultValue == null ? null : String.valueOf(defaultValue),
+                ifNotExists);
     }
 }

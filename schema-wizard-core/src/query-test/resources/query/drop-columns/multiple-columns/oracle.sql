@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users DROP (first_name, enabled)

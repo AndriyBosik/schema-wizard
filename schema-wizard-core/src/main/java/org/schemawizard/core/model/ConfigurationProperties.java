@@ -1,6 +1,5 @@
 package org.schemawizard.core.model;
 
-import org.schemawizard.core.metadata.ColumnNamingStrategy;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.model.defaults.Defaults;
 
@@ -13,7 +12,6 @@ public class ConfigurationProperties {
     private final String migrationsPackage;
     private final String extensionPackage;
     private final boolean logGeneratedSql;
-    private final ColumnNamingStrategy columnNamingStrategy;
 
     private final Defaults defaults;
 
@@ -26,7 +24,6 @@ public class ConfigurationProperties {
             String migrationsPackage,
             String extensionPackage,
             boolean logGeneratedSql,
-            ColumnNamingStrategy columnNamingStrategy,
             Defaults defaults
     ) {
         this.databaseProvider = databaseProvider;
@@ -37,7 +34,6 @@ public class ConfigurationProperties {
         this.migrationsPackage = migrationsPackage;
         this.extensionPackage = extensionPackage;
         this.logGeneratedSql = logGeneratedSql;
-        this.columnNamingStrategy = columnNamingStrategy;
         this.defaults = defaults;
     }
 
@@ -77,10 +73,6 @@ public class ConfigurationProperties {
         return logGeneratedSql;
     }
 
-    public ColumnNamingStrategy getColumnNamingStrategy() {
-        return columnNamingStrategy;
-    }
-
     public static PropertyConfigurationBuilder builder() {
         return new PropertyConfigurationBuilder();
     }
@@ -94,7 +86,6 @@ public class ConfigurationProperties {
         private String migrationsPackage;
         private String extensionPackage;
         private boolean logGeneratedSql;
-        private ColumnNamingStrategy columnNamingStrategy;
 
         private Defaults defaults;
 
@@ -145,11 +136,6 @@ public class ConfigurationProperties {
             return this;
         }
 
-        public PropertyConfigurationBuilder columnNamingStrategy(ColumnNamingStrategy columnNamingStrategy) {
-            this.columnNamingStrategy = columnNamingStrategy;
-            return this;
-        }
-
         public ConfigurationProperties build() {
             return new ConfigurationProperties(
                     databaseProvider,
@@ -160,7 +146,6 @@ public class ConfigurationProperties {
                     migrationsPackage,
                     extensionPackage,
                     logGeneratedSql,
-                    columnNamingStrategy,
                     defaults);
         }
     }

@@ -1,0 +1,1 @@
+DROP INDEX schemawizard.idx_users_email

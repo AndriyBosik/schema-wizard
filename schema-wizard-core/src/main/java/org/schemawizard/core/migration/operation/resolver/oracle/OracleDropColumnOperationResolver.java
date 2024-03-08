@@ -24,6 +24,6 @@ public class OracleDropColumnOperationResolver implements OperationResolver<Drop
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.DROP_COLUMN,
-                        operationService.mapColumnName(operation.getName())));
+                        operation.getName()));
     }
 }

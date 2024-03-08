@@ -20,10 +20,11 @@ public class PostgreSqlDropColumnOperationResolver implements OperationResolver<
     public MigrationInfo resolve(DropColumnOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "%s %s %s %s",
+                        "%s %s %s%s %s",
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.DROP_COLUMN,
+                        operation.isIfExists() ? (" " + SqlClause.IF_EXISTS) : "",
                         operationService.mapColumnName(operation.getName())));
     }
 }

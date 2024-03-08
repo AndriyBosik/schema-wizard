@@ -1,8 +1,9 @@
 package org.schemawizard.core.property.service.impl;
 
+import java.io.InputStream;
+import java.net.URL;
 import org.schemawizard.core.exception.InvalidConfigurationException;
 import org.schemawizard.core.exception.InvalidConfigurationPropertiesLocation;
-import org.schemawizard.core.metadata.ColumnNamingStrategy;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.model.ConfigurationProperties;
@@ -12,17 +13,12 @@ import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
 import org.schemawizard.core.utils.IOUtils;
-import org.schemawizard.core.utils.StringUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Optional;
 
 public class ConfigurationPropertiesServiceImpl implements ConfigurationPropertiesService {
     private final static String DEFAULT_LOCATION = "application.yaml";
@@ -71,18 +67,12 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
     private ConfigurationProperties mapConfigurationProperties(YamlContext context) {
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         Text text = Text.builder()
-                .defaultLength(propertyParser
-                        .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
-                .build();
+            .defaultLength(propertyParser
+                .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
+            .build();
         Defaults defaults = Defaults.builder()
-                .text(text)
-                .build();
-
-        String namingStrategy = Optional.ofNullable(context.getSchema().getWizard().getNamingStrategy())
-                .map(YamlContext.Schema.Wizard.NamingStrategy::getColumn)
-                .map(YamlContext.Schema.Wizard.NamingStrategy.Column::getType)
-                .orElse(null);
-
+            .text(text)
+            .build();
         return ConfigurationProperties.builder()
                 .databaseProvider(mapDatabaseProvider(connectionUrl))
                 .context(propertyParser.parseStringValue(context.getSchema().getWizard().getContext()))
@@ -92,7 +82,6 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
                 .migrationsPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getMigration().getPackageName()))
                 .extensionPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getExtension().getPackageName()))
                 .logGeneratedSql(propertyParser.parseBooleanValue(context.getSchema().getWizard().getLog().getSqlQuery()))
-                .columnNamingStrategy(StringUtils.isBlank(namingStrategy) ? ColumnNamingStrategy.SNAKE_CASE : ColumnNamingStrategy.valueOf(namingStrategy))
                 .defaults(defaults)
                 .build();
     }

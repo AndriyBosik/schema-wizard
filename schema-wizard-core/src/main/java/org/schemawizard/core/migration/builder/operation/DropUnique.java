@@ -7,6 +7,7 @@ public class DropUnique implements OperationBuilder {
     private final String schema;
     private final String table;
     private String name;
+    private boolean ifExists = false;
 
     private DropUnique(String schema, String table) {
         this.schema = schema;
@@ -26,11 +27,17 @@ public class DropUnique implements OperationBuilder {
         return this;
     }
 
+    public DropUnique ifExists() {
+        this.ifExists = true;
+        return this;
+    }
+
     @Override
     public Operation build() {
         return new DropUniqueOperation(
                 schema,
                 table,
-                name);
+                name,
+                ifExists);
     }
 }
