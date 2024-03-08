@@ -47,7 +47,7 @@ public class CreateTableTest extends GenericTest {
                     public ColumnBuilder createdDate() {
                         return factory.generic("created_date")
                                 .nullable(false)
-                                .type("date");
+                                .type("INTERVAL YEAR TO MONTH");
                     }
                 })
                 .primaryKey(table -> table.id())
@@ -113,7 +113,7 @@ public class CreateTableTest extends GenericTest {
                     public ColumnBuilder createdDate() {
                         return factory.generic("created_date")
                                 .nullable(false)
-                                .type("date");
+                                .type("INTERVAL YEAR TO MONTH");
                     }
                 })
                 .compositePrimaryKey("pk_posts_user_id_created_date", table -> List.of(table.userId(), table.createdDate()))

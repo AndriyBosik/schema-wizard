@@ -17,6 +17,12 @@ public class PostgreSqlColumnTypeFactory implements ColumnTypeFactory {
             return "INTEGER";
         } else if (PlainColumnType.BOOLEAN.equalsIgnoreCase(type)) {
             return "BOOLEAN";
+        } else if (PlainColumnType.DATE.equalsIgnoreCase(type)) {
+            return "DATE";
+        } else if (PlainColumnType.TIMESTAMP.equalsIgnoreCase(type)) {
+            return "TIMESTAMP";
+        } else if (PlainColumnType.TIMESTAMP_WITH_TIME_ZONE.equalsIgnoreCase(type)) {
+            return "TIMESTAMP WITH TIME ZONE";
         }
         return type;
     }

@@ -11,11 +11,42 @@ import java.util.List;
 public class AddColumnsTest extends GenericTest {
     @Test
     public void shouldGenerateBooleanColumnNotNull() {
-        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newBool("enabled").nullable(false)))
+        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newBool("enabled")
+                        .nullable(false)))
                 .build();
-        MigrationInfo info = operationResolverService.resolve(operation);
 
+        MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("add-columns/add-enabled-column", info.getSql());
+    }
+
+    @Test
+    public void shouldGenerateDateColumn() {
+        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newDate("birthday").nullable(false)))
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-columns/add-date-column", info.getSql());
+    }
+
+    @Test
+    public void shouldGenerateTimestampColumn() {
+        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newTimestamp("created_date")
+                        .nullable(false)))
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-columns/add-timestamp-column", info.getSql());
+    }
+
+    @Test
+    public void shouldGenerateTimestampWithTimeZoneColumn() {
+        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newTimestamp("created_date")
+                        .withTimeZone(true)
+                        .nullable(false)))
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-columns/add-timestamp-with-time-zone-column", info.getSql());
     }
 
     @Test
