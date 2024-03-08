@@ -3,7 +3,7 @@ package org.schemawizard.core.migration.builder.column;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class DoubleColumnBuilder implements ColumnBuilder {
+public class DecimalColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
     private final String name;
@@ -11,34 +11,40 @@ public class DoubleColumnBuilder implements ColumnBuilder {
     private Integer precision;
     private Integer scale;
     private Double defaultValue;
+    private boolean ifNotExists;
 
-    private DoubleColumnBuilder(String schema, String table, String name) {
+    private DecimalColumnBuilder(String schema, String table, String name) {
         this.schema = schema;
         this.table = table;
         this.name = name;
     }
 
-    public static DoubleColumnBuilder builder(String schema, String table, String name) {
-        return new DoubleColumnBuilder(schema, table, name);
+    public static DecimalColumnBuilder builder(String schema, String table, String name) {
+        return new DecimalColumnBuilder(schema, table, name);
     }
 
-    public DoubleColumnBuilder nullable(boolean nullable) {
+    public DecimalColumnBuilder nullable(boolean nullable) {
         this.nullable = nullable;
         return this;
     }
 
-    public DoubleColumnBuilder precision(int precision) {
+    public DecimalColumnBuilder precision(int precision) {
         this.precision = precision;
         return this;
     }
 
-    public DoubleColumnBuilder scale(int scale) {
+    public DecimalColumnBuilder scale(int scale) {
         this.scale = scale;
         return this;
     }
 
-    public DoubleColumnBuilder defaultValue(double defaultValue) {
+    public DecimalColumnBuilder defaultValue(double defaultValue) {
         this.defaultValue = defaultValue;
+        return this;
+    }
+
+    public DecimalColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
         return this;
     }
 
@@ -48,12 +54,13 @@ public class DoubleColumnBuilder implements ColumnBuilder {
                 schema,
                 table,
                 name,
-                PlainColumnType.DOUBLE,
+                PlainColumnType.DECIMAL,
                 null,
                 null,
                 precision,
                 scale,
                 nullable,
-                defaultValue == null ? null : String.valueOf(defaultValue));
+                defaultValue == null ? null : String.valueOf(defaultValue),
+                ifNotExists);
     }
 }

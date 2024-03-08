@@ -33,6 +33,6 @@ public class OracleDropColumnsOperationResolver implements OperationResolver<Dro
     private String buildCommaSeparatedColumns(DropColumnsOperation operation) {
         return operation.getColumns().stream()
                 .map(DropColumnOperation::getName)
-                .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
+                .collect(Collectors.joining(SqlClause.COMMA_SEPARATOR));
     }
 }

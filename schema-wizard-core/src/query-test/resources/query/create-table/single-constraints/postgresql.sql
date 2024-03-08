@@ -1,0 +1,1 @@
+CREATE TABLE schemawizard.posts (created_date date NOT NULL, id INTEGER NULL, rate NUMERIC DEFAULT 0.0 NOT NULL, title VARCHAR(300) NOT NULL, user_id INTEGER NOT NULL, PRIMARY KEY (id), CONSTRAINT fk_posts_user_id FOREIGN KEY (user_id) REFERENCES schemawizard.users (id), CONSTRAINT unq_title UNIQUE (title))

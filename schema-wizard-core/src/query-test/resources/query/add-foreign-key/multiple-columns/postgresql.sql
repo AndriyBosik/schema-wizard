@@ -1,0 +1,1 @@
+ALTER TABLE posts ADD CONSTRAINT fk_posts_user_id_user_email FOREIGN KEY (user_id, user_email) REFERENCES users (id, email)

@@ -11,7 +11,7 @@ public class OracleColumnTypeFactory implements ColumnTypeFactory {
     public String getNative(String type) {
         if (PlainColumnType.TEXT.equalsIgnoreCase(type)) {
             return "VARCHAR";
-        } else if (PlainColumnType.DOUBLE.equalsIgnoreCase(type)) {
+        } else if (PlainColumnType.DECIMAL.equalsIgnoreCase(type)) {
             return "NUMBER";
         } else if (PlainColumnType.INTEGER.equalsIgnoreCase(type)) {
             return "INTEGER";

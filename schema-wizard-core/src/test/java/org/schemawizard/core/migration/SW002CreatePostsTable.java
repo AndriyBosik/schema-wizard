@@ -15,19 +15,19 @@ public class SW002CreatePostsTable implements Migration {
                         "posts",
                         factory -> new Object() {
                             public ColumnBuilder id() {
-                                return factory.integer("id").nullable(false);
+                                return factory.newInteger("id").nullable(false);
                             }
 
                             public ColumnBuilder title() {
-                                return factory.text("title").nullable(false);
+                                return factory.newText("title").nullable(false);
                             }
 
                             public ColumnBuilder description() {
-                                return factory.bool("description").nullable(false);
+                                return factory.newBool("description").nullable(false);
                             }
 
                             public ColumnBuilder userId() {
-                                return factory.integer("user_id").nullable(false);
+                                return factory.newInteger("user_id").nullable(false);
                             }
                         })
                 .ifNotExists()

@@ -6,6 +6,7 @@ public class DropForeignKey implements OperationBuilder {
     private final String schema;
     private final String table;
     private String name;
+    private boolean ifExists;
 
     private DropForeignKey(String schema, String table) {
         this.schema = schema;
@@ -25,11 +26,17 @@ public class DropForeignKey implements OperationBuilder {
         return this;
     }
 
+    public DropForeignKey ifExists() {
+        this.ifExists = true;
+        return this;
+    }
+
     @Override
     public DropForeignKeyOperation build() {
         return new DropForeignKeyOperation(
                 schema,
                 table,
-                name);
+                name,
+                ifExists);
     }
 }

@@ -11,6 +11,7 @@ import org.schemawizard.core.migration.operation.AddColumnsOperation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
 import org.schemawizard.core.migration.service.OperationService;
 
+import java.util.AbstractMap;
 import java.util.stream.Collectors;
 
 @Provider(DatabaseProvider.POSTGRESQL)
@@ -38,8 +39,14 @@ public class PostgreSqlAddColumnsOperationResolver implements OperationResolver<
 
     private String buildColumnsDefinitions(AddColumnsOperation operation) {
         return operation.getColumns().stream()
-                .map(columnOperation -> operationService.buildColumnDefinition(columnOperation, columnTypeFactory))
-                .map(definition -> String.format("%s %s", SqlClause.ADD_COLUMN, definition))
-                .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
+                .map(columnOperation -> new AbstractMap.SimpleEntry<>(
+                        columnOperation.isIfNotExists(),
+                        operationService.buildColumnDefinition(columnOperation, columnTypeFactory)))
+                .map(entry -> String.format(
+                        "%s%s %s",
+                        SqlClause.ADD_COLUMN,
+                        entry.getKey() ? (" " + SqlClause.IF_NOT_EXISTS) : "",
+                        entry.getValue()))
+                .collect(Collectors.joining(SqlClause.COMMA_SEPARATOR));
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE users DROP CONSTRAINT IF EXISTS pk_users_id

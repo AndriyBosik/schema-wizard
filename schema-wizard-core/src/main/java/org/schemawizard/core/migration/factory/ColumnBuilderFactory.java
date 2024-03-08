@@ -1,6 +1,7 @@
 package org.schemawizard.core.migration.factory;
 
 import org.schemawizard.core.migration.builder.column.BoolColumnBuilder;
+import org.schemawizard.core.migration.builder.column.DecimalColumnBuilder;
 import org.schemawizard.core.migration.builder.column.GenericColumnBuilder;
 import org.schemawizard.core.migration.builder.column.IntegerColumnBuilder;
 import org.schemawizard.core.migration.builder.column.TextColumnBuilder;
@@ -22,15 +23,19 @@ public class ColumnBuilderFactory {
         return GenericColumnBuilder.builder(schema, table, name);
     }
 
-    public IntegerColumnBuilder integer(String name) {
+    public IntegerColumnBuilder newInteger(String name) {
         return IntegerColumnBuilder.builder(schema, table, name);
     }
 
-    public TextColumnBuilder text(String name) {
+    public TextColumnBuilder newText(String name) {
         return TextColumnBuilder.builder(schema, table, name);
     }
 
-    public BoolColumnBuilder bool(String name) {
+    public BoolColumnBuilder newBool(String name) {
         return BoolColumnBuilder.builder(schema, table, name);
+    }
+
+    public DecimalColumnBuilder newDecimal(String name) {
+        return DecimalColumnBuilder.builder(schema, table, name);
     }
 }

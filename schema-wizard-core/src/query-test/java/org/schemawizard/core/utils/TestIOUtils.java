@@ -6,11 +6,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
-public class IOUtils {
-    private IOUtils() {}
+public class TestIOUtils {
+    private TestIOUtils() {}
 
     public static File getResourceFile(String path) {
-        ClassLoader loader = IOUtils.class.getClassLoader();
+        ClassLoader loader = TestIOUtils.class.getClassLoader();
         URL url = loader.getResource(path);
         if (url == null) {
             throw new IllegalArgumentException("Path does not exists: " + path);

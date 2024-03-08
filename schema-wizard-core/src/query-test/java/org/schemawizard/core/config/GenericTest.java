@@ -40,7 +40,7 @@ import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.model.ConfigurationProperties;
-import org.schemawizard.core.utils.IOUtils;
+import org.schemawizard.core.utils.TestIOUtils;
 
 import java.io.File;
 import java.util.AbstractMap;
@@ -119,8 +119,8 @@ public class GenericTest {
 
     protected void assertQuery(String type, String actual) {
         String path = String.format("query/%s/%s.sql", type, getQueryFileName());
-        File file = IOUtils.getResourceFile(path);
-        String content = IOUtils.getContent(file);
+        File file = TestIOUtils.getResourceFile(path);
+        String content = TestIOUtils.getContent(file);
 
         assertEquals(content, actual);
     }

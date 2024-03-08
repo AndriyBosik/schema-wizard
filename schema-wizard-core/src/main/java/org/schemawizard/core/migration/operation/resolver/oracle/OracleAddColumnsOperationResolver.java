@@ -40,6 +40,6 @@ public class OracleAddColumnsOperationResolver implements OperationResolver<AddC
         return operation.getColumns().stream()
                 .map(columnOperation -> operationService.buildColumnDefinition(columnOperation, columnTypeFactory))
                 .map(definition -> String.format("%s %s", SqlClause.ADD, definition))
-                .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
+                .collect(Collectors.joining(SqlClause.SPACE_SEPARATOR));
     }
 }

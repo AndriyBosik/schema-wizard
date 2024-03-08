@@ -9,6 +9,7 @@ public class AddColumnOperation extends TableBasedOperation {
     private final Integer scale;
     private final boolean nullable;
     private final String sqlDefault;
+    private final boolean ifNotExists;
 
     public AddColumnOperation(
             String schema,
@@ -20,7 +21,8 @@ public class AddColumnOperation extends TableBasedOperation {
             Integer precision,
             Integer scale,
             boolean nullable,
-            String sqlDefault
+            String sqlDefault,
+            boolean ifNotExists
     ) {
         super(schema, table);
         this.name = name;
@@ -31,6 +33,7 @@ public class AddColumnOperation extends TableBasedOperation {
         this.scale = scale;
         this.nullable = nullable;
         this.sqlDefault = sqlDefault;
+        this.ifNotExists = ifNotExists;
     }
 
     public String getName() {
@@ -63,5 +66,9 @@ public class AddColumnOperation extends TableBasedOperation {
 
     public String getSqlDefault() {
         return sqlDefault;
+    }
+
+    public boolean isIfNotExists() {
+        return ifNotExists;
     }
 }

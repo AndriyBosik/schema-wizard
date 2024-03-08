@@ -9,6 +9,7 @@ public class IntegerColumnBuilder implements ColumnBuilder {
     private final String name;
     private boolean nullable = true;
     private Integer defaultValue;
+    private boolean ifNotExists = false;
 
     private IntegerColumnBuilder(String schema, String table, String name) {
         this.schema = schema;
@@ -30,6 +31,11 @@ public class IntegerColumnBuilder implements ColumnBuilder {
         return this;
     }
 
+    public IntegerColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
+        return this;
+    }
+
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
@@ -42,6 +48,7 @@ public class IntegerColumnBuilder implements ColumnBuilder {
                 null,
                 null,
                 nullable,
-                defaultValue == null ? null : String.valueOf(defaultValue));
+                defaultValue == null ? null : String.valueOf(defaultValue),
+                ifNotExists);
     }
 }

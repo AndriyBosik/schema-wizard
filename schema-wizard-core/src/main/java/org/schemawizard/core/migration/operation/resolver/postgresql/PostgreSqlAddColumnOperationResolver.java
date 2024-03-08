@@ -28,10 +28,11 @@ public class PostgreSqlAddColumnOperationResolver implements OperationResolver<A
     public MigrationInfo resolve(AddColumnOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "%s %s %s %s",
+                        "%s %s %s%s %s",
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.ADD_COLUMN,
+                        operation.isIfNotExists() ? (" " + SqlClause.IF_NOT_EXISTS) : "",
                         operationService.buildColumnDefinition(operation, columnTypeFactory)));
     }
 }

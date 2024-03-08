@@ -1,0 +1,1 @@
+ALTER TABLE example.posts ADD CONSTRAINT fk_posts_user_id FOREIGN KEY (user_id) REFERENCES schemawizard.users (id)

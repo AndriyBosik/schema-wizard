@@ -1,0 +1,1 @@
+ALTER TABLE users ADD CONSTRAINT unq_users_email UNIQUE (email)

@@ -11,6 +11,7 @@ public class TextColumnBuilder implements ColumnBuilder {
     private Integer minLength;
     private Integer maxLength;
     private String defaultValue;
+    private boolean ifNotExists = false;
 
     private TextColumnBuilder(String schema, String table, String name) {
         this.schema = schema;
@@ -42,6 +43,11 @@ public class TextColumnBuilder implements ColumnBuilder {
         return this;
     }
 
+    public TextColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
+        return this;
+    }
+
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
@@ -54,6 +60,7 @@ public class TextColumnBuilder implements ColumnBuilder {
                 null,
                 null,
                 nullable,
-                defaultValue);
+                defaultValue,
+                ifNotExists);
     }
 }

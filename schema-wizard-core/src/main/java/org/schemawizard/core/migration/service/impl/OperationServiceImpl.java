@@ -43,11 +43,11 @@ public class OperationServiceImpl implements OperationService {
             builder.append(")");
         }
 
-        builder.append(operation.isNullable() ? " NULL" : " NOT NULL");
-
         if (operation.getSqlDefault() != null) {
             builder.append(" DEFAULT ").append(operation.getSqlDefault());
         }
+
+        builder.append(operation.isNullable() ? " NULL" : " NOT NULL");
 
         return builder.toString();
     }

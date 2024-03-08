@@ -1,7 +1,8 @@
 package org.schemawizard.core.metadata;
 
 public class SqlClause {
-    public static final String COLUMNS_SEPARATOR = ", ";
+    public static final String SPACE_SEPARATOR = " ";
+    public static final String COMMA_SEPARATOR = ", ";
 
     public static final String CREATE_TABLE = "CREATE TABLE";
     public static final String ALTER_TABLE = "ALTER TABLE";
