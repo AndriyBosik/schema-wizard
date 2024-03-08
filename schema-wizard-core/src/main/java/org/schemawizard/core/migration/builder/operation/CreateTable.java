@@ -5,6 +5,7 @@ import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.factory.ColumnBuilderFactory;
 import org.schemawizard.core.migration.metadata.ReferentialAction;
+import org.schemawizard.core.migration.operation.AddCheckOperation;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.AddForeignKeyOperation;
 import org.schemawizard.core.migration.operation.AddPrimaryKeyOperation;
@@ -40,6 +41,7 @@ public class CreateTable<T> implements OperationBuilder {
     private PrimaryKeyDefinition<T> primaryKeyDefinition;
     private final List<ForeignKeyDefinition> foreignKeyDefinitions = new ArrayList<>();
     private final List<UniqueDefinition<T>> uniqueDefinitions = new ArrayList<>();
+    private final List<CheckDefinition<T>> checkDefinitions = new ArrayList<>();
 
     private CreateTable(
             String schema,
@@ -145,6 +147,15 @@ public class CreateTable<T> implements OperationBuilder {
         return this;
     }
 
+    public CreateTable<T> check(String condition) {
+        return check(null, condition);
+    }
+
+    public CreateTable<T> check(String name, String condition) {
+        this.checkDefinitions.add(new CheckDefinition<>(name, condition));
+        return this;
+    }
+
     @Override
     public Operation build() {
         List<Pair<ColumnBuilder, AddColumnOperation>> columnBuilders = Arrays.stream(columnsDefinitor.getClass().getDeclaredFields())
@@ -187,6 +198,13 @@ public class CreateTable<T> implements OperationBuilder {
                                         .map(columnBuilder -> findOperation(columnBuilder, columnBuilders))
                                         .map(AddColumnOperation::getName)
                                         .toArray(String[]::new)))
+                        .collect(Collectors.toList()),
+                checkDefinitions.stream()
+                        .map(definition -> new AddCheckOperation(
+                                schema,
+                                table,
+                                definition.getName(),
+                                definition.getCondition()))
                         .collect(Collectors.toList()));
     }
 
@@ -454,6 +472,24 @@ public class CreateTable<T> implements OperationBuilder {
 
         public Function<T, List<ColumnBuilder>> getFunc() {
             return func;
+        }
+    }
+
+    private static class CheckDefinition<T> {
+        private final String name;
+        private final String condition;
+
+        private CheckDefinition(String name, String condition) {
+            this.name = name;
+            this.condition = condition;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCondition() {
+            return condition;
         }
     }
 }

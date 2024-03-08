@@ -8,6 +8,7 @@ import org.schemawizard.core.migration.factory.ColumnTypeFactory;
 import org.schemawizard.core.migration.metadata.ColumnTypeFactoryQualifier;
 import org.schemawizard.core.migration.metadata.ReferentialAction;
 import org.schemawizard.core.migration.model.MigrationInfo;
+import org.schemawizard.core.migration.operation.AddCheckOperation;
 import org.schemawizard.core.migration.operation.AddForeignKeyOperation;
 import org.schemawizard.core.migration.operation.AddPrimaryKeyOperation;
 import org.schemawizard.core.migration.operation.AddUniqueOperation;
@@ -58,7 +59,8 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
         return Stream.of(
                         Stream.of(buildPrimaryKey(operation.getPrimaryKey())),
                         operation.getForeignKeys().stream().map(this::buildForeignKey),
-                        operation.getUniques().stream().map(this::buildUnique))
+                        operation.getUniques().stream().map(this::buildUnique),
+                        operation.getChecks().stream().map(this::buildCheck))
                 .flatMap(Function.identity())
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(SqlClause.COMMA_SEPARATOR));
@@ -100,6 +102,17 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.UNIQUE,
                 String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
+    }
+
+    private String buildCheck(AddCheckOperation operation) {
+        if (operation == null) {
+            return null;
+        }
+        return String.format(
+                "%s%s (%s)",
+                operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
+                SqlClause.CHECK,
+                operation.getCondition());
     }
 
     private String buildReferentialActions(AddForeignKeyOperation operation) {
