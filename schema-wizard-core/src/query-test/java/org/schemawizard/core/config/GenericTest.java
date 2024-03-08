@@ -11,12 +11,14 @@ import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
 import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryFileOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryRawOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnsOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddForeignKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddPrimaryKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddUniqueOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleCreateTableOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnsOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropForeignKeyOperationResolver;
@@ -25,12 +27,14 @@ import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropTable
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropUniqueOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleRenameColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleRenameTableOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnsOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddForeignKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddPrimaryKeyOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddUniqueOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlCreateTableOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnsOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropForeignKeyOperationResolver;
@@ -96,6 +100,8 @@ public class GenericTest {
                         PostgreSqlDropUniqueOperationResolver.class,
                         PostgreSqlRenameColumnOperationResolver.class,
                         PostgreSqlRenameTableOperationResolver.class,
+                        PostgreSqlAddCheckOperationResolver.class,
+                        PostgreSqlDropCheckOperationResolver.class,
                         OracleAddColumnOperationResolver.class,
                         OracleAddColumnsOperationResolver.class,
                         OracleAddForeignKeyOperationResolver.class,
@@ -109,7 +115,9 @@ public class GenericTest {
                         OracleDropTableOperationResolver.class,
                         OracleDropUniqueOperationResolver.class,
                         OracleRenameColumnOperationResolver.class,
-                        OracleRenameTableOperationResolver.class).stream()
+                        OracleRenameTableOperationResolver.class,
+                        OracleAddCheckOperationResolver.class,
+                        OracleDropCheckOperationResolver.class).stream()
                 .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
                 .filter(pair -> pair.getValue() == TestContext.getProvider() || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey)

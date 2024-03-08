@@ -23,6 +23,7 @@ public class SqlClause {
     public static final String RENAME_COLUMN = "RENAME COLUMN";
     public static final String RENAME = "RENAME";
     public static final String TO = "TO";
+    public static final String CHECK = "CHECK";
 
     private SqlClause() {
     }

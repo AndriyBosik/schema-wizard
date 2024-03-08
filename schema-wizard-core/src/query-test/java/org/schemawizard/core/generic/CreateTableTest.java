@@ -1,6 +1,5 @@
 package org.schemawizard.core.generic;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.schemawizard.core.config.GenericTest;
 import org.schemawizard.core.exception.InvalidMigrationDefinitionException;
@@ -12,7 +11,8 @@ import org.schemawizard.core.migration.operation.Operation;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CreateTableTest extends GenericTest {
     @Test
@@ -24,6 +24,11 @@ public class CreateTableTest extends GenericTest {
 
                     public ColumnBuilder userId() {
                         return factory.newInteger("user_id")
+                                .nullable(false);
+                    }
+
+                    public ColumnBuilder age() {
+                        return factory.newInteger("age")
                                 .nullable(false);
                     }
 
@@ -51,6 +56,8 @@ public class CreateTableTest extends GenericTest {
                         .foreignTable("users")
                         .foreignColumn("id"))
                 .unique("unq_title", table -> table.title())
+                .check("rate >= 0 AND rate <= 100")
+                .check("chk_user_age_greater_than_zero", "age > 0")
                 .build();
 
         MigrationInfo info = operationResolverService.resolve(operation);
