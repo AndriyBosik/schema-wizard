@@ -27,6 +27,7 @@ import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropPrima
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropTableOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropUniqueOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleRenameColumnOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.oracle.OracleRenameConstraintOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.oracle.OracleRenameTableOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddCheckOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnOperationResolver;
@@ -44,6 +45,7 @@ import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlD
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropTableOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropUniqueOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlRenameColumnOperationResolver;
+import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlRenameConstraintOperationResolver;
 import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlRenameTableOperationResolver;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.migration.service.OperationService;
@@ -105,6 +107,7 @@ public class GenericTest {
                         PostgreSqlAddCheckOperationResolver.class,
                         PostgreSqlDropCheckOperationResolver.class,
                         PostgreSqlDropConstraintOperationResolver.class,
+                        PostgreSqlRenameConstraintOperationResolver.class,
                         OracleAddColumnOperationResolver.class,
                         OracleAddColumnsOperationResolver.class,
                         OracleAddForeignKeyOperationResolver.class,
@@ -121,7 +124,8 @@ public class GenericTest {
                         OracleRenameTableOperationResolver.class,
                         OracleAddCheckOperationResolver.class,
                         OracleDropCheckOperationResolver.class,
-                        OracleDropConstraintOperationResolver.class).stream()
+                        OracleDropConstraintOperationResolver.class,
+                        OracleRenameConstraintOperationResolver.class).stream()
                 .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
                 .filter(pair -> pair.getValue() == TestContext.getProvider() || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey)
