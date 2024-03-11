@@ -5,5 +5,5 @@ public interface PropertyParser {
 
     boolean parseBooleanValue(String value);
 
-    Integer parseLongValue(String value);
+    Integer parseIntegerValue(String value);
 }

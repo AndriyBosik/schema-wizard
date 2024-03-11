@@ -33,8 +33,3 @@ public class Text {
         }
     }
 }
-
-
-//public Text build() {
-//    return new Text(defaultLength);
-//}

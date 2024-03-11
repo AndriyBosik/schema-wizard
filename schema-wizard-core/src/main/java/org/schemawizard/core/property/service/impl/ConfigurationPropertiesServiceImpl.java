@@ -68,7 +68,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         Text text = Text.builder()
             .defaultLength(propertyParser
-                .parseLongValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
+                .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
             .build();
         Defaults defaults = Defaults.builder()
             .text(text)
