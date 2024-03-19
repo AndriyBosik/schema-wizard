@@ -46,6 +46,12 @@ public class PropertyParserImpl implements PropertyParser {
         return Boolean.parseBoolean(stringValue);
     }
 
+    @Override
+    public Integer parseIntegerValue(String value) {
+        String stringValue = parseStringValue(value);
+        return stringValue != null ? Integer.parseInt(stringValue) : null;
+    }
+
     private int findBalancedBrace(String propertyValue, int envStart) {
         int notBalancedBraces = 1;
         for (int i = envStart; i < propertyValue.length(); i++) {

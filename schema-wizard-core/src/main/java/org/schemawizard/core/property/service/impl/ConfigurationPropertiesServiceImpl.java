@@ -1,10 +1,14 @@
 package org.schemawizard.core.property.service.impl;
 
-import org.schemawizard.core.exception.InvalidConfigurationPropertiesLocation;
+import java.io.InputStream;
+import java.net.URL;
 import org.schemawizard.core.exception.InvalidConfigurationException;
+import org.schemawizard.core.exception.InvalidConfigurationPropertiesLocation;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.model.defaults.Defaults;
+import org.schemawizard.core.model.defaults.Text;
 import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
@@ -15,9 +19,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.io.InputStream;
-import java.net.URL;
 
 public class ConfigurationPropertiesServiceImpl implements ConfigurationPropertiesService {
     private final static String DEFAULT_LOCATION = "application.yaml";
@@ -65,6 +66,13 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
 
     private ConfigurationProperties mapConfigurationProperties(YamlContext context) {
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
+        Text text = Text.builder()
+            .defaultLength(propertyParser
+                .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
+            .build();
+        Defaults defaults = Defaults.builder()
+            .text(text)
+            .build();
         return ConfigurationProperties.builder()
                 .databaseProvider(mapDatabaseProvider(connectionUrl))
                 .context(propertyParser.parseStringValue(context.getSchema().getWizard().getContext()))
@@ -73,6 +81,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
                 .password(propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getPassword()))
                 .migrationsPackage(propertyParser.parseStringValue(context.getSchema().getWizard().getMigration().getPackageName()))
                 .logGeneratedSql(propertyParser.parseBooleanValue(context.getSchema().getWizard().getLog().getSqlQuery()))
+                .defaults(defaults)
                 .build();
     }
 
