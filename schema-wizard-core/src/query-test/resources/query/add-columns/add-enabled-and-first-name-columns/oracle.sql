@@ -1,0 +1,1 @@
+ALTER TABLE users ADD enabled NUMBER(1) NULL ADD first_name VARCHAR(200) NULL

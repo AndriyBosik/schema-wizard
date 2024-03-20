@@ -1,7 +1,8 @@
 package org.schemawizard.core.metadata;
 
 public class SqlClause {
-    public static final String COLUMNS_SEPARATOR = ", ";
+    public static final String SPACE_SEPARATOR = " ";
+    public static final String COMMA_SEPARATOR = ", ";
 
     public static final String CREATE_TABLE = "CREATE TABLE";
     public static final String ALTER_TABLE = "ALTER TABLE";
@@ -19,6 +20,10 @@ public class SqlClause {
     public static final String IF_NOT_EXISTS = "IF NOT EXISTS";
     public static final String ADD_CONSTRAINT = "ADD CONSTRAINT";
     public static final String DROP_CONSTRAINT = "DROP CONSTRAINT";
+    public static final String RENAME_COLUMN = "RENAME COLUMN";
+    public static final String RENAME = "RENAME";
+    public static final String TO = "TO";
+    public static final String CHECK = "CHECK";
 
     private SqlClause() {
     }

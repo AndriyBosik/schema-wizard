@@ -48,6 +48,12 @@ public class ErrorMessage {
     public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
             "The context %s is invalid - no migrations were found to downgrade";
 
+    public static final String IF_NOT_EXISTS_NOT_SUPPORTED =
+            "[IF NOT EXISTS] clause not supported";
+
+    public static final String IF_EXISTS_NOT_SUPPORTED =
+            "[IF EXISTS] clause not supported";
+
     private ErrorMessage() {
     }
 }

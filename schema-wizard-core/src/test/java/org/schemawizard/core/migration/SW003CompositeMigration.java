@@ -13,13 +13,13 @@ public class SW003CompositeMigration implements Migration {
     public Operation up(MigrationContext context) {
         return Composite.builder()
                 .add(AddColumns.builder("SCHEMAWIZARD", "users", factory -> List.of(
-                        factory.text("column1")
+                        factory.newText("column1")
                 )).build())
                 .add(AddColumns.builder("SCHEMAWIZARD", "users", factory -> List.of(
-                        factory.text("column2")
+                        factory.newText("column2")
                 )).build())
                 .add(AddColumns.builder("SCHEMAWIZARD", "users", factory -> List.of(
-                        factory.text("column3")
+                        factory.newText("column3")
                 )).build())
                 .build();
     }

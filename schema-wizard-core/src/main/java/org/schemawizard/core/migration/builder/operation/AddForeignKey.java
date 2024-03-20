@@ -11,8 +11,8 @@ public class AddForeignKey implements OperationBuilder {
     private String foreignSchema;
     private String foreignTable;
     private String[] foreignColumns;
-    private ReferentialAction onUpdate = ReferentialAction.NO_ACTION;
-    private ReferentialAction onDelete = ReferentialAction.NO_ACTION;
+    private ReferentialAction onUpdate;
+    private ReferentialAction onDelete;
 
     private AddForeignKey(String table) {
         this(null, table);

@@ -26,6 +26,6 @@ public class OracleAddUniqueOperationResolver implements OperationResolver<AddUn
                         SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
                         SqlClause.UNIQUE,
-                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns())));
+                        String.join(SqlClause.COMMA_SEPARATOR, operation.getColumns())));
     }
 }

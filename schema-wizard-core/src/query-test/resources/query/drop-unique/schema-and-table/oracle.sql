@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users DROP CONSTRAINT unq_users_first_name_last_name
