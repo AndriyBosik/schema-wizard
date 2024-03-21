@@ -40,6 +40,8 @@ import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.model.defaults.Defaults;
+import org.schemawizard.core.model.defaults.Text;
 import org.schemawizard.core.utils.IOUtils;
 
 import java.io.File;
@@ -66,6 +68,9 @@ public class GenericTest {
         this.supportedProviders = supportedProviders;
         ConfigurationProperties properties = ConfigurationProperties.builder()
                 .databaseProvider(TestContext.getProvider())
+                .defaults(Defaults.builder()
+                        .text(new Text(255))
+                        .build())
                 .build();
 
         DiContainer container = new DiContainer();
