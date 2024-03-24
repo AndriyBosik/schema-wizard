@@ -1,6 +1,7 @@
 package org.schemawizard.core.config;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.reflections.Reflections;
 import org.schemawizard.core.di.DiContainer;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.migration.annotation.Provider;
@@ -9,32 +10,6 @@ import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
-import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryFileOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.multi.MultiNativeQueryRawOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleAddUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleCreateTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.oracle.OracleDropUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlAddUniqueOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlCreateTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropColumnsOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropForeignKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropPrimaryKeyOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropTableOperationResolver;
-import org.schemawizard.core.migration.operation.resolver.postgresql.PostgreSqlDropUniqueOperationResolver;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
@@ -48,6 +23,7 @@ import java.io.File;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -80,36 +56,8 @@ public class GenericTest {
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
 
-        Set.of(
-                        MultiNativeQueryFileOperationResolver.class,
-                        MultiNativeQueryRawOperationResolver.class,
-                        PostgreSqlAddColumnOperationResolver.class,
-                        PostgreSqlAddColumnsOperationResolver.class,
-                        PostgreSqlAddForeignKeyOperationResolver.class,
-                        PostgreSqlAddPrimaryKeyOperationResolver.class,
-                        PostgreSqlAddUniqueOperationResolver.class,
-                        PostgreSqlCreateTableOperationResolver.class,
-                        PostgreSqlDropColumnOperationResolver.class,
-                        PostgreSqlDropColumnsOperationResolver.class,
-                        PostgreSqlDropForeignKeyOperationResolver.class,
-                        PostgreSqlDropPrimaryKeyOperationResolver.class,
-                        PostgreSqlDropTableOperationResolver.class,
-                        PostgreSqlDropUniqueOperationResolver.class,
-                        OracleAddColumnOperationResolver.class,
-                        OracleAddColumnsOperationResolver.class,
-                        OracleAddForeignKeyOperationResolver.class,
-                        OracleAddPrimaryKeyOperationResolver.class,
-                        OracleAddUniqueOperationResolver.class,
-                        OracleCreateTableOperationResolver.class,
-                        OracleDropColumnOperationResolver.class,
-                        OracleDropColumnsOperationResolver.class,
-                        OracleDropForeignKeyOperationResolver.class,
-                        OracleDropPrimaryKeyOperationResolver.class,
-                        OracleDropTableOperationResolver.class,
-                        OracleDropUniqueOperationResolver.class).stream()
-                .map(resolver -> new AbstractMap.SimpleEntry<>(resolver, parserDatabaseProviderFromClass(resolver)))
-                .filter(pair -> pair.getValue() == TestContext.getProvider() || pair.getValue() == DatabaseProvider.MULTI)
-                .map(Map.Entry::getKey)
+        Reflections basePackageReflections = new Reflections("org.schemawizard.core");
+        registerResolvers(basePackageReflections, TestContext.getProvider())
                 .forEach(resolver -> container.register(OperationResolver.class, resolver));
 
         container.register(OperationResolverService.class, OperationResolverServiceImpl.class);
@@ -128,6 +76,16 @@ public class GenericTest {
         String content = IOUtils.getContent(file);
 
         assertEquals(content, actual);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Stream<Class<? extends OperationResolver>> registerResolvers(Reflections reflections, DatabaseProvider provider) {
+        return reflections.getSubTypesOf(OperationResolver.class).stream()
+                .map(resolver -> new AbstractMap.SimpleEntry<>(
+                        resolver,
+                        parserDatabaseProviderFromClass((Class<? extends OperationResolver<?>>) resolver)))
+                .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
+                .map(Map.Entry::getKey);
     }
 
     private DatabaseProvider parserDatabaseProviderFromClass(Class<? extends OperationResolver<? extends Operation>> resolver) {
