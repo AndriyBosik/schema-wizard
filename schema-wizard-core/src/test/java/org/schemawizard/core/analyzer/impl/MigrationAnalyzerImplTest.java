@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.DeclaredMigration;
-import org.schemawizard.core.analyzer.HistoryTableCreator;
+import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
@@ -30,14 +30,14 @@ public class MigrationAnalyzerImplTest {
 
     private final DeclaredMigrationService declaredMigrationsService = Mockito.mock(DeclaredMigrationService.class);
 
-    private final HistoryTableCreator historyTableCreator = Mockito.mock(HistoryTableCreator.class);
+    private final HistoryTable historyTable = Mockito.mock(HistoryTable.class);
 
     private final DowngradeFactory downgradeFactory = Mockito.mock(DowngradeFactory.class);
 
     private final MigrationAnalyzer migrationAnalyzer = new MigrationAnalyzerImpl(
             appliedMigrationsService,
             declaredMigrationsService,
-            historyTableCreator,
+            historyTable,
             downgradeFactory);
 
     @Test
@@ -195,29 +195,9 @@ public class MigrationAnalyzerImplTest {
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::upgradeAnalyze);
     }
 
-    private List<AppliedMigration> createTwoAppliedMigrationDescOrder() {
-        AppliedMigration appliedMigration2 = new AppliedMigration(
-                2,
-                2,
-                "second migration",
-                "context",
-                LocalDateTime.now()
-        );
-
-        AppliedMigration appliedMigration3 = new AppliedMigration(
-                3,
-                3,
-                "third migration",
-                "context",
-                LocalDateTime.now()
-        );
-
-        return List.of(appliedMigration3, appliedMigration2);
-    }
-
     @Test
     void downgradeAnalyzeShouldThrowExceptionIfHistoryTableDoesNotExist() {
-        when(historyTableCreator.historyTableExists()).thenReturn(false);
+        when(historyTable.exists()).thenReturn(false);
         assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(2)));
     }
 

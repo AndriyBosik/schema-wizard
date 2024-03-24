@@ -6,9 +6,11 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.schemawizard.core.analyzer.HistoryTableCreator;
+import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.dao.ConnectionHolder;
+import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
+import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -19,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class HistoryTableCreatorImplTest {
+public class HistoryTableImplTest {
 
     private static final String SELECT_TABLE_SQL = "SELECT table_name " +
             "FROM information_schema.tables " +
@@ -31,11 +33,12 @@ public class HistoryTableCreatorImplTest {
                     .connectionUrl(postgres.getJdbcUrl())
                     .username(postgres.getUsername())
                     .password(postgres.getPassword())
-                    .build()
-    );
+                    .build());
 
-    private final HistoryTableCreator historyTableCreator = new HistoryTableCreatorImpl(
-            connectionHolder, new PostgresHistoryTableQueryFactory());
+    private final TransactionService transactionService = new TransactionServiceImpl(connectionHolder);
+
+    private final HistoryTable historyTable = new HistoryTableImpl(
+            transactionService, new PostgresHistoryTableQueryFactory());
 
     @BeforeAll
     static void setUp() {
@@ -50,13 +53,13 @@ public class HistoryTableCreatorImplTest {
     @Test
     @Order(1)
     void isHistoryTableExistShouldReturnFalseIfTableNotExist() {
-        assertFalse(historyTableCreator.historyTableExists());
+        assertFalse(historyTable.exists());
     }
 
     @Test
     @Order(2)
     void createTableIfNotExistShouldCreateTable() {
-        historyTableCreator.createTableIfNotExist();
+        historyTable.createIfNotExists();
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
             statement.execute(SELECT_TABLE_SQL);
             assertTrue(statement.getResultSet().next());
@@ -68,6 +71,6 @@ public class HistoryTableCreatorImplTest {
     @Test
     @Order(3)
     void isHistoryTableExistShouldReturnTrueIfTableExist() {
-        assertTrue(historyTableCreator.historyTableExists());
+        assertTrue(historyTable.exists());
     }
 }

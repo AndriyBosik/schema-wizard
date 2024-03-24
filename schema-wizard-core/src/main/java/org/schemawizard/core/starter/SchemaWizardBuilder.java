@@ -1,11 +1,11 @@
 package org.schemawizard.core.starter;
 
 import org.reflections.Reflections;
-import org.schemawizard.core.analyzer.HistoryTableCreator;
+import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
 import org.schemawizard.core.analyzer.factory.impl.DowngradeFactoryImpl;
-import org.schemawizard.core.analyzer.impl.HistoryTableCreatorImpl;
+import org.schemawizard.core.analyzer.impl.HistoryTableImpl;
 import org.schemawizard.core.analyzer.impl.MigrationAnalyzerImpl;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
@@ -83,7 +83,7 @@ public class SchemaWizardBuilder {
         container.register(AppliedMigrationsService.class, AppliedMigrationsServiceImpl.class);
         container.register(DeclaredMigrationService.class, ClassesDeclaredMigrationService.class);
         container.register(ConnectionHolder.class, ConnectionHolder.class);
-        container.register(HistoryTableCreator.class, HistoryTableCreatorImpl.class);
+        container.register(HistoryTable.class, HistoryTableImpl.class);
         container.register(MigrationAnalyzer.class, MigrationAnalyzerImpl.class);
         container.register(MigrationRunner.class, MigrationRunnerImpl.class);
         container.register(OperationResolverService.class, OperationResolverServiceImpl.class);

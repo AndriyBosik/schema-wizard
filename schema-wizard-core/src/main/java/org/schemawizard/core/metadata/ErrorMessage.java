@@ -48,6 +48,9 @@ public class ErrorMessage {
     public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
             "The context %s is invalid - no migrations were found to downgrade";
 
+    public static final String UNABLE_TO_LOCK_TABLE_TEMPLATE =
+            "Unable to lock table %s";
+
     private ErrorMessage() {
     }
 }
