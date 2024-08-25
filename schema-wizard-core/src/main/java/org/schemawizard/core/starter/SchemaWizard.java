@@ -4,6 +4,7 @@ import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
+import org.schemawizard.core.analyzer.model.CountDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.runner.MigrationRunner;
@@ -35,16 +36,23 @@ public class SchemaWizard {
         });
     }
 
-    public void down(int version) {
+    public void downByVersion(int version) {
         transactionService.doWithinTransaction(() -> {
             List<MigrationData> downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(version));
             migrationRunner.downgrade(downgradeMigrations);
         });
     }
 
-    public void down(String context) {
+    public void downByContext(String context) {
         transactionService.doWithinTransaction(() -> {
             List<MigrationData> downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new ContextDowngradeStrategyParameters(context));
+            migrationRunner.downgrade(downgradeMigrations);
+        });
+    }
+
+    public void downByCount(int count) {
+        transactionService.doWithinTransaction(() -> {
+            List<MigrationData> downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new CountDowngradeStrategyParameters(count));
             migrationRunner.downgrade(downgradeMigrations);
         });
     }
