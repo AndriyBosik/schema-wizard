@@ -8,10 +8,12 @@ import org.schemawizard.core.analyzer.model.CountDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.DowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.DowngradeStrategy;
+import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.metadata.ErrorMessage;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -19,13 +21,16 @@ import java.util.function.Function;
 public class DowngradeFactoryImpl implements DowngradeFactory {
     private final TransactionService transactionService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
+    private final ConnectionHolder connectionHolder;
 
     public DowngradeFactoryImpl(
             TransactionService transactionService,
-            HistoryTableQueryFactory historyTableQueryFactory
+            HistoryTableQueryFactory historyTableQueryFactory,
+            ConnectionHolder connectionHolder
     ) {
         this.transactionService = transactionService;
         this.historyTableQueryFactory = historyTableQueryFactory;
+        this.connectionHolder = connectionHolder;
     }
 
     @Override
