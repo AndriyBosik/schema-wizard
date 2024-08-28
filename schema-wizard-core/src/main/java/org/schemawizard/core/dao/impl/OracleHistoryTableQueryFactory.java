@@ -10,6 +10,10 @@ import static org.schemawizard.core.dao.Constants.MIGRATION_TABLE_NAME;
 import static org.schemawizard.core.dao.Constants.VERSION;
 
 public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory {
+    private final static String METADATA_TABLE_NAME = "USER_TABLES";
+    private final static String MIGRATION_HISTORY_TABLE_CREATION_LOCK_NAME = "SCHEMAWIZARD_LOCK";
+    private final static String EXECUTION_LOCK_NAME = "SCHEMAWIZARD_EXECUTION_LOCK";
+
     @Override
     public String getCreateMigrationHistoryTableSql() {
         return String.format("CREATE TABLE %s ("
@@ -31,8 +35,9 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     @Override
     public String getSelectTableSql() {
         return String.format("SELECT table_name "
-                        + "FROM USER_TABLES "
+                        + "FROM %s "
                         + "WHERE LOWER(table_name)='%s'",
+                METADATA_TABLE_NAME,
                 MIGRATION_TABLE_NAME);
     }
 
@@ -49,7 +54,7 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
         return String.format("WITH break_row AS (" +
                         "SELECT id FROM %s WHERE %s = ?) " +
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
-                        "FROM %s " +
+                        "FROM %s mh " +
                         "LEFT JOIN break_row ON (1 = 1) " +
                         "WHERE break_row.%s IS NOT NULL AND mh.%s >= break_row.%s " +
                         "ORDER BY %s DESC",
@@ -81,7 +86,7 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     @Override
     public String getInsertMigrationHistoryRowQuery() {
         return String.format(
-                "INSERT INTO %s (%s, %s, %s) VALUES (?, ?)",
+                "INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
                 MIGRATION_TABLE_NAME,
                 VERSION,
                 DESCRIPTION,
@@ -94,5 +99,44 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
                 "DELETE FROM %s WHERE %s = ?",
                 MIGRATION_TABLE_NAME,
                 VERSION);
+    }
+
+    @Override
+    public String getLockForExecutionSql() {
+        return String.format(
+                "DECLARE\n" +
+                        "  l_lock_handle VARCHAR2(128);\n" +
+                        "  l_result NUMBER;\n" +
+                        "BEGIN\n" +
+                        "  DBMS_LOCK.ALLOCATE_UNIQUE('%s', l_lock_handle);\n" +
+                        "  l_result := DBMS_LOCK.REQUEST(l_lock_handle, DBMS_LOCK.X_MODE);\n" +
+                        "END;",
+                EXECUTION_LOCK_NAME);
+    }
+
+    @Override
+    public String getAcquireAdvisoryLockSql() {
+        return String.format(
+                "DECLARE\n" +
+                        "  l_lock_handle VARCHAR2(128);\n" +
+                        "  l_result NUMBER;\n" +
+                        "BEGIN\n" +
+                        "  DBMS_LOCK.ALLOCATE_UNIQUE('%s', l_lock_handle);\n" +
+                        "  l_result := DBMS_LOCK.REQUEST(l_lock_handle, DBMS_LOCK.X_MODE);\n" +
+                        "END;",
+                MIGRATION_HISTORY_TABLE_CREATION_LOCK_NAME);
+    }
+
+    @Override
+    public String getReleaseAdvisoryLockSql() {
+        return String.format(
+                "DECLARE\n" +
+                        "  l_lock_handle VARCHAR2(128);\n" +
+                        "  l_result NUMBER;\n" +
+                        "BEGIN\n" +
+                        "  DBMS_LOCK.ALLOCATE_UNIQUE('%s', l_lock_handle);\n" +
+                        "  l_result := DBMS_LOCK.RELEASE(l_lock_handle);\n" +
+                        "END;",
+                MIGRATION_HISTORY_TABLE_CREATION_LOCK_NAME);
     }
 }
