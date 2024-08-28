@@ -20,6 +20,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
@@ -50,7 +53,19 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
             throw new InvalidConfigurationPropertiesLocation(
                     String.format(ErrorMessage.INVALID_PROPERTIES_LOCATION_FORMAT, location));
         }
-        InputStream inputStream = IOUtils.getInputStream(resource.getFile());
+        return getProperties(IOUtils.getInputStream(resource.getFile()));
+    }
+
+    @Override
+    public ConfigurationProperties getProperties(File file) {
+        try {
+            return getProperties(new FileInputStream(file));
+        } catch (FileNotFoundException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private ConfigurationProperties getProperties(InputStream inputStream) {
         Yaml yaml = new Yaml(buildConstructor(), buildRepresenter());
         YamlContext context = yaml.loadAs(inputStream, YamlContext.class);
         return mapConfigurationProperties(context);

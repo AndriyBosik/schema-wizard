@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+def pluginName = "SchemaWizard Plugin"
+def pluginDescription = "Use plugin to run SchemaWizard from command line"
+
+group 'org.schema-wizard'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.maven:maven-core:3.9.9'
+    implementation 'org.apache.maven:maven-plugin-api:3.9.9'
+    implementation 'org.apache.maven:maven-project:2.2.1'
+    implementation project(':schema-wizard-core') // TODO change to `implementation 'org.schema-wizard:schema-wizard-core:version'` once the library becomes published to Maven repository
+
+    compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.14.0'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+tasks.register('initializePluginDescriptor') {
+    def inputFile = file("/src/main/resources/META-INF/maven/plugin-template.xml")
+    def outputFile = file("/src/main/resources/META-INF/maven/plugin.xml")
+
+    doLast {
+        def content = inputFile.text
+
+        content = content.replace("\${plugin.name}", pluginName)
+        content = content.replace("\${plugin.description}", pluginDescription)
+        content = content.replace("\${plugin.groupId}", project.group.toString())
+        content = content.replace("\${plugin.artifactId}", project.name)
+        content = content.replace("\${plugin.version}", project.version.toString())
+
+        outputFile.text = content
+    }
+}
+
+tasks.register('copyPluginDescriptor', Copy) {
+    from 'src/main/resources/META-INF/maven'
+    into "${buildDir}/resources/main/META-INF/maven"
+}
+
+tasks.copyPluginDescriptor {
+    dependsOn initializePluginDescriptor
+}
+
+tasks.jar {
+    dependsOn copyPluginDescriptor
+}
+
+test {
+    useJUnitPlatform()
+}

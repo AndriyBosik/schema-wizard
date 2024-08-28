@@ -48,6 +48,7 @@ import org.schemawizard.core.runner.MigrationRunner;
 import org.schemawizard.core.runner.impl.MigrationRunnerImpl;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
+import java.io.File;
 import java.util.AbstractMap;
 import java.util.Map;
 
@@ -66,13 +67,33 @@ public class SchemaWizardBuilder {
     }
 
     public static SchemaWizardBuilder init() {
-        DiContainer container = new DiContainer();
-        container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
-        container.register(PropertyParser.class, PropertyParserImpl.class);
-        container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
+        DiContainer container = initDiContainerWithPropertyServices();
 
         ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
         ConfigurationProperties properties = propertiesService.getProperties();
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(String location) {
+        DiContainer container = initDiContainerWithPropertyServices();
+
+        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
+        ConfigurationProperties properties = propertiesService.getProperties(location);
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(File file) {
+        DiContainer container = initDiContainerWithPropertyServices();
+
+        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
+        ConfigurationProperties properties = propertiesService.getProperties(file);
+
+        return init(container, properties);
+    }
+
+    private static SchemaWizardBuilder init(DiContainer container, ConfigurationProperties properties) {
         container.register(ConfigurationProperties.class, properties);
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
@@ -111,6 +132,15 @@ public class SchemaWizardBuilder {
         }
 
         return new SchemaWizardBuilder(container, properties);
+    }
+
+    private static DiContainer initDiContainerWithPropertyServices() {
+        DiContainer container = new DiContainer();
+        container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
+        container.register(PropertyParser.class, PropertyParserImpl.class);
+        container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
+
+        return container;
     }
 
     @SuppressWarnings("unchecked")
