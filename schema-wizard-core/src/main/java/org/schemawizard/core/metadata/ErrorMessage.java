@@ -45,6 +45,8 @@ public class ErrorMessage {
     public static final String MIGRATION_WITH_VERSION_WAS_NOT_FOUND_TEMPLATE =
             "Migration with version %s was not found";
 
+    public static final String MIGRATIONS_WERE_NOT_FOUND = "No migrations were found";
+
     public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
             "The context %s is invalid - no migrations were found to downgrade";
 
