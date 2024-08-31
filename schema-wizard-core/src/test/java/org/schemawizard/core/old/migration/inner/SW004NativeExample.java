@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.inner;
+package org.schemawizard.core.old.migration.inner;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.operation.DropColumns;

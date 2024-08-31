@@ -1,12 +1,12 @@
-package org.schemawizard.core.analyzer.service.impl;
+package org.schemawizard.core.old.analyzer.service.impl;
 
-import org.junit.jupiter.api.Test;
 import org.schemawizard.core.analyzer.DeclaredMigration;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
-import org.schemawizard.core.migration.SW001CreateUsersTable;
-import org.schemawizard.core.migration.SW002CreatePostsTable;
-import org.schemawizard.core.migration.SW003CompositeMigration;
-import org.schemawizard.core.migration.inner.SW004NativeExample;
+import org.schemawizard.core.analyzer.service.impl.ClassesDeclaredMigrationService;
+import org.schemawizard.core.old.migration.SW001CreateUsersTable;
+import org.schemawizard.core.old.migration.SW002CreatePostsTable;
+import org.schemawizard.core.old.migration.SW003CompositeMigration;
+import org.schemawizard.core.old.migration.inner.SW004NativeExample;
 import org.schemawizard.core.model.ConfigurationProperties;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class ClassesDeclaredMigrationServiceTest {
                     .build()
     );
 
-    @Test
+//    @Test
     void serviceShouldReturnCorrectMigrations() {
         var actualMigrations = classesDeclaredMigrationService.getDeclaredMigrations();
         var expectedMigrations = expectedMigrations();

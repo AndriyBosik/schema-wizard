@@ -1,5 +1,6 @@
-package org.schemawizard.core.migration;
+package org.schemawizard.core.old.migration;
 
+import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.builder.operation.CreateTable;

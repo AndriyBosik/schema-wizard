@@ -1,5 +1,6 @@
-package org.schemawizard.core.migration;
+package org.schemawizard.core.old.migration;
 
+import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.operation.AddColumns;
 import org.schemawizard.core.migration.builder.operation.Composite;
 import org.schemawizard.core.migration.builder.operation.DropColumns;

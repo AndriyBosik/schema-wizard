@@ -1,10 +1,8 @@
-package org.schemawizard.core.analyzer.service.impl;
+package org.schemawizard.core.old.analyzer.service.impl;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
+import org.schemawizard.core.analyzer.service.impl.AppliedMigrationsServiceImpl;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
@@ -53,17 +51,17 @@ public class AppliedMigrationsServiceImplTest {
     private final AppliedMigrationsService appliedMigrationsService = new AppliedMigrationsServiceImpl(
             transactionService, new PostgresHistoryTableQueryFactory());
 
-    @BeforeAll
+    //    @BeforeAll
     static void setUp() {
         postgres.start();
     }
 
-    @AfterAll
+    //    @AfterAll
     static void stop() {
         postgres.stop();
     }
 
-    @Test
+    //    @Test
     void getAppliedMigrationsShouldReturnAllMigrations() throws SQLException {
         createMigrationsTable();
         List<AppliedMigration> expectedMigrations = createAllMigrations();

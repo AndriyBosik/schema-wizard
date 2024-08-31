@@ -1,0 +1,7 @@
+properties:
+  caseSensitiveTableNames: ${DB_CASE_SENSITIVE_TABLE_NAMES}
+  schema: ${DB_SCHEMA}
+connectionConfig:
+  url: ${DB_URL}
+  user: ${DB_USERNAME}
+  password: ${DB_PASSWORD}

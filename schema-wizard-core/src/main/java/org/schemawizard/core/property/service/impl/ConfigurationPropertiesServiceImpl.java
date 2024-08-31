@@ -20,6 +20,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
@@ -50,25 +53,20 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
             throw new InvalidConfigurationPropertiesLocation(
                     String.format(ErrorMessage.INVALID_PROPERTIES_LOCATION_FORMAT, location));
         }
-        InputStream inputStream = IOUtils.getInputStream(resource.getFile());
-        Yaml yaml = new Yaml(buildConstructor(), buildRepresenter());
-        YamlContext context = yaml.loadAs(inputStream, YamlContext.class);
-        return mapConfigurationProperties(context);
+        return getProperties(IOUtils.getInputStream(resource.getFile()));
     }
 
-    private Representer buildRepresenter() {
-        Representer representer = new Representer(new DumperOptions());
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        return representer;
+    @Override
+    public ConfigurationProperties getProperties(File file) {
+        try {
+            return getProperties(new FileInputStream(file));
+        } catch (FileNotFoundException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
-    private Constructor buildConstructor() {
-        Constructor constructor = new Constructor(YamlContext.class, new LoaderOptions());
-        constructor.setPropertyUtils(propertyUtils);
-        return constructor;
-    }
-
-    private ConfigurationProperties mapConfigurationProperties(YamlContext context) {
+    @Override
+    public ConfigurationProperties getProperties(YamlContext context) {
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         Text text = Text.builder()
                 .defaultLength(propertyParser
@@ -95,6 +93,24 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
                 .columnNamingStrategy(StringUtils.isBlank(namingStrategy) ? ColumnNamingStrategy.SNAKE_CASE : ColumnNamingStrategy.valueOf(namingStrategy))
                 .defaults(defaults)
                 .build();
+    }
+
+    private ConfigurationProperties getProperties(InputStream inputStream) {
+        Yaml yaml = new Yaml(buildConstructor(), buildRepresenter());
+        YamlContext context = yaml.loadAs(inputStream, YamlContext.class);
+        return getProperties(context);
+    }
+
+    private Representer buildRepresenter() {
+        Representer representer = new Representer(new DumperOptions());
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        return representer;
+    }
+
+    private Constructor buildConstructor() {
+        Constructor constructor = new Constructor(YamlContext.class, new LoaderOptions());
+        constructor.setPropertyUtils(propertyUtils);
+        return constructor;
     }
 
     private DatabaseProvider mapDatabaseProvider(String connectionUrl) {

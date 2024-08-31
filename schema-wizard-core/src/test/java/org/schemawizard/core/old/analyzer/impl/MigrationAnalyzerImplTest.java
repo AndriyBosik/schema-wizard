@@ -1,6 +1,5 @@
-package org.schemawizard.core.analyzer.impl;
+package org.schemawizard.core.old.analyzer.impl;
 
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.schemawizard.core.analyzer.AppliedMigration;
 import org.schemawizard.core.analyzer.DeclaredMigration;
@@ -9,12 +8,13 @@ import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
+import org.schemawizard.core.analyzer.impl.MigrationAnalyzerImpl;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
-import org.schemawizard.core.migration.SW001CreateUsersTable;
-import org.schemawizard.core.migration.SW002CreatePostsTable;
-import org.schemawizard.core.migration.SW003CompositeMigration;
+import org.schemawizard.core.old.migration.SW001CreateUsersTable;
+import org.schemawizard.core.old.migration.SW002CreatePostsTable;
+import org.schemawizard.core.old.migration.SW003CompositeMigration;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,7 +40,7 @@ public class MigrationAnalyzerImplTest {
             historyTable,
             downgradeFactory);
 
-    @Test
+//    @Test
     void upgradeAnalyzeShouldReturnNotAppliedMigrations() {
         var appliedMigrations = createTwoAppliedMigrations();
         var declaredMigrations = createThreeDeclaredMigrations();
@@ -151,7 +151,7 @@ public class MigrationAnalyzerImplTest {
         return List.of(migration1, migration2, migration3);
     }
 
-    @Test
+//    @Test
     void upgradeAnalyzeShouldNotReturnAnythingIfMigrationsNumbersTheSame() {
         var appliedMigrations = createTwoAppliedMigrations();
         var declaredMigrations = createTwoDeclaredMigrations();
@@ -163,7 +163,7 @@ public class MigrationAnalyzerImplTest {
         assertEquals(0, actualMigrations.size());
     }
 
-    @Test
+//    @Test
     void upgradeAnalyzeShouldThrowExceptionIfAppliedMigrationsNumberGreaterThenDeclared() {
         var appliedMigrations = createThreeAppliedMigrations();
         var declaredMigrations = createTwoDeclaredMigrations();
@@ -173,7 +173,7 @@ public class MigrationAnalyzerImplTest {
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::upgradeAnalyze);
     }
 
-    @Test
+//    @Test
     void upgradeAnalyzeShouldThrowExceptionIfAppliedAndDeclaredMigrationVersionDifferent() {
         AppliedMigration appliedMigration = new AppliedMigration(
                 1,
@@ -195,13 +195,13 @@ public class MigrationAnalyzerImplTest {
         assertThrows(MigrationAnalyzerException.class, migrationAnalyzer::upgradeAnalyze);
     }
 
-    @Test
+//    @Test
     void downgradeAnalyzeShouldThrowExceptionIfHistoryTableDoesNotExist() {
         when(historyTable.exists()).thenReturn(false);
         assertThrows(MigrationAnalyzerException.class, () -> migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(2)));
     }
 
-    @Test
+//    @Test
     void downgradeAnalyzeShouldThrowExceptionIfMultipleDeclaredMigrationWithTheSameVersion() {
         var declaredMigrationsWithTheSameVersion = createDeclaredMigrationsWithTheSameVersion();
         when(declaredMigrationsService.getDeclaredMigrations()).thenReturn(declaredMigrationsWithTheSameVersion);

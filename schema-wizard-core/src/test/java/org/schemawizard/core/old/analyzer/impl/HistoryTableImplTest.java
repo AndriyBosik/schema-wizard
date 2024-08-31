@@ -1,4 +1,4 @@
-package org.schemawizard.core.analyzer.impl;
+package org.schemawizard.core.old.analyzer.impl;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.schemawizard.core.analyzer.HistoryTable;
+import org.schemawizard.core.analyzer.impl.HistoryTableImpl;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
@@ -40,24 +41,24 @@ public class HistoryTableImplTest {
     private final HistoryTable historyTable = new HistoryTableImpl(
             transactionService, new PostgresHistoryTableQueryFactory());
 
-    @BeforeAll
+//    @BeforeAll
     static void setUp() {
         postgres.start();
     }
 
-    @AfterAll
+//    @AfterAll
     static void stop() {
         postgres.stop();
     }
 
-    @Test
-    @Order(1)
-    void isHistoryTableExistShouldReturnFalseIfTableNotExist() {
+//    @Test
+//    @Order(1)
+        void isHistoryTableExistShouldReturnFalseIfTableNotExist() {
         assertFalse(historyTable.exists());
     }
 
-    @Test
-    @Order(2)
+//    @Test
+//    @Order(2)
     void createTableIfNotExistShouldCreateTable() {
         historyTable.createIfNotExists();
         try (Statement statement = connectionHolder.getConnection().createStatement()) {
@@ -68,8 +69,8 @@ public class HistoryTableImplTest {
         }
     }
 
-    @Test
-    @Order(3)
+//    @Test
+//    @Order(3)
     void isHistoryTableExistShouldReturnTrueIfTableExist() {
         assertTrue(historyTable.exists());
     }

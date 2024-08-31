@@ -39,6 +39,7 @@ import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
 import org.schemawizard.core.property.service.impl.CamelCasePropertyUtils;
@@ -48,13 +49,13 @@ import org.schemawizard.core.runner.MigrationRunner;
 import org.schemawizard.core.runner.impl.MigrationRunnerImpl;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
+import java.io.File;
 import java.util.AbstractMap;
 import java.util.Map;
 
 public class SchemaWizardBuilder {
     private final DiContainer container;
     private final ConfigurationProperties properties;
-
     private static final String SW_BASE_PACKAGE_NAME = "org.schemawizard.core";
 
     private SchemaWizardBuilder(
@@ -66,20 +67,51 @@ public class SchemaWizardBuilder {
     }
 
     public static SchemaWizardBuilder init() {
-        DiContainer container = new DiContainer();
-        container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
-        container.register(PropertyParser.class, PropertyParserImpl.class);
-        container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
+        DiContainer container = initDiContainerWithPropertyServices();
 
         ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
         ConfigurationProperties properties = propertiesService.getProperties();
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(String location) {
+        DiContainer container = initDiContainerWithPropertyServices();
+
+        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
+        ConfigurationProperties properties = propertiesService.getProperties(location);
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(File file) {
+        DiContainer container = initDiContainerWithPropertyServices();
+
+        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
+        ConfigurationProperties properties = propertiesService.getProperties(file);
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(YamlContext yamlContext) {
+        DiContainer container = initDiContainerWithPropertyServices();
+
+        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
+        ConfigurationProperties properties = propertiesService.getProperties(yamlContext);
+
+        return init(container, properties);
+    }
+
+    public static SchemaWizardBuilder init(ConfigurationProperties properties) {
+        return init(initDiContainerWithPropertyServices(), properties);
+    }
+
+    private static SchemaWizardBuilder init(DiContainer container, ConfigurationProperties properties) {
         container.register(ConfigurationProperties.class, properties);
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
-
         DatabaseProvider provider = properties.getDatabaseProvider();
-
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
@@ -92,25 +124,29 @@ public class SchemaWizardBuilder {
         container.register(MigrationRunner.class, MigrationRunnerImpl.class);
         container.register(OperationResolverService.class, OperationResolverServiceImpl.class);
         container.register(SchemaWizard.class, SchemaWizard.class);
-
         if (properties.isLogGeneratedSql()) {
             container.register(QueryGeneratedCallback.class, QueryLoggerCallback.class);
         }
         Reflections basePackageReflections = new Reflections(SW_BASE_PACKAGE_NAME);
         registerResolvers(basePackageReflections, container, provider);
-
         if (properties.getExtensionPackage() != null) {
             Reflections extensionPackageReflections = new Reflections(properties.getExtensionPackage());
             registerResolvers(extensionPackageReflections, container, provider);
-
             extensionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class)
                     .forEach(callback -> container.register(BeforeQueryExecutionCallback.class, callback));
-
             extensionPackageReflections.getSubTypesOf(AfterQueryExecutionCallback.class)
                     .forEach(callback -> container.register(AfterQueryExecutionCallback.class, callback));
         }
-
         return new SchemaWizardBuilder(container, properties);
+    }
+
+    private static DiContainer initDiContainerWithPropertyServices() {
+        DiContainer container = new DiContainer();
+        container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
+        container.register(PropertyParser.class, PropertyParserImpl.class);
+        container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
+
+        return container;
     }
 
     @SuppressWarnings("unchecked")

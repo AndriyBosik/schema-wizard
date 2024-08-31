@@ -10,8 +10,6 @@ repositories {
 }
 
 configurations {
-    queryTestImplementation.extendsFrom testImplementation
-    queryTestRuntime.extendsFrom testRuntime
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -21,8 +19,8 @@ sourceSets {
     queryTest {
         java.srcDir "$projectDir/src/query-test/java"
         resources.srcDir "$projectDir/src/query-test/resources"
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += main.output
+        runtimeClasspath += main.output
     }
 }
 
@@ -32,15 +30,17 @@ ext {
     slf4jVersion = '2.0.5'
     junitVersion = '5.10.0'
     mockitoVersion = '5.4.0'
-    testContainersVersion = '1.19.1'
-    postgresqlVersion = '42.6.0'
+    testContainersVersion = '1.20.0'
+    postgresqlVersion = '42.7.4'
+    oracleVersion = '23.5.0.24.07'
     reflectionsVersion = '0.10.2'
+    dbUnitVersion = '2.8.0'
+    dbRiderVersion = '1.44.0'
 }
 
 dependencies {
     implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
-
     implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
 
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
@@ -49,9 +49,15 @@ dependencies {
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation platform("org.testcontainers:testcontainers-bom:${testContainersVersion}")
     testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:oracle-free'
+    testImplementation "org.dbunit:dbunit:${dbUnitVersion}"
     testRuntimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
+    testRuntimeOnly "com.oracle.database.jdbc:ojdbc11:${oracleVersion}"
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation "com.github.database-rider:rider-junit5:${dbRiderVersion}"
 
+    queryTestImplementation platform("org.junit:junit-bom:${junitVersion}")
+    queryTestImplementation "org.reflections:reflections:${reflectionsVersion}"
     queryTestImplementation 'org.junit.jupiter:junit-jupiter-api'
     queryTestImplementation "org.mockito:mockito-core:${mockitoVersion}"
     queryTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
