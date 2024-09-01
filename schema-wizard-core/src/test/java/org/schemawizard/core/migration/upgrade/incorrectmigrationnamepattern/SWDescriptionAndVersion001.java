@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.emptyhistory;
+package org.schemawizard.core.migration.upgrade.incorrectmigrationnamepattern;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
@@ -7,16 +7,12 @@ import org.schemawizard.core.migration.builder.operation.DropTable;
 import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.operation.Operation;
 
-public class SW001CreatePeopleTable implements Migration {
+public class SWDescriptionAndVersion001 implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("people", factory -> new Object() {
                     public ColumnBuilder id() {
-                        return factory.integer("id");
-                    }
-
-                    public ColumnBuilder email() {
-                        return factory.text("email").nullable(false);
+                        return factory.integer("id").nullable(false);
                     }
                 })
                 .primaryKey(table -> table.id())

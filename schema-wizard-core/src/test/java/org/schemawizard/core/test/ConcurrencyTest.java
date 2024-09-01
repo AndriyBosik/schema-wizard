@@ -43,7 +43,7 @@ public class ConcurrencyTest {
     }
 
     private void upgrade(CyclicBarrier startupBarrier) {
-        SchemaWizard schemaWizard = FactoryUtils.newInstance("singlestartup");
+        SchemaWizard schemaWizard = FactoryUtils.newInstance("concurrency.singlestartup");
         await(startupBarrier);
         schemaWizard.up();
     }

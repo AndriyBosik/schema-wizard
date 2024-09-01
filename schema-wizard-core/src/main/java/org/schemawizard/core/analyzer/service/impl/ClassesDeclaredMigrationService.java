@@ -41,8 +41,10 @@ public class ClassesDeclaredMigrationService implements DeclaredMigrationService
         var matcher = MIGRATION_CLASS_NAME_PATTERN.matcher(className);
         if (!matcher.matches()) {
             throw new MigrationAnalyzerException(
-                    String.format("Class name '%s' doesn't match the pattern '%s'",
-                            className, MIGRATION_CLASS_NAME_PATTERN.pattern()));
+                    String.format(
+                            "Class name '%s' doesn't match the pattern '%s'",
+                            className,
+                            "SW<version><description>"));
         }
 
         int version = Integer.parseInt(matcher.group(1));

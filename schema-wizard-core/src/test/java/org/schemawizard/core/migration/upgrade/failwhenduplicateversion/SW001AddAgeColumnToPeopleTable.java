@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.emptyhistory;
+package org.schemawizard.core.migration.upgrade.failwhenduplicateversion;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.annotation.SWName;
@@ -10,7 +10,7 @@ import org.schemawizard.core.migration.operation.Operation;
 import java.util.List;
 
 @SWName("Add age column")
-public class SW002AddAgeColumnToPeopleTable implements Migration {
+public class SW001AddAgeColumnToPeopleTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return AddColumns.builder(

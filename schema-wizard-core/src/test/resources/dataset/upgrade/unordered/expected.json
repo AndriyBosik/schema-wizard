@@ -1,0 +1,19 @@
+{
+  "migration_history": [
+    {
+      "version": 1,
+      "description": "create people table",
+      "context": null
+    },
+    {
+      "version": 10,
+      "description": "Add age column",
+      "context": null
+    },
+    {
+      "version": 2,
+      "description": "Create posts table",
+      "context": null
+    }
+  ]
+}

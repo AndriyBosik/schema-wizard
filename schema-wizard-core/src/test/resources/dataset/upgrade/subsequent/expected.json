@@ -17,12 +17,3 @@
         }
     ]
 }
-
-
-
-<?xml version="1.0" encoding="UTF-8"?>
-<dataset>
-    <migration_history version="1" description="create people table"/>
-    <migration_history version="2" description="Add age column"/>
-    <migration_history version="444" description="Create posts table" context="subsequent-upgrade"/>
-</dataset>

@@ -1,22 +1,24 @@
-package org.schemawizard.core.migration.subsequent;
+package org.schemawizard.core.migration.upgrade.subsequent;
 
 import org.schemawizard.core.migration.Migration;
+import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.builder.operation.CreateTable;
 import org.schemawizard.core.migration.builder.operation.DropTable;
 import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.operation.Operation;
 
-public class SW001CreatePeopleTable implements Migration {
+@SWName("Create posts table")
+public class SW444CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
-        return CreateTable.builder("people", factory -> new Object() {
+        return CreateTable.builder("posts", factory -> new Object() {
                     public ColumnBuilder id() {
                         return factory.integer("id");
                     }
 
                     public ColumnBuilder email() {
-                        return factory.text("email").nullable(false);
+                        return factory.text("title").nullable(false);
                     }
                 })
                 .primaryKey(table -> table.id())
@@ -25,6 +27,6 @@ public class SW001CreatePeopleTable implements Migration {
 
     @Override
     public Operation down(MigrationContext context) {
-        return DropTable.builder("people").build();
+        return DropTable.builder("posts").build();
     }
 }

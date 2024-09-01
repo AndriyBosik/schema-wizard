@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.subsequent;
+package org.schemawizard.core.migration.upgrade.unordered;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.annotation.SWName;
@@ -9,7 +9,7 @@ import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.operation.Operation;
 
 @SWName("Create posts table")
-public class SW444CreatePostsTable implements Migration {
+public class SW002CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("posts", factory -> new Object() {

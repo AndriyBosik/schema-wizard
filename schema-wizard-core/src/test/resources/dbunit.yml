@@ -1,3 +1,5 @@
+cacheTableNames: false
+cacheConnection: false
 properties:
   caseSensitiveTableNames: ${DB_CASE_SENSITIVE_TABLE_NAMES}
   schema: ${DB_SCHEMA}
