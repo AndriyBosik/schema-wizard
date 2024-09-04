@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.upgrade.privateconstrctor;
+package org.schemawizard.core.migration.validation.privateconstrctor;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;

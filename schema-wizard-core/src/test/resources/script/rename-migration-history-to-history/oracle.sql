@@ -1,1 +1,1 @@
-ALTER TABLE migration_history RENAME TO history;
+ALTER TABLE migration_history RENAME TO history

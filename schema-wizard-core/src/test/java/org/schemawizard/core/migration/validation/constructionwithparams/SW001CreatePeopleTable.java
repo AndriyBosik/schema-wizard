@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.upgrade.multipleconstructors;
+package org.schemawizard.core.migration.validation.constructionwithparams;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
@@ -8,9 +8,6 @@ import org.schemawizard.core.migration.model.MigrationContext;
 import org.schemawizard.core.migration.operation.Operation;
 
 public class SW001CreatePeopleTable implements Migration {
-    public SW001CreatePeopleTable() {
-    }
-
     public SW001CreatePeopleTable(String message) {
     }
 

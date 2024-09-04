@@ -28,6 +28,5 @@ public class PipelineTestRunner implements TestRunner {
 
     @Override
     public void shutdownEnvironment() {
-        dbInitializer.shutdown();
     }
 }

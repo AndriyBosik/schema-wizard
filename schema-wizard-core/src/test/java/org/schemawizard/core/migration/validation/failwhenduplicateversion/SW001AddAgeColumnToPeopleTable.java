@@ -1,4 +1,4 @@
-package org.schemawizard.core.migration.upgrade.failwhenduplicateversion;
+package org.schemawizard.core.migration.validation.failwhenduplicateversion;
 
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.annotation.SWName;

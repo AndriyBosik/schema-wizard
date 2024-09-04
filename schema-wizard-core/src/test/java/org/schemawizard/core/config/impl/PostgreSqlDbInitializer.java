@@ -5,7 +5,7 @@ import org.schemawizard.core.config.DbInitializer;
 import org.schemawizard.core.utils.EnvUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-public class PostgreSqlDbInitializer extends AbstractDbInitializer implements DbInitializer {
+public class PostgreSqlDbInitializer extends AbstractDbInitializer {
     public PostgreSqlDbInitializer() {
         super(
                 new PostgreSQLContainer<>("postgres:16-alpine")

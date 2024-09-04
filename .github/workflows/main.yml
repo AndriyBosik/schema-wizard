@@ -28,6 +28,10 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
       - name: "PostgreSQL: Test library features"
         env:
           PROVIDER: POSTGRESQL
@@ -46,6 +50,10 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
       - name: "Oracle: Test library features"
         env:
           PROVIDER: ORACLE
