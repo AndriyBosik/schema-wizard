@@ -11,4 +11,6 @@ public @interface PreResetDb {
     String[] clean() default {};
 
     String[] drop() default {};
+
+    String[] execute() default {};
 }

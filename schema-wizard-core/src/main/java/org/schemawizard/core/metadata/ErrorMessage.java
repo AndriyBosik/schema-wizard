@@ -50,6 +50,12 @@ public class ErrorMessage {
             "The context %s is invalid - no migrations were found to downgrade";
     public static final String UNABLE_TO_LOCK_TABLE_TEMPLATE =
             "Unable to lock table %s";
+    public static final String UNABLE_TO_DOWNGRADE_BY_COUNT_FORMAT =
+            "Unable to downgrade migrations by count. %s applied migrations were found, but %s were requested to be downgraded";
+    public static final String NEGATIVE_COUNT_TO_DOWNGRADE_FORMAT =
+            "Downgrade count of migrations cannot be negative: %s";
+    public static final String CONTEXT_VALUE_IS_BLANK_FORMAT =
+            "Context value '%s' is blank";
 
     private ErrorMessage() {
     }

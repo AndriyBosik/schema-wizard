@@ -7,8 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DataSet {
-    String[] initial() default {};
+public @interface PostResetDb {
+    String[] clean() default {};
 
-    String[] expected() default {};
+    String[] drop() default {};
+
+    String[] execute() default {};
 }

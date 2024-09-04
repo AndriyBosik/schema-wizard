@@ -1,0 +1,10 @@
+{
+  "migration_history": [
+    {
+      "id": 101,
+      "version": 123,
+      "description": "create people table",
+      "context": null
+    }
+  ]
+}

@@ -13,7 +13,6 @@ import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.metadata.ErrorMessage;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -21,7 +20,6 @@ import java.util.function.Function;
 public class DowngradeFactoryImpl implements DowngradeFactory {
     private final TransactionService transactionService;
     private final HistoryTableQueryFactory historyTableQueryFactory;
-    private final ConnectionHolder connectionHolder;
 
     public DowngradeFactoryImpl(
             TransactionService transactionService,
@@ -30,7 +28,6 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
     ) {
         this.transactionService = transactionService;
         this.historyTableQueryFactory = historyTableQueryFactory;
-        this.connectionHolder = connectionHolder;
     }
 
     @Override
@@ -95,15 +92,14 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
         return new DowngradeStrategy() {
             @Override
             public <T> T apply(Function<PreparedStatement, T> action) {
-                try (
-                        Connection connection = connectionHolder.getConnection();
-                        PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByCount())
-                ) {
-                    statement.setInt(1, parameters.getCount());
-                    return action.apply(statement);
-                } catch (SQLException exception) {
-                    throw new MigrationAnalyzerException(exception.getMessage(), exception);
-                }
+                return transactionService.doWithinTransaction(connection -> {
+                    try (PreparedStatement statement = connection.prepareStatement(historyTableQueryFactory.getSelectLastMigrationsByCount())) {
+                        statement.setInt(1, parameters.getCount());
+                        return action.apply(statement);
+                    } catch (SQLException exception) {
+                        throw new MigrationAnalyzerException(exception.getMessage(), exception);
+                    }
+                });
             }
 
             @Override
