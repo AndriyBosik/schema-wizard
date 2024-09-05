@@ -22,15 +22,27 @@ public class ColumnBuilderFactory {
         return GenericColumnBuilder.builder(schema, table, name);
     }
 
-    public IntegerColumnBuilder integer(String name) {
+    public IntegerColumnBuilder newInteger() {
+        return IntegerColumnBuilder.builder(schema, table);
+    }
+
+    public IntegerColumnBuilder newInteger(String name) {
         return IntegerColumnBuilder.builder(schema, table, name);
     }
 
-    public TextColumnBuilder text(String name) {
+    public TextColumnBuilder newText() {
+        return TextColumnBuilder.builder(schema, table);
+    }
+
+    public TextColumnBuilder newText(String name) {
         return TextColumnBuilder.builder(schema, table, name);
     }
 
-    public BoolColumnBuilder bool(String name) {
+    public BoolColumnBuilder newBool() {
+        return BoolColumnBuilder.builder(schema, table);
+    }
+
+    public BoolColumnBuilder newBool(String name) {
         return BoolColumnBuilder.builder(schema, table, name);
     }
 }

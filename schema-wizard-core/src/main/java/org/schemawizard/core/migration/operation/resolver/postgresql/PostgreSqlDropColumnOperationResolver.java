@@ -24,6 +24,6 @@ public class PostgreSqlDropColumnOperationResolver implements OperationResolver<
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.DROP_COLUMN,
-                        operation.getName()));
+                        operationService.mapColumnName(operation.getName())));
     }
 }

@@ -32,6 +32,7 @@ public class PostgreSqlDropColumnsOperationResolver implements OperationResolver
     private String buildDropColumnsQuery(DropColumnsOperation operation) {
         return operation.getColumns().stream()
                 .map(DropColumnOperation::getName)
+                .map(operationService::mapColumnName)
                 .map(name -> String.format("%s %s", SqlClause.DROP_COLUMN, name))
                 .collect(Collectors.joining(SqlClause.COLUMNS_SEPARATOR));
     }

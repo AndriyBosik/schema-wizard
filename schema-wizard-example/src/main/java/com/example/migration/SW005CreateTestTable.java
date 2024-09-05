@@ -14,29 +14,21 @@ public class SW005CreateTestTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder(
-                "SCHEMAWIZARD",
-                "test",
-                factory -> new Object() {
-                    public ColumnBuilder firstName() {
-                        return factory.text("first_name").nullable(false).maxLength(100);
-                    }
-
-                    public ColumnBuilder middleName() {
-                        return factory.text("middle_name").nullable(true);
-                    }
-
-                    public ColumnBuilder lastName() {
-                        return factory.text("last_name").nullable(false);
-                    }
-                })
-            .ifNotExists()
-            .build();
+                        "SCHEMAWIZARD",
+                        "test",
+                        factory -> new Object() {
+                            ColumnBuilder firstName = factory.newInteger("id").nullable(false);
+                            ColumnBuilder middleName = factory.newText("middle_name").nullable(true);
+                            ColumnBuilder lastName = factory.newText("last_name").nullable(false);
+                        })
+                .ifNotExists()
+                .build();
     }
 
     @Override
     public Operation down(MigrationContext context) {
         return DropTable.builder("SCHEMAWIZARD", "test")
-            .ifExists()
-            .build();
+                .ifExists()
+                .build();
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public class AddColumnsGenericTest extends GenericTest {
     @Test
     public void shouldGenerateBooleanColumnNotNull() {
-        Operation operation = AddColumns.builder("users", factory -> List.of(factory.bool("enabled").nullable(false)))
+        Operation operation = AddColumns.builder("users", factory -> List.of(factory.newBool("enabled").nullable(false)))
                 .build();
         MigrationInfo info = operationResolverService.resolve(operation);
 

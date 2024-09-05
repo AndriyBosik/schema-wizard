@@ -69,7 +69,7 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
                 "%s%s (%s)",
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.PRIMARY_KEY,
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
     }
 
     private String buildForeignKey(AddForeignKeyOperation operation) {
@@ -80,10 +80,10 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
                 "%s%s (%s) %s %s (%s)",
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.FOREIGN_KEY,
-                String.join(",", operation.getColumns()),
+                String.join(",", operationService.mapColumnNames(operation.getColumns())),
                 SqlClause.REFERENCES,
                 operationService.buildTable(operation.getForeignSchema(), operation.getForeignTable()),
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getForeignColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getForeignColumns())));
     }
 
     private String buildUnique(AddUniqueOperation operation) {
@@ -92,8 +92,8 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
         }
         return String.format(
                 "%s%s (%s)",
-                operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
+                operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operationService.mapColumnName(operation.getName())),
                 SqlClause.UNIQUE,
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
     }
 }

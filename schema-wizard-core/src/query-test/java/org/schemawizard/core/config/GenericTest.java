@@ -3,17 +3,22 @@ package org.schemawizard.core.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.reflections.Reflections;
 import org.schemawizard.core.di.DiContainer;
+import org.schemawizard.core.exception.InvalidConfigurationException;
+import org.schemawizard.core.metadata.ColumnNamingStrategy;
 import org.schemawizard.core.metadata.DatabaseProvider;
+import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.annotation.Provider;
 import org.schemawizard.core.migration.factory.ColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
+import org.schemawizard.core.migration.service.ColumnNamingStrategyService;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
+import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.model.defaults.Defaults;
 import org.schemawizard.core.model.defaults.Text;
@@ -44,6 +49,7 @@ public class GenericTest {
         this.supportedProviders = supportedProviders;
         ConfigurationProperties properties = ConfigurationProperties.builder()
                 .databaseProvider(TestContext.getProvider())
+                .columnNamingStrategy(ColumnNamingStrategy.SNAKE_CASE)
                 .defaults(Defaults.builder()
                         .text(new Text(255))
                         .build())
@@ -55,6 +61,7 @@ public class GenericTest {
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
+        container.register(ColumnNamingStrategyService.class, getColumnNamingStartegyServiceClass(properties.getColumnNamingStrategy()));
 
         Reflections basePackageReflections = new Reflections("org.schemawizard.core");
         registerResolvers(basePackageReflections, TestContext.getProvider())
@@ -83,12 +90,26 @@ public class GenericTest {
         return reflections.getSubTypesOf(OperationResolver.class).stream()
                 .map(resolver -> new AbstractMap.SimpleEntry<>(
                         resolver,
-                        parserDatabaseProviderFromClass((Class<? extends OperationResolver<?>>) resolver)))
+                        parseDatabaseProviderFromClass((Class<? extends OperationResolver<?>>) resolver)))
                 .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey);
     }
 
-    private DatabaseProvider parserDatabaseProviderFromClass(Class<? extends OperationResolver<? extends Operation>> resolver) {
+    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStartegyServiceClass(ColumnNamingStrategy strategy) {
+        if (strategy == null) {
+            throw new InvalidConfigurationException(
+                    ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);
+        }
+        if (strategy == ColumnNamingStrategy.SNAKE_CASE) {
+            return SnakeCaseColumnNamingStrategyService.class;
+        }
+        throw new InvalidConfigurationException(
+                String.format(
+                        ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT,
+                        strategy));
+    }
+
+    private DatabaseProvider parseDatabaseProviderFromClass(Class<? extends OperationResolver<? extends Operation>> resolver) {
         Provider annotation = resolver.getAnnotation(Provider.class);
         if (annotation == null) {
             return DatabaseProvider.MULTI;

@@ -26,6 +26,6 @@ public class PostgreSqlAddUniqueOperationResolver implements OperationResolver<A
                         SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
                         SqlClause.UNIQUE,
-                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns())));
+                        String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns()))));
     }
 }
