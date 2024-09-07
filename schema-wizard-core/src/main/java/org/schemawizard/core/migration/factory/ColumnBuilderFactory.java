@@ -57,8 +57,16 @@ public class ColumnBuilderFactory {
         return DecimalColumnBuilder.builder(schema, table, name);
     }
 
+    public DateColumnBuilder newDate() {
+        return DateColumnBuilder.builder(schema, table);
+    }
+
     public DateColumnBuilder newDate(String name) {
         return DateColumnBuilder.builder(schema, table, name);
+    }
+
+    public TimestampColumnBuilder newTimestamp() {
+        return TimestampColumnBuilder.builder(schema, table);
     }
 
     public TimestampColumnBuilder newTimestamp(String name) {

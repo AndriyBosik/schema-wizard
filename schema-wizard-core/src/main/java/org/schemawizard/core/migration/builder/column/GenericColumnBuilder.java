@@ -29,6 +29,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
         return new GenericColumnBuilder(schema, table, name);
     }
 
+    @Override
     public GenericColumnBuilder name(String name) {
         this.name = name;
         return this;

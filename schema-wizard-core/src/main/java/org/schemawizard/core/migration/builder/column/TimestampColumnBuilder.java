@@ -6,7 +6,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class TimestampColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private boolean nullable = true;
     private boolean withTimeZone = false;
     private Integer defaultValue;
@@ -18,8 +18,18 @@ public class TimestampColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static TimestampColumnBuilder builder(String schema, String table) {
+        return new TimestampColumnBuilder(schema, table, null);
+    }
+
     public static TimestampColumnBuilder builder(String schema, String table, String name) {
         return new TimestampColumnBuilder(schema, table, name);
+    }
+
+    @Override
+    public TimestampColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public TimestampColumnBuilder nullable(boolean nullable) {

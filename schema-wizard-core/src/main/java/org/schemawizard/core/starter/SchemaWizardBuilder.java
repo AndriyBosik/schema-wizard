@@ -23,6 +23,7 @@ import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.di.DiContainer;
 import org.schemawizard.core.exception.InvalidConfigurationException;
+import org.schemawizard.core.metadata.ColumnNamingStrategy;
 import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.annotation.Provider;
@@ -31,10 +32,12 @@ import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.operation.resolver.OperationResolver;
+import org.schemawizard.core.migration.service.ColumnNamingStrategyService;
 import org.schemawizard.core.migration.service.OperationResolverService;
 import org.schemawizard.core.migration.service.OperationService;
 import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl;
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
+import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
@@ -80,6 +83,7 @@ public class SchemaWizardBuilder {
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
+        container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
         container.register(AppliedMigrationsService.class, AppliedMigrationsServiceImpl.class);
         container.register(DeclaredMigrationService.class, ClassesDeclaredMigrationService.class);
         container.register(ConnectionHolder.class, ConnectionHolder.class);
@@ -141,5 +145,19 @@ public class SchemaWizardBuilder {
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT,
                 provider));
+    }
+
+    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStrategyServiceClass(ColumnNamingStrategy strategy) {
+        if (strategy == null) {
+            throw new InvalidConfigurationException(
+                    ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);
+        }
+        if (strategy == ColumnNamingStrategy.SNAKE_CASE) {
+            return SnakeCaseColumnNamingStrategyService.class;
+        }
+        throw new InvalidConfigurationException(
+                String.format(
+                        ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT,
+                        strategy));
     }
 }

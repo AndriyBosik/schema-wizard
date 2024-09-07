@@ -6,7 +6,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class BoolColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private boolean nullable = true;
     private Boolean defaultValue;
     private boolean ifNotExists = false;
@@ -17,8 +17,18 @@ public class BoolColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static BoolColumnBuilder builder(String schema, String table) {
+        return new BoolColumnBuilder(schema, table, null);
+    }
+
     public static BoolColumnBuilder builder(String schema, String table, String name) {
         return new BoolColumnBuilder(schema, table, name);
+    }
+
+    @Override
+    public BoolColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public BoolColumnBuilder nullable(boolean nullable) {

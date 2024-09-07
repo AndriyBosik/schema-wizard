@@ -9,5 +9,9 @@ public interface OperationService {
 
     String buildTable(TableBasedOperation operation);
 
+    String mapColumnName(String name);
+
+    String[] mapColumnNames(String... names);
+
     String buildColumnDefinition(AddColumnOperation operation, ColumnTypeFactory typeFactory);
 }

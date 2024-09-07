@@ -27,6 +27,7 @@ public class DecimalColumnBuilder implements ColumnBuilder {
         return new DecimalColumnBuilder(schema, table, name);
     }
 
+    @Override
     public DecimalColumnBuilder name(String name) {
         this.name = name;
         return this;

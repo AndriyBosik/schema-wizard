@@ -5,14 +5,8 @@ import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.factory.ColumnBuilderFactory;
 import org.schemawizard.core.migration.metadata.ReferentialAction;
-import org.schemawizard.core.migration.operation.AddCheckOperation;
-import org.schemawizard.core.migration.operation.AddColumnOperation;
-import org.schemawizard.core.migration.operation.AddForeignKeyOperation;
-import org.schemawizard.core.migration.operation.AddPrimaryKeyOperation;
-import org.schemawizard.core.migration.operation.AddUniqueOperation;
-import org.schemawizard.core.migration.operation.CreateTableOperation;
-import org.schemawizard.core.migration.operation.Operation;
 import org.schemawizard.core.migration.model.Pair;
+import org.schemawizard.core.migration.operation.AddCheckOperation;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.AddForeignKeyOperation;
 import org.schemawizard.core.migration.operation.AddPrimaryKeyOperation;
@@ -23,7 +17,6 @@ import org.schemawizard.core.utils.ReflectionUtils;
 import org.schemawizard.core.utils.StringUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +34,7 @@ public class CreateTable<T> implements OperationBuilder {
     private PrimaryKeyDefinition<T> primaryKeyDefinition;
     private final List<ForeignKeyDefinition> foreignKeyDefinitions = new ArrayList<>();
     private final List<UniqueDefinition<T>> uniqueDefinitions = new ArrayList<>();
-    private final List<CheckDefinition<T>> checkDefinitions = new ArrayList<>();
+    private final List<CheckDefinition> checkDefinitions = new ArrayList<>();
 
     private CreateTable(
             String schema,
@@ -111,7 +104,7 @@ public class CreateTable<T> implements OperationBuilder {
     }
 
     public CreateTable<T> foreignKey(String name, Consumer<SingleForeignKey<T>> foreignKeyConsumer) {
-        SingleForeignKey<T> builder = SingleForeignKey.builder(schema, table, columnsDefinitor)
+        SingleForeignKey<T> builder = SingleForeignKey.builder(columnsDefinitor)
                 .name(name);
         foreignKeyConsumer.accept(builder);
         foreignKeyDefinitions.add(builder.build());
@@ -119,7 +112,7 @@ public class CreateTable<T> implements OperationBuilder {
     }
 
     public CreateTable<T> compositeForeignKey(String name, Consumer<CompositeForeignKey<T>> foreignKeyConsumer) {
-        CompositeForeignKey<T> builder = CompositeForeignKey.builder(schema, table, columnsDefinitor)
+        CompositeForeignKey<T> builder = CompositeForeignKey.builder(columnsDefinitor)
                 .name(name);
         foreignKeyConsumer.accept(builder);
         foreignKeyDefinitions.add(builder.build());
@@ -152,7 +145,7 @@ public class CreateTable<T> implements OperationBuilder {
     }
 
     public CreateTable<T> check(String name, String condition) {
-        this.checkDefinitions.add(new CheckDefinition<>(name, condition));
+        this.checkDefinitions.add(new CheckDefinition(name, condition));
         return this;
     }
 
@@ -179,15 +172,11 @@ public class CreateTable<T> implements OperationBuilder {
                                 .map(columnBuilder -> findOperation(columnBuilder, columnBuilders))
                                 .map(AddColumnOperation::getName)
                                 .toArray(String[]::new)),
-                Arrays.stream(columnsDefinitor.getClass().getDeclaredMethods())
-                        .filter(method -> method.getParameterCount() == 0)
-                        .filter(method -> method.getReturnType().isAssignableFrom(ColumnBuilder.class))
-                        .filter(method -> Modifier.isPublic(method.getModifiers()))
-                        .sorted(this::methodNameComparator)
-                        .map(method -> ReflectionUtils.setAccessible(method, true))
-                        .map(method -> ReflectionUtils.<ColumnBuilder>invokeMethod(method, columnsDefinitor))
-                        .map(ColumnBuilder::build)
-                        .map(this::validateColumnOperation)
+                columnBuilders.stream()
+                        .map(Pair::getRight)
+                        .collect(Collectors.toList()),
+                foreignKeyDefinitions.stream()
+                        .map(definition -> mapToForeignKeyOperation(definition, columnBuilders))
                         .collect(Collectors.toList()),
                 uniqueDefinitions.stream()
                         .map(definition -> new AddUniqueOperation(
@@ -226,7 +215,7 @@ public class CreateTable<T> implements OperationBuilder {
 
     private AddColumnOperation getOperationValue(Field field) {
         ReflectionUtils.setAccessible(field, true);
-        ColumnBuilder builder = ReflectionUtils.<ColumnBuilder>getValue(field, columnsDefinitor);
+        ColumnBuilder builder = ReflectionUtils.getValue(field, columnsDefinitor);
         AddColumnOperation operation = builder.build();
         if (!StringUtils.isBlank(operation.getName())) {
             return operation;
@@ -259,8 +248,8 @@ public class CreateTable<T> implements OperationBuilder {
         private String foreignSchema;
         private String foreignTable;
         private String foreignColumn;
-        private ReferentialAction onUpdate;
-        private ReferentialAction onDelete;
+        private ReferentialAction onUpdate = ReferentialAction.NO_ACTION;
+        private ReferentialAction onDelete = ReferentialAction.NO_ACTION;
 
         private SingleForeignKey(T columnDefinitor) {
             this.columnDefinitor = columnDefinitor;
@@ -325,8 +314,8 @@ public class CreateTable<T> implements OperationBuilder {
         private String foreignSchema;
         private String foreignTable;
         private String[] foreignColumns;
-        private ReferentialAction onUpdate;
-        private ReferentialAction onDelete;
+        private ReferentialAction onUpdate = ReferentialAction.NO_ACTION;
+        private ReferentialAction onDelete = ReferentialAction.NO_ACTION;
 
         private CompositeForeignKey(T columnDefinitor) {
             this.columnDefinitor = columnDefinitor;
@@ -475,7 +464,7 @@ public class CreateTable<T> implements OperationBuilder {
         }
     }
 
-    private static class CheckDefinition<T> {
+    private static class CheckDefinition {
         private final String name;
         private final String condition;
 

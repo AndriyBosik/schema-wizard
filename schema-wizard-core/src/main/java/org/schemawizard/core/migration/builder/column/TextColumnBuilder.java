@@ -6,7 +6,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class TextColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private boolean nullable = true;
     private Integer minLength;
     private Integer maxLength;
@@ -19,8 +19,18 @@ public class TextColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static TextColumnBuilder builder(String schema, String table) {
+        return new TextColumnBuilder(schema, table, null);
+    }
+
     public static TextColumnBuilder builder(String schema, String table, String name) {
         return new TextColumnBuilder(schema, table, name);
+    }
+
+    @Override
+    public TextColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public TextColumnBuilder nullable(boolean nullable) {

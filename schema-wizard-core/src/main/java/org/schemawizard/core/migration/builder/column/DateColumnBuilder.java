@@ -6,7 +6,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class DateColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private boolean nullable = true;
     private Integer defaultValue;
     private boolean ifNotExists = false;
@@ -17,8 +17,18 @@ public class DateColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static DateColumnBuilder builder(String schema, String table) {
+        return new DateColumnBuilder(schema, table, null);
+    }
+
     public static DateColumnBuilder builder(String schema, String table, String name) {
         return new DateColumnBuilder(schema, table, name);
+    }
+
+    @Override
+    public DateColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public DateColumnBuilder nullable(boolean nullable) {
