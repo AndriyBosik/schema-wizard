@@ -3,4 +3,3 @@ rootProject.name = "schema-wizard"
 include 'schema-wizard-core'
 include 'schema-wizard-example'
 include 'schema-wizard-maven-plugin'
-
