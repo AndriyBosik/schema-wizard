@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class ConfigurationPropertiesServiceImplTest {
 
     private final ConfigurationPropertiesServiceImpl configurationPropertiesService
-            = new ConfigurationPropertiesServiceImpl(new CamelCasePropertyUtils(), new PropertyParserImpl());
+            = new ConfigurationPropertiesServiceImpl(new CamelCasePropertyUtils(), new PropertyParserImpl(), Thread.currentThread().getContextClassLoader());
 
     @Test
     void propertiesServiceShouldReturnCorrectProperties() {

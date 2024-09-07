@@ -2,6 +2,7 @@ package org.schemawizard.core.analyzer.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.schemawizard.core.analyzer.DeclaredMigration;
+import org.schemawizard.core.analyzer.factory.impl.ReflectionsFactoryImpl;
 import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
 import org.schemawizard.core.migration.SW001CreateUsersTable;
 import org.schemawizard.core.migration.SW002CreatePostsTable;
@@ -19,8 +20,9 @@ public class ClassesDeclaredMigrationServiceTest {
             = new ClassesDeclaredMigrationService(
             ConfigurationProperties.builder()
                     .migrationsPackage("org.schemawizard.core.migration")
-                    .build()
-    );
+                    .build(),
+            new ReflectionsFactoryImpl(
+                    Thread.currentThread().getContextClassLoader()));
 
     @Test
     void serviceShouldReturnCorrectMigrations() {

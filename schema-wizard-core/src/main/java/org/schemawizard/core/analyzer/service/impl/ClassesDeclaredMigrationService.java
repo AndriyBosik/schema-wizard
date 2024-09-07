@@ -1,12 +1,13 @@
 package org.schemawizard.core.analyzer.service.impl;
 
+import org.reflections.Reflections;
 import org.schemawizard.core.analyzer.DeclaredMigration;
-import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
+import org.schemawizard.core.analyzer.factory.ReflectionsFactory;
+import org.schemawizard.core.analyzer.service.DeclaredMigrationService;
 import org.schemawizard.core.migration.Migration;
 import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.model.ConfigurationProperties;
-import org.reflections.Reflections;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,21 +16,24 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.reflections.scanners.Scanners.SubTypes;
-
 public class ClassesDeclaredMigrationService implements DeclaredMigrationService {
-
-    private final ConfigurationProperties configurationProperties;
     private static final Pattern MIGRATION_CLASS_NAME_PATTERN = Pattern.compile("^SW(\\d+)(\\D+\\w*)");
 
-    public ClassesDeclaredMigrationService(ConfigurationProperties configurationProperties) {
+    private final ConfigurationProperties configurationProperties;
+    private final ReflectionsFactory reflectionsFactory;
+
+    public ClassesDeclaredMigrationService(
+            ConfigurationProperties configurationProperties,
+            ReflectionsFactory reflectionsFactory
+    ) {
         this.configurationProperties = configurationProperties;
+        this.reflectionsFactory = reflectionsFactory;
     }
 
     @Override
     public List<DeclaredMigration> getDeclaredMigrations() {
-        Reflections reflections = new Reflections(configurationProperties.getMigrationsPackage());
-        var migrationClasses = reflections.get(SubTypes.of(Migration.class).asClass());
+        Reflections reflections = reflectionsFactory.newInstance(configurationProperties.getMigrationsPackage());
+        var migrationClasses = reflections.getSubTypesOf(Migration.class);
         return migrationClasses.stream()
                 .map(this::migrationClassToDeclaredMigration)
                 .sorted(Comparator.comparing(DeclaredMigration::getVersion))

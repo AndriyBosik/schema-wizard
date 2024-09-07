@@ -14,10 +14,16 @@ import java.net.URL;
 
 @Provider(DatabaseProvider.MULTI)
 public class MultiNativeQueryFileOperationResolver implements OperationResolver<NativeQueryFileOperation> {
+    private final ClassLoader classLoader;
+
+    public MultiNativeQueryFileOperationResolver(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
     @Override
     public MigrationInfo resolve(NativeQueryFileOperation operation) {
         String filePath = operation.getFilePath();
-        URL resource = getClass().getClassLoader().getResource(filePath);
+        URL resource = classLoader.getResource(filePath);
         if (resource == null) {
             throw new InvalidMigrationDefinitionException(String.format(ErrorMessage.NOT_EXISTENT_FILE_FORMAT, filePath));
         }
