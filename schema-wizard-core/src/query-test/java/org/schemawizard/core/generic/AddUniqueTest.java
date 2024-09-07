@@ -39,4 +39,15 @@ public class AddUniqueTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("add-unique/multiple-columns-with-schema", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        Operation operation = AddUnique.builder("schemawizard", "users")
+                .name("unq_users_first_name_last_name")
+                .columns("firstName", "lastName")
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-unique/map-camel-case-to-snake-case", info.getSql());
+    }
 }

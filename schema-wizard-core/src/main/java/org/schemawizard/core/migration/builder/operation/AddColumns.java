@@ -1,10 +1,13 @@
 package org.schemawizard.core.migration.builder.operation;
 
+import org.schemawizard.core.exception.InvalidMigrationDefinitionException;
+import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.factory.ColumnBuilderFactory;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.AddColumnsOperation;
 import org.schemawizard.core.migration.operation.Operation;
+import org.schemawizard.core.utils.StringUtils;
 
 import java.util.List;
 import java.util.function.Function;
@@ -41,6 +44,16 @@ public class AddColumns implements OperationBuilder {
         List<AddColumnOperation> operations = columnsFunction.apply(factory).stream()
                 .map(ColumnBuilder::build)
                 .collect(Collectors.toList());
+
+        boolean emptyColumnExists = operations.stream()
+                .anyMatch(operation -> StringUtils.isBlank(operation.getName()));
+        if (emptyColumnExists) {
+            throw new InvalidMigrationDefinitionException(
+                    String.format(
+                            ErrorMessage.EMPTY_COLUMN_NAME_FOR_OPERATION_FORMAT,
+                            AddColumns.class.getSimpleName()));
+        }
+
         return new AddColumns(schema, table, operations);
     }
 

@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users RENAME COLUMN first_name TO last_name

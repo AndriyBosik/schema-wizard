@@ -27,6 +27,6 @@ public class PostgreSqlCreateIndexOperationResolver implements OperationResolver
                         SqlClause.ON,
                         operationService.buildTable(operation),
                         operation.getUsing() == null ? "" : (" " + SqlClause.USING + " " + operation.getUsing()),
-                        String.join(", ", operation.getColumns())));
+                        String.join(", ", operationService.mapColumnNames(operation.getColumns()))));
     }
 }

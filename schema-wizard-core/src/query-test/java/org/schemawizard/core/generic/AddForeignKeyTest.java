@@ -62,4 +62,19 @@ public class AddForeignKeyTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("add-foreign-key/referential-actions", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        AddForeignKeyOperation operation = AddForeignKey.builder("posts")
+                .name("fk_posts_user_id")
+                .columns("userId")
+                .foreignTable("users")
+                .foreignColumns("userId")
+                .onDelete(ReferentialAction.CASCADE)
+                .onUpdate(ReferentialAction.SET_NULL)
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-foreign-key/map-camel-case-to-snake-case", info.getSql());
+    }
 }

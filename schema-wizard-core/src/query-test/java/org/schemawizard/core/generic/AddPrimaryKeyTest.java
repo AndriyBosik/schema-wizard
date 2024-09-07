@@ -39,4 +39,15 @@ public class AddPrimaryKeyTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("add-primary-key/multiple-columns", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        Operation operation = AddPrimaryKey.builder("users")
+                .name("pk_users_first_name_last_name")
+                .columns("firstName", "lastName")
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-primary-key/map-camel-case-to-snake-case", info.getSql());
+    }
 }

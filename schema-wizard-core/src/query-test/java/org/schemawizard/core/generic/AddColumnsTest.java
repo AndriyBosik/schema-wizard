@@ -2,11 +2,15 @@ package org.schemawizard.core.generic;
 
 import org.junit.jupiter.api.Test;
 import org.schemawizard.core.config.GenericTest;
+import org.schemawizard.core.exception.InvalidMigrationDefinitionException;
 import org.schemawizard.core.migration.builder.operation.AddColumns;
 import org.schemawizard.core.migration.model.MigrationInfo;
 import org.schemawizard.core.migration.operation.Operation;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AddColumnsTest extends GenericTest {
     @Test
@@ -111,5 +115,27 @@ public class AddColumnsTest extends GenericTest {
 
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("add-columns/if-not-exists", info.getSql());
+    }
+
+    @Test
+    public void shouldMapCamelCaseToSnakeCase() {
+        Operation operation = AddColumns.builder("users", factory -> List.of(
+                        factory.newText("firstName")
+                                .maxLength(50)
+                                .nullable(false)))
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("add-columns/map-camel-case-to-snake-case", info.getSql());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenColumnNameIsEmpty() {
+        InvalidMigrationDefinitionException exception = assertThrows(InvalidMigrationDefinitionException.class, () -> AddColumns.builder("users", factory -> List.of(
+                        factory.newText("first_name").nullable(true),
+                        factory.newText().nullable(true),
+                        factory.newText("last_name").nullable(true)))
+                .build());
+        assertEquals("Empty column name for operation: AddColumns", exception.getMessage());
     }
 }

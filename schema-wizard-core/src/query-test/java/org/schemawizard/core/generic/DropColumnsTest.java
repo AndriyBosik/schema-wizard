@@ -37,4 +37,14 @@ public class DropColumnsTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("drop-columns/if-exists", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        Operation operation = DropColumns.builder("schemawizard", "users")
+                .columns("firstName", "lastName")
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("drop-columns/map-camel-case-to-snake-case", info.getSql());
+    }
 }

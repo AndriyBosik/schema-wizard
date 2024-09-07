@@ -24,8 +24,8 @@ public class OracleRenameColumnOperationResolver implements OperationResolver<Re
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.RENAME_COLUMN,
-                        operation.getFrom(),
+                        operationService.mapColumnName(operation.getFrom()),
                         SqlClause.TO,
-                        operation.getTo()));
+                        operationService.mapColumnName(operation.getTo())));
     }
 }

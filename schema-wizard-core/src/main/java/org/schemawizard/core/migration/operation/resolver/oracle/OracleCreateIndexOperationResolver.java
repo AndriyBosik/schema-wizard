@@ -25,6 +25,6 @@ public class OracleCreateIndexOperationResolver implements OperationResolver<Cre
                         operation.getName(),
                         SqlClause.ON,
                         operationService.buildTable(operation),
-                        String.join(", ", operation.getColumns())));
+                        String.join(", ", operationService.mapColumnNames(operation.getColumns()))));
     }
 }

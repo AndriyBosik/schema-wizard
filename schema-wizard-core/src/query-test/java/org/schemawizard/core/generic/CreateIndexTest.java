@@ -53,4 +53,16 @@ public class CreateIndexTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("create-index/if-not-exists", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        Operation operation = CreateIndex.builder("users")
+                .name("idx_users_first_name_last_name")
+                .columns("firstName", "lastName")
+                .ifNotExists()
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("create-index/map-camel-case-to-snake-case", info.getSql());
+    }
 }

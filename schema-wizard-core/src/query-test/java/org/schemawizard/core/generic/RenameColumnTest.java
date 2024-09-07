@@ -27,4 +27,15 @@ public class RenameColumnTest extends GenericTest {
         MigrationInfo info = operationResolverService.resolve(operation);
         assertQuery("rename-column/schema-and-table", info.getSql());
     }
+
+    @Test
+    public void shouldMapCamelCaseColumnsToSnakeCase() {
+        Operation operation = RenameColumn.builder("firstName", "lastName")
+                .schema("schemawizard")
+                .table("users")
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("rename-column/map-camel-case-to-snake-case", info.getSql());
+    }
 }

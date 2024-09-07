@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -174,6 +175,7 @@ public class CreateTable<T> implements OperationBuilder {
                                 .toArray(String[]::new)),
                 columnBuilders.stream()
                         .map(Pair::getRight)
+                        .sorted(Comparator.comparing(AddColumnOperation::getName))
                         .collect(Collectors.toList()),
                 foreignKeyDefinitions.stream()
                         .map(definition -> mapToForeignKeyOperation(definition, columnBuilders))
