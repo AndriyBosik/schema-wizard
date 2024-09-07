@@ -70,7 +70,7 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
                 "%s%s (%s)",
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.PRIMARY_KEY,
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
     }
 
     private String buildForeignKey(AddForeignKeyOperation operation) {
@@ -81,10 +81,10 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
                 "%s%s (%s) %s %s (%s)",
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.FOREIGN_KEY,
-                String.join(",", operation.getColumns()),
+                String.join(",", operationService.mapColumnNames(operation.getColumns())),
                 SqlClause.REFERENCES,
                 operationService.buildTable(operation.getForeignSchema(), operation.getForeignTable()),
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getForeignColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getForeignColumns())));
     }
 
     private String buildUnique(AddUniqueOperation operation) {
@@ -95,6 +95,6 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
                 "%s%s (%s)",
                 operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.UNIQUE,
-                String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns()));
+                String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
     }
 }

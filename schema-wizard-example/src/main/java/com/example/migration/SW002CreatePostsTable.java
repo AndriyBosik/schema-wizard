@@ -11,28 +11,17 @@ public class SW002CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder(
-                "SCHEMAWIZARD",
+                        "SCHEMAWIZARD",
                         "posts",
                         factory -> new Object() {
-                            public ColumnBuilder id() {
-                                return factory.integer("id").nullable(false);
-                            }
-
-                            public ColumnBuilder title() {
-                                return factory.text("title").nullable(false);
-                            }
-
-                            public ColumnBuilder description() {
-                                return factory.bool("description").nullable(false);
-                            }
-
-                            public ColumnBuilder userId() {
-                                return factory.integer("user_id").nullable(false);
-                            }
+                            ColumnBuilder id = factory.newInteger().nullable(false);
+                            ColumnBuilder title = factory.newText().nullable(false);
+                            ColumnBuilder description = factory.newBool().nullable(false);
+                            ColumnBuilder userId = factory.newInteger().nullable(false);
                         })
                 .ifNotExists()
-                .primaryKey("pk_posts", table -> table.id())
-                .foreignKey(fk -> fk.column(table -> table.userId())
+                .primaryKey("pk_posts", table -> table.id)
+                .foreignKey(fk -> fk.column(table -> table.userId)
                         .foreignSchema("SCHEMAWIZARD")
                         .foreignTable("users")
                         .foreignColumn("id"))

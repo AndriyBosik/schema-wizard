@@ -3,8 +3,11 @@ schema:
     context: ${SW_CONTEXT:}
     database:
       connection-url: jdbc:postgresql://${DS_HOST:localhost}:${DS_PORT:5432}/${DS_DATABASE:schema_wizard}
-      username: postgres
-      password: root
+      username: ${DS_USERNAME:postgres}
+      password: ${DS_PASSWORD:root}
+    naming-strategy:
+      column:
+        type: SNAKE_CASE
     migration:
       package-name: com.example.migration
     extension:

@@ -29,27 +29,25 @@ public class ErrorMessage {
             "Native query migration is empty";
     public static final String NOT_EXISTENT_FILE_FORMAT =
             "File %s does not exist";
-
     public static final String INVALID_DATABASE_PROVIDER_FORMAT =
             "Invalid database provider for connection URL: %s";
-
     public static final String NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT =
             "No query factory found for database provider: %s";
-
+    public static final String NO_COLUMN_NAMING_STRATEGY_FOUND =
+            "No column naming strategy found";
+    public static final String NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT =
+            "No column naming strategy found for value: %s";
+    public static final String COLUMN_DEFINITION_NOT_FOUND_FOR_TABLE_FORMAT =
+            "Column definition not found for table: %s";
     public static final String MULTIPLE_OPERATION_RESOLVERS_FORMAT =
             "These resolvers use the same operation type: %s %s";
-
     public static final String UNABLE_TO_RESOLVE_DOWNGRADE_PARAMETERS_CLASS_TEMPLATE =
             "Unable to resolve downgrade parameters class: %s";
-
     public static final String MIGRATION_WITH_VERSION_WAS_NOT_FOUND_TEMPLATE =
             "Migration with version %s was not found";
-
     public static final String MIGRATIONS_WERE_NOT_FOUND = "No migrations were found";
-
     public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
             "The context %s is invalid - no migrations were found to downgrade";
-
     public static final String UNABLE_TO_LOCK_TABLE_TEMPLATE =
             "Unable to lock table %s";
 

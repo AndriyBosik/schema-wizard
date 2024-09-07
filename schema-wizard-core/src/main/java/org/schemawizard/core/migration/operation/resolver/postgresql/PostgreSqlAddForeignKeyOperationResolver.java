@@ -26,9 +26,9 @@ public class PostgreSqlAddForeignKeyOperationResolver implements OperationResolv
                         SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
                         SqlClause.FOREIGN_KEY,
-                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getColumns()),
+                        String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns())),
                         SqlClause.REFERENCES,
                         operationService.buildTable(operation.getForeignSchema(), operation.getForeignTable()),
-                        String.join(SqlClause.COLUMNS_SEPARATOR, operation.getForeignColumns())));
+                        String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getForeignColumns()))));
     }
 }

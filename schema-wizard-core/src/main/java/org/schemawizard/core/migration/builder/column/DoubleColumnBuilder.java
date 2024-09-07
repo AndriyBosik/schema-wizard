@@ -6,7 +6,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 public class DoubleColumnBuilder implements ColumnBuilder {
     private final String schema;
     private final String table;
-    private final String name;
+    private String name;
     private boolean nullable = true;
     private Integer precision;
     private Integer scale;
@@ -18,8 +18,17 @@ public class DoubleColumnBuilder implements ColumnBuilder {
         this.name = name;
     }
 
+    public static DoubleColumnBuilder builder(String schema, String table) {
+        return builder(schema, table, null);
+    }
+
     public static DoubleColumnBuilder builder(String schema, String table, String name) {
         return new DoubleColumnBuilder(schema, table, name);
+    }
+
+    public DoubleColumnBuilder name(String name) {
+        this.name = name;
+        return this;
     }
 
     public DoubleColumnBuilder nullable(boolean nullable) {

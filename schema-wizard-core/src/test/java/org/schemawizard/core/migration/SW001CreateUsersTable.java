@@ -17,27 +17,27 @@ public class SW001CreateUsersTable implements Migration {
                         "users",
                         factory -> new Object() {
                             public ColumnBuilder id() {
-                                return factory.integer("id").nullable(false);
+                                return factory.newInteger("id").nullable(false);
                             }
 
                             public ColumnBuilder email() {
-                                return factory.text("email").nullable(false);
+                                return factory.newText("email").nullable(false);
                             }
 
                             public ColumnBuilder enabled() {
-                                return factory.bool("enabled").nullable(false);
+                                return factory.newBool("enabled").nullable(false);
                             }
 
                             public ColumnBuilder firstName() {
-                                return factory.text("first_name").nullable(false);
+                                return factory.newText("first_name").nullable(false);
                             }
 
                             public ColumnBuilder middleName() {
-                                return factory.text("middle_name").nullable(true);
+                                return factory.newText("middle_name").nullable(true);
                             }
 
                             public ColumnBuilder lastName() {
-                                return factory.text("last_name").nullable(false);
+                                return factory.newText("last_name").nullable(false);
                             }
                         })
                 .ifNotExists()
