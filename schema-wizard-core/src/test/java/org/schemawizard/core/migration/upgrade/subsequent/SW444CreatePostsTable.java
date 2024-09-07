@@ -13,15 +13,10 @@ public class SW444CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("posts", factory -> new Object() {
-                    public ColumnBuilder id() {
-                        return factory.integer("id");
-                    }
-
-                    public ColumnBuilder email() {
-                        return factory.text("title").nullable(false);
-                    }
+                    ColumnBuilder id = factory.newInteger();
+                    ColumnBuilder title = factory.newText().nullable(false);
                 })
-                .primaryKey(table -> table.id())
+                .primaryKey(table -> table.id)
                 .build();
     }
 

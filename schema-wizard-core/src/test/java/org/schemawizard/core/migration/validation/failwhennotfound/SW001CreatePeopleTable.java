@@ -11,15 +11,10 @@ public class SW001CreatePeopleTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("people", factory -> new Object() {
-                    public ColumnBuilder id() {
-                        return factory.integer("id").nullable(false);
-                    }
-
-                    public ColumnBuilder email() {
-                        return factory.text("email").nullable(false);
-                    }
+                    ColumnBuilder id = factory.newInteger();
+                    ColumnBuilder email = factory.newText().nullable(false);
                 })
-                .primaryKey(table -> table.id())
+                .primaryKey(table -> table.id)
                 .build();
     }
 

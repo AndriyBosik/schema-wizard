@@ -1,7 +1,6 @@
 package org.schemawizard.core.migration.upgrade.callbacks;
 
 import org.schemawizard.core.migration.Migration;
-import org.schemawizard.core.migration.annotation.SWName;
 import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.builder.operation.CreateTable;
 import org.schemawizard.core.migration.builder.operation.DropTable;
@@ -12,15 +11,10 @@ public class SW002CreatePostsTable implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("posts", factory -> new Object() {
-                    public ColumnBuilder id() {
-                        return factory.integer("id");
-                    }
-
-                    public ColumnBuilder email() {
-                        return factory.text("title").nullable(false);
-                    }
+                    ColumnBuilder id = factory.newInteger();
+                    ColumnBuilder title = factory.newText().nullable(false);
                 })
-                .primaryKey(table -> table.id())
+                .primaryKey(table -> table.id)
                 .build();
     }
 

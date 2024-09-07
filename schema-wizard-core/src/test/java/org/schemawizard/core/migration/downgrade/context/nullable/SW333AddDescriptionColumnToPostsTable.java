@@ -14,7 +14,7 @@ public class SW333AddDescriptionColumnToPostsTable implements Migration {
         return AddColumns.builder(
                         "posts",
                         factory -> List.of(
-                                factory.integer("description").nullable(false)))
+                                factory.newInteger("description").nullable(false)))
                 .build();
     }
 

@@ -16,7 +16,7 @@ public class SW222AddAgeColumnToPeopleTable implements Migration {
         return AddColumns.builder(
                         "people",
                         factory -> List.of(
-                                factory.integer("age").nullable(false)))
+                                factory.newInteger("age").nullable(false)))
                 .build();
     }
 

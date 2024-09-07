@@ -11,11 +11,9 @@ public class SWDescriptionAndVersion001 implements Migration {
     @Override
     public Operation up(MigrationContext context) {
         return CreateTable.builder("people", factory -> new Object() {
-                    public ColumnBuilder id() {
-                        return factory.integer("id").nullable(false);
-                    }
+                    ColumnBuilder id = factory.newInteger("id").nullable(false);
                 })
-                .primaryKey(table -> table.id())
+                .primaryKey(table -> table.id)
                 .build();
     }
 
