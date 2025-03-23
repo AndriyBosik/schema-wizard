@@ -57,6 +57,7 @@ public class GenericTest {
 
         DiContainer container = new DiContainer();
 
+        container.register(ClassLoader.class, Thread.currentThread().getContextClassLoader());
         container.register(ConfigurationProperties.class, properties);
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);

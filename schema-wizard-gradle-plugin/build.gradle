@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'java-gradle-plugin'
+}
+
+group = 'org.schema-wizard'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+gradlePlugin {
+    plugins {
+        schemaWizardPlugin {
+            id = 'org.schemawizard.gradle-plugin'
+            implementationClass = 'org.schemawizard.gradle.SchemaWizardPlugin'
+        }
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation project(':schema-wizard-core') // TODO it doesn't work. Change to `implementation 'org.schema-wizard:schema-wizard-core:version'` once the library becomes published to Maven repository
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

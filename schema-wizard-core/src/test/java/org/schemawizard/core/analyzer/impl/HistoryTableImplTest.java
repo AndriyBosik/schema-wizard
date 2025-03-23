@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.TransactionService;
+import org.schemawizard.core.dao.impl.DriverLoaderImpl;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.TransactionServiceImpl;
 import org.schemawizard.core.model.ConfigurationProperties;
@@ -33,7 +34,9 @@ public class HistoryTableImplTest {
                     .connectionUrl(postgres.getJdbcUrl())
                     .username(postgres.getUsername())
                     .password(postgres.getPassword())
-                    .build());
+                    .build(),
+            new DriverLoaderImpl(
+                    Thread.currentThread().getContextClassLoader()));
 
     private final TransactionService transactionService = new TransactionServiceImpl(connectionHolder);
 

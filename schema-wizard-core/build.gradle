@@ -33,7 +33,7 @@ ext {
     junitVersion = '5.10.0'
     mockitoVersion = '5.4.0'
     testContainersVersion = '1.19.1'
-    postgresqlVersion = '42.6.0'
+    postgresqlVersion = '42.7.4'
     reflectionsVersion = '0.10.2'
 }
 
