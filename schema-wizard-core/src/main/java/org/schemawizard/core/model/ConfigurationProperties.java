@@ -100,6 +100,7 @@ public class ConfigurationProperties {
 
         private PropertyConfigurationBuilder() {
         }
+
         public PropertyConfigurationBuilder defaults(Defaults defaults) {
             this.defaults = defaults;
             return this;

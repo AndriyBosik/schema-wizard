@@ -100,7 +100,7 @@ public class SchemaWizardBuilder {
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
-        container.register(ColumnNamingStrategyService.class, getColumnNamingStartegyServiceClass(properties.getColumnNamingStrategy()));
+        container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
         container.register(AppliedMigrationsService.class, AppliedMigrationsServiceImpl.class);
         container.register(DeclaredMigrationService.class, ClassesDeclaredMigrationService.class);
         container.register(ConnectionHolder.class, ConnectionHolder.class);
@@ -176,7 +176,7 @@ public class SchemaWizardBuilder {
                 provider));
     }
 
-    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStartegyServiceClass(ColumnNamingStrategy strategy) {
+    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStrategyServiceClass(ColumnNamingStrategy strategy) {
         if (strategy == null) {
             throw new InvalidConfigurationException(
                     ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);

@@ -20,10 +20,11 @@ public class PostgreSqlDropForeignKeyOperationResolver implements OperationResol
     public MigrationInfo resolve(DropForeignKeyOperation operation) {
         return new MigrationInfo(
                 String.format(
-                        "%s %s %s %s",
+                        "%s %s %s%s %s",
                         SqlClause.ALTER_TABLE,
                         operationService.buildTable(operation),
                         SqlClause.DROP_CONSTRAINT,
+                        operation.isIfExists() ? (" " + SqlClause.IF_EXISTS) : "",
                         operation.getName()));
     }
 }

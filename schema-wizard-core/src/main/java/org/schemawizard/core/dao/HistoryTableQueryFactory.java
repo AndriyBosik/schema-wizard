@@ -11,8 +11,6 @@ public interface HistoryTableQueryFactory {
 
     String getSelectLastMigrationsByContext();
 
-    String getSelectLastMigrationsByCount();
-
     String getInsertMigrationHistoryRowQuery();
 
     String getDeleteMigrationHistoryRowQuery();

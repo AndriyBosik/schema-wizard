@@ -22,7 +22,7 @@ import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrateg
 import org.schemawizard.core.model.ConfigurationProperties;
 import org.schemawizard.core.model.defaults.Defaults;
 import org.schemawizard.core.model.defaults.Text;
-import org.schemawizard.core.utils.IOUtils;
+import org.schemawizard.core.utils.TestIOUtils;
 
 import java.io.File;
 import java.util.AbstractMap;
@@ -62,7 +62,7 @@ public class GenericTest {
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
-        container.register(ColumnNamingStrategyService.class, getColumnNamingStartegyServiceClass(properties.getColumnNamingStrategy()));
+        container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
 
         Reflections basePackageReflections = new Reflections("org.schemawizard.core");
         registerResolvers(basePackageReflections, TestContext.getProvider())
@@ -80,8 +80,8 @@ public class GenericTest {
 
     protected void assertQuery(String type, String actual) {
         String path = String.format("query/%s/%s.sql", type, getQueryFileName());
-        File file = IOUtils.getResourceFile(path);
-        String content = IOUtils.getContent(file);
+        File file = TestIOUtils.getResourceFile(path);
+        String content = TestIOUtils.getContent(file);
 
         assertEquals(content, actual);
     }
@@ -94,20 +94,6 @@ public class GenericTest {
                         parseDatabaseProviderFromClass((Class<? extends OperationResolver<?>>) resolver)))
                 .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey);
-    }
-
-    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStartegyServiceClass(ColumnNamingStrategy strategy) {
-        if (strategy == null) {
-            throw new InvalidConfigurationException(
-                    ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);
-        }
-        if (strategy == ColumnNamingStrategy.SNAKE_CASE) {
-            return SnakeCaseColumnNamingStrategyService.class;
-        }
-        throw new InvalidConfigurationException(
-                String.format(
-                        ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT,
-                        strategy));
     }
 
     private DatabaseProvider parseDatabaseProviderFromClass(Class<? extends OperationResolver<? extends Operation>> resolver) {
@@ -127,5 +113,19 @@ public class GenericTest {
             default:
                 throw new IllegalArgumentException("Unknown directory for database provider: " + TestContext.getProvider());
         }
+    }
+
+    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStrategyServiceClass(ColumnNamingStrategy strategy) {
+        if (strategy == null) {
+            throw new InvalidConfigurationException(
+                    ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);
+        }
+        if (strategy == ColumnNamingStrategy.SNAKE_CASE) {
+            return SnakeCaseColumnNamingStrategyService.class;
+        }
+        throw new InvalidConfigurationException(
+                String.format(
+                        ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT,
+                        strategy));
     }
 }

@@ -45,7 +45,6 @@ public class ErrorMessage {
             "Unable to resolve downgrade parameters class: %s";
     public static final String MIGRATION_WITH_VERSION_WAS_NOT_FOUND_TEMPLATE =
             "Migration with version %s was not found";
-    public static final String MIGRATIONS_WERE_NOT_FOUND = "No migrations were found";
     public static final String DOWNGRADE_CONTEXT_IS_INVALID_TEMPLATE =
             "The context %s is invalid - no migrations were found to downgrade";
     public static final String UNABLE_TO_LOCK_TABLE_TEMPLATE =
@@ -54,6 +53,8 @@ public class ErrorMessage {
             "Unable to instantiate driver for database provider: %s";
     public static final String UNABLE_TO_DETERMINE_DRIVER_CLASS_FOR_DATABASE_PROVIDER_FORMAT =
             "Unable to determine driver class for database provider: %s";
+    public static final String EMPTY_COLUMN_NAME_FOR_OPERATION_FORMAT =
+            "Empty column name for operation: %s";
 
     private ErrorMessage() {
     }
