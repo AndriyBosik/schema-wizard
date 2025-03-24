@@ -39,6 +39,7 @@ public class OracleAddForeignKeyOperationResolver implements OperationResolver<A
 
     private String buildReferentialActions(AddForeignKeyOperation operation) {
         return Optional.ofNullable(operation.getOnDelete())
+                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.ORACLE))
                 .map(ReferentialAction::getValue)
                 .map(value -> " ON DELETE " + value)
                 .orElse("");

@@ -118,9 +118,11 @@ public class PostgreSqlCreateTableOperationResolver implements OperationResolver
     private String buildReferentialActions(AddForeignKeyOperation operation) {
         return Stream.of(
                         Optional.ofNullable(operation.getOnDelete())
+                                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.POSTGRESQL))
                                 .map(ReferentialAction::getValue)
                                 .map(value -> " ON DELETE " + value),
                         Optional.ofNullable(operation.getOnUpdate())
+                                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.POSTGRESQL))
                                 .map(ReferentialAction::getValue)
                                 .map(value -> " ON UPDATE " + value))
                 .map(opt -> opt.orElse(null))
