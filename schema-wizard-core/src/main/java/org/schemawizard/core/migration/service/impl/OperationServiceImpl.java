@@ -24,13 +24,13 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public String buildTable(String schema, String table) {
+    public String buildFullName(String schema, String table) {
         return schema == null ? table : (schema + "." + table);
     }
 
     @Override
     public String buildTable(TableBasedOperation operation) {
-        return buildTable(operation.getSchema(), operation.getTable());
+        return buildFullName(operation.getSchema(), operation.getTable());
     }
 
     @Override

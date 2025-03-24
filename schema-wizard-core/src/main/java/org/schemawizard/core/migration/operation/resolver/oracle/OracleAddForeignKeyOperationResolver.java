@@ -32,25 +32,15 @@ public class OracleAddForeignKeyOperationResolver implements OperationResolver<A
                         SqlClause.FOREIGN_KEY,
                         String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getColumns())),
                         SqlClause.REFERENCES,
-                        operationService.buildTable(operation.getForeignSchema(), operation.getForeignTable()),
+                        operationService.buildFullName(operation.getForeignSchema(), operation.getForeignTable()),
                         String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getForeignColumns())),
-                        referentialActionsClause == null ? "" : (" " + referentialActionsClause)));
+                        referentialActionsClause));
     }
 
     private String buildReferentialActions(AddForeignKeyOperation operation) {
         return Optional.ofNullable(operation.getOnDelete())
-                .map(this::mapReferentialAction)
-                .map(value -> "ON DELETE " + value)
-                .orElse(null);
-    }
-
-    private String mapReferentialAction(ReferentialAction action) {
-        switch (action) {
-            case CASCADE:
-                return "CASCADE";
-            case SET_NULL:
-                return "SET NULL";
-        }
-        return null;
+                .map(ReferentialAction::getValue)
+                .map(value -> " ON DELETE " + value)
+                .orElse("");
     }
 }

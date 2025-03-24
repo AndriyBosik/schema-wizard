@@ -5,7 +5,7 @@ import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.TableBasedOperation;
 
 public interface OperationService {
-    String buildTable(String schema, String table);
+    String buildFullName(String schema, String table);
 
     String buildTable(TableBasedOperation operation);
 

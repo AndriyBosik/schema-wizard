@@ -19,7 +19,6 @@ import org.schemawizard.core.utils.StringUtils;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -89,9 +88,9 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
                 SqlClause.FOREIGN_KEY,
                 String.join(",", operationService.mapColumnNames(operation.getColumns())),
                 SqlClause.REFERENCES,
-                operationService.buildTable(operation.getForeignSchema(), operation.getForeignTable()),
+                operationService.buildFullName(operation.getForeignSchema(), operation.getForeignTable()),
                 String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getForeignColumns())),
-                referentialActionsClause == null ? "" : (" " + referentialActionsClause));
+                referentialActionsClause);
     }
 
     private String buildUnique(AddUniqueOperation operation) {
@@ -118,18 +117,8 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
 
     private String buildReferentialActions(AddForeignKeyOperation operation) {
         return Optional.ofNullable(operation.getOnDelete())
-                .map(this::mapReferentialAction)
-                .map(value -> "ON DELETE " + value)
-                .orElse(null);
-    }
-
-    private String mapReferentialAction(ReferentialAction action) {
-        switch (action) {
-            case CASCADE:
-                return "CASCADE";
-            case SET_NULL:
-                return "SET NULL";
-        }
-        return null;
+                .map(ReferentialAction::getValue)
+                .map(value -> " ON DELETE " + value)
+                .orElse("");
     }
 }
