@@ -49,6 +49,10 @@ public class ErrorMessage {
             "The context %s is invalid - no migrations were found to downgrade";
     public static final String UNABLE_TO_LOCK_TABLE_TEMPLATE =
             "Unable to lock table %s";
+    public static final String UNABLE_TO_INSTANTIATE_DATABASE_DRIVER_FORMAT =
+            "Unable to instantiate driver for database provider: %s";
+    public static final String UNABLE_TO_DETERMINE_DRIVER_CLASS_FOR_DATABASE_PROVIDER_FORMAT =
+            "Unable to determine driver class for database provider: %s";
     public static final String EMPTY_COLUMN_NAME_FOR_OPERATION_FORMAT =
             "Empty column name for operation: %s";
 
