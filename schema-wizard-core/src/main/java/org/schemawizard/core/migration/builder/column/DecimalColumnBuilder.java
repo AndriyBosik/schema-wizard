@@ -3,10 +3,7 @@ package org.schemawizard.core.migration.builder.column;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class DecimalColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class DecimalColumnBuilder extends AbstractColumnBuilder {
     private boolean nullable = true;
     private Integer precision;
     private Integer scale;
@@ -14,9 +11,7 @@ public class DecimalColumnBuilder implements ColumnBuilder {
     private boolean ifNotExists;
 
     private DecimalColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static DecimalColumnBuilder builder(String schema, String table) {

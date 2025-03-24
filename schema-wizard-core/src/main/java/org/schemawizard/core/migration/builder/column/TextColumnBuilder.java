@@ -3,10 +3,7 @@ package org.schemawizard.core.migration.builder.column;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class TextColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class TextColumnBuilder extends AbstractColumnBuilder {
     private boolean nullable = true;
     private Integer minLength;
     private Integer maxLength;
@@ -14,9 +11,7 @@ public class TextColumnBuilder implements ColumnBuilder {
     private boolean ifNotExists = false;
 
     private TextColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static TextColumnBuilder builder(String schema, String table) {

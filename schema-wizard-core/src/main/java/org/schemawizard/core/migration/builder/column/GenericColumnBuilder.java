@@ -2,10 +2,7 @@ package org.schemawizard.core.migration.builder.column;
 
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class GenericColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class GenericColumnBuilder extends AbstractColumnBuilder {
     private String type;
     private Integer minLength;
     private Integer maxLength;
@@ -16,9 +13,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
     private boolean ifNotExists = false;
 
     private GenericColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static GenericColumnBuilder builder(String schema, String table) {

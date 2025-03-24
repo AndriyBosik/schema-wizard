@@ -3,18 +3,13 @@ package org.schemawizard.core.migration.builder.column;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class BoolColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class BoolColumnBuilder extends AbstractColumnBuilder {
     private boolean nullable = true;
     private Boolean defaultValue;
     private boolean ifNotExists = false;
 
     private BoolColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static BoolColumnBuilder builder(String schema, String table) {

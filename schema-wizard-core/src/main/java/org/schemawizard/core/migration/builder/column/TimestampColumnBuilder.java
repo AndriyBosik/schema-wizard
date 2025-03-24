@@ -3,19 +3,14 @@ package org.schemawizard.core.migration.builder.column;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class TimestampColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class TimestampColumnBuilder extends AbstractColumnBuilder {
     private boolean nullable = true;
     private boolean withTimeZone = false;
     private Integer defaultValue;
     private boolean ifNotExists = false;
 
     private TimestampColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static TimestampColumnBuilder builder(String schema, String table) {
