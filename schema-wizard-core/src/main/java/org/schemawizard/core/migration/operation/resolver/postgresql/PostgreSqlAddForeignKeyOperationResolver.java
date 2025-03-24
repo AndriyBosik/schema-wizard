@@ -50,6 +50,6 @@ public class PostgreSqlAddForeignKeyOperationResolver implements OperationResolv
                                 .map(value -> " ON UPDATE " + value))
                 .map(opt -> opt.orElse(null))
                 .filter(Objects::nonNull)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining());
     }
 }
