@@ -5,7 +5,6 @@ import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.MigrationData;
 import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
-import org.schemawizard.core.analyzer.model.CountDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.metadata.ErrorMessage;
@@ -39,7 +38,7 @@ public class SchemaWizard {
         });
     }
 
-    public void downByVersion(int version) {
+    public void down(int version) {
         transactionService.doWithinTransaction(() -> {
             List<MigrationData> downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(version));
             migrationRunner.downgrade(downgradeMigrations);

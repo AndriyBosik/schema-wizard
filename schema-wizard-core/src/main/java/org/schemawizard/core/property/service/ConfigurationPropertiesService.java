@@ -5,6 +5,8 @@ import org.schemawizard.core.property.model.YamlContext;
 
 import java.io.File;
 
+import java.io.File;
+
 public interface ConfigurationPropertiesService {
     ConfigurationProperties getProperties();
 

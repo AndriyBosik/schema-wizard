@@ -4,11 +4,9 @@ import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.exception.UnknownDowngradeParametersException;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
 import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
-import org.schemawizard.core.analyzer.model.CountDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.DowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.DowngradeStrategy;
-import org.schemawizard.core.dao.ConnectionHolder;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.metadata.ErrorMessage;
@@ -23,8 +21,7 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
 
     public DowngradeFactoryImpl(
             TransactionService transactionService,
-            HistoryTableQueryFactory historyTableQueryFactory,
-            ConnectionHolder connectionHolder
+            HistoryTableQueryFactory historyTableQueryFactory
     ) {
         this.transactionService = transactionService;
         this.historyTableQueryFactory = historyTableQueryFactory;
@@ -36,8 +33,6 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
             return versionStrategy((VersionDowngradeStrategyParameters) parameters);
         } else if (parameters instanceof ContextDowngradeStrategyParameters) {
             return contextStrategy((ContextDowngradeStrategyParameters) parameters);
-        } else if (parameters instanceof CountDowngradeStrategyParameters) {
-            return countStrategy((CountDowngradeStrategyParameters) parameters);
         }
         throw new UnknownDowngradeParametersException(
                 String.format(

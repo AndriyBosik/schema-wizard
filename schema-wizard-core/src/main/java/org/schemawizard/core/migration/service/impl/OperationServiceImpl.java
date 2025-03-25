@@ -24,8 +24,13 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public String buildTable(String schema, String table) {
+    public String buildFullName(String schema, String table) {
         return schema == null ? table : (schema + "." + table);
+    }
+
+    @Override
+    public String buildTable(TableBasedOperation operation) {
+        return buildFullName(operation.getSchema(), operation.getTable());
     }
 
     @Override
@@ -41,16 +46,11 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public String buildTable(TableBasedOperation operation) {
-        return buildTable(operation.getSchema(), operation.getTable());
-    }
-
-    @Override
     public String buildColumnDefinition(
             AddColumnOperation operation,
             ColumnTypeFactory typeFactory
     ) {
-        String columnName = columnNamingStrategyService.map(operation.getName());
+        String columnName = mapColumnName(operation.getName());
 
         StringBuilder builder = new StringBuilder(columnName);
 
@@ -83,11 +83,11 @@ public class OperationServiceImpl implements OperationService {
             builder.append(")");
         }
 
-        builder.append(operation.isNullable() ? " NULL" : " NOT NULL");
-
         if (operation.getSqlDefault() != null) {
             builder.append(" DEFAULT ").append(operation.getSqlDefault());
         }
+
+        builder.append(operation.isNullable() ? " NULL" : " NOT NULL");
 
         return builder.toString();
     }

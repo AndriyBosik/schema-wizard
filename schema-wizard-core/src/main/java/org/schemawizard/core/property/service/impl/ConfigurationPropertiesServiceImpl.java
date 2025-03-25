@@ -1,5 +1,9 @@
 package org.schemawizard.core.property.service.impl;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Optional;
+
 import org.schemawizard.core.exception.InvalidConfigurationException;
 import org.schemawizard.core.exception.InvalidConfigurationPropertiesLocation;
 import org.schemawizard.core.metadata.ColumnNamingStrategy;
@@ -32,13 +36,16 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
 
     private final PropertyUtils propertyUtils;
     private final PropertyParser propertyParser;
+    private final ClassLoader classLoader;
 
     public ConfigurationPropertiesServiceImpl(
             PropertyUtils propertyUtils,
-            PropertyParser propertyParser
+            PropertyParser propertyParser,
+            ClassLoader classLoader
     ) {
         this.propertyUtils = propertyUtils;
         this.propertyParser = propertyParser;
+        this.classLoader = classLoader;
     }
 
     @Override
@@ -48,7 +55,7 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
 
     @Override
     public ConfigurationProperties getProperties(String location) {
-        URL resource = getClass().getClassLoader().getResource(location);
+        URL resource = classLoader.getResource(location);
         if (resource == null) {
             throw new InvalidConfigurationPropertiesLocation(
                     String.format(ErrorMessage.INVALID_PROPERTIES_LOCATION_FORMAT, location));
@@ -65,22 +72,35 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
         }
     }
 
+    private ConfigurationProperties getProperties(InputStream inputStream) {
+        Yaml yaml = new Yaml(buildConstructor(), buildRepresenter());
+        YamlContext context = yaml.loadAs(inputStream, YamlContext.class);
+        return mapConfigurationProperties(context);
+    }
+
+    @Override
+    public ConfigurationProperties getProperties(File file) {
+        try {
+            return getProperties(new FileInputStream(file));
+        } catch (FileNotFoundException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     @Override
     public ConfigurationProperties getProperties(YamlContext context) {
         String connectionUrl = propertyParser.parseStringValue(context.getSchema().getWizard().getDatabase().getConnectionUrl());
         Text text = Text.builder()
-                .defaultLength(propertyParser
-                        .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
-                .build();
+            .defaultLength(propertyParser
+                .parseIntegerValue(context.getSchema().getWizard().getDefaults().getText().getMaxLength()))
+            .build();
         Defaults defaults = Defaults.builder()
-                .text(text)
-                .build();
-
+            .text(text)
+            .build();
         String namingStrategy = Optional.ofNullable(context.getSchema().getWizard().getNamingStrategy())
                 .map(YamlContext.Schema.Wizard.NamingStrategy::getColumn)
                 .map(YamlContext.Schema.Wizard.NamingStrategy.Column::getType)
                 .orElse(null);
-
         return ConfigurationProperties.builder()
                 .databaseProvider(mapDatabaseProvider(connectionUrl))
                 .context(propertyParser.parseStringValue(context.getSchema().getWizard().getContext()))

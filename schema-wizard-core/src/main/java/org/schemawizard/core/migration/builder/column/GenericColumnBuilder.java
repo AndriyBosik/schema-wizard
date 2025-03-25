@@ -2,10 +2,7 @@ package org.schemawizard.core.migration.builder.column;
 
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 
-public class GenericColumnBuilder implements ColumnBuilder {
-    private final String schema;
-    private final String table;
-    private String name;
+public class GenericColumnBuilder extends AbstractColumnBuilder {
     private String type;
     private Integer minLength;
     private Integer maxLength;
@@ -13,11 +10,10 @@ public class GenericColumnBuilder implements ColumnBuilder {
     private Integer scale;
     private boolean nullable;
     private String sqlDefault;
+    private boolean ifNotExists = false;
 
     private GenericColumnBuilder(String schema, String table, String name) {
-        this.schema = schema;
-        this.table = table;
-        this.name = name;
+        super(schema, table, name);
     }
 
     public static GenericColumnBuilder builder(String schema, String table) {
@@ -28,6 +24,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
         return new GenericColumnBuilder(schema, table, name);
     }
 
+    @Override
     public GenericColumnBuilder name(String name) {
         this.name = name;
         return this;
@@ -68,6 +65,11 @@ public class GenericColumnBuilder implements ColumnBuilder {
         return this;
     }
 
+    public GenericColumnBuilder ifNotExists() {
+        this.ifNotExists = true;
+        return this;
+    }
+
     @Override
     public AddColumnOperation build() {
         return new AddColumnOperation(
@@ -80,6 +82,7 @@ public class GenericColumnBuilder implements ColumnBuilder {
                 precision,
                 scale,
                 nullable,
-                sqlDefault);
+                sqlDefault,
+                ifNotExists);
     }
 }

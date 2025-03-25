@@ -8,6 +8,10 @@ public class StringUtils {
         return value == null || value.isBlank();
     }
 
+    public static boolean isNotBlank(String value) {
+        return !isBlank(value);
+    }
+
     public static String strip(String value) {
         return value == null ? null : value.strip();
     }

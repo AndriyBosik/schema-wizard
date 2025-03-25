@@ -16,8 +16,8 @@ public class ReflectionUtils {
         try {
             return type.getConstructor(parameterTypes).newInstance(args);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                 IllegalAccessException exception) {
-            throw new RuntimeException(exception);
+                 IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -30,7 +30,6 @@ public class ReflectionUtils {
     }
 
     public static <T> T invokeMethod(Method method, Object obj, Object... args) {
-
         try {
             return (T) method.invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException exception) {

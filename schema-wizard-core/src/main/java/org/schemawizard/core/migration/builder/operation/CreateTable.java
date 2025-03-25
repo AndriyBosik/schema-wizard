@@ -6,6 +6,7 @@ import org.schemawizard.core.migration.builder.column.ColumnBuilder;
 import org.schemawizard.core.migration.factory.ColumnBuilderFactory;
 import org.schemawizard.core.migration.metadata.ReferentialAction;
 import org.schemawizard.core.migration.model.Pair;
+import org.schemawizard.core.migration.operation.AddCheckOperation;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.AddForeignKeyOperation;
 import org.schemawizard.core.migration.operation.AddPrimaryKeyOperation;
@@ -19,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,6 +35,7 @@ public class CreateTable<T> implements OperationBuilder {
     private PrimaryKeyDefinition<T> primaryKeyDefinition;
     private final List<ForeignKeyDefinition> foreignKeyDefinitions = new ArrayList<>();
     private final List<UniqueDefinition<T>> uniqueDefinitions = new ArrayList<>();
+    private final List<CheckDefinition> checkDefinitions = new ArrayList<>();
 
     private CreateTable(
             String schema,
@@ -94,14 +97,24 @@ public class CreateTable<T> implements OperationBuilder {
     }
 
     public CreateTable<T> foreignKey(Consumer<SingleForeignKey<T>> foreignKeyConsumer) {
-        SingleForeignKey<T> builder = SingleForeignKey.builder(columnsDefinitor);
+        return foreignKey(null, foreignKeyConsumer);
+    }
+
+    public CreateTable<T> compositeForeignKey(Consumer<CompositeForeignKey<T>> foreignKeyConsumer) {
+        return compositeForeignKey(null, foreignKeyConsumer);
+    }
+
+    public CreateTable<T> foreignKey(String name, Consumer<SingleForeignKey<T>> foreignKeyConsumer) {
+        SingleForeignKey<T> builder = SingleForeignKey.builder(columnsDefinitor)
+                .name(name);
         foreignKeyConsumer.accept(builder);
         foreignKeyDefinitions.add(builder.build());
         return this;
     }
 
-    public CreateTable<T> compositeForeignKey(Consumer<CompositeForeignKey<T>> foreignKeyConsumer) {
-        CompositeForeignKey<T> builder = CompositeForeignKey.builder(columnsDefinitor);
+    public CreateTable<T> compositeForeignKey(String name, Consumer<CompositeForeignKey<T>> foreignKeyConsumer) {
+        CompositeForeignKey<T> builder = CompositeForeignKey.builder(columnsDefinitor)
+                .name(name);
         foreignKeyConsumer.accept(builder);
         foreignKeyDefinitions.add(builder.build());
         return this;
@@ -125,6 +138,15 @@ public class CreateTable<T> implements OperationBuilder {
     public CreateTable<T> compositeUnique(String name, Function<T, List<ColumnBuilder>> uniqueFunc) {
         Objects.requireNonNull(uniqueFunc);
         this.uniqueDefinitions.add(new UniqueDefinition<>(name, uniqueFunc));
+        return this;
+    }
+
+    public CreateTable<T> check(String condition) {
+        return check(null, condition);
+    }
+
+    public CreateTable<T> check(String name, String condition) {
+        this.checkDefinitions.add(new CheckDefinition(name, condition));
         return this;
     }
 
@@ -153,6 +175,7 @@ public class CreateTable<T> implements OperationBuilder {
                                 .toArray(String[]::new)),
                 columnBuilders.stream()
                         .map(Pair::getRight)
+                        .sorted(Comparator.comparing(AddColumnOperation::getName))
                         .collect(Collectors.toList()),
                 foreignKeyDefinitions.stream()
                         .map(definition -> mapToForeignKeyOperation(definition, columnBuilders))
@@ -166,6 +189,13 @@ public class CreateTable<T> implements OperationBuilder {
                                         .map(columnBuilder -> findOperation(columnBuilder, columnBuilders))
                                         .map(AddColumnOperation::getName)
                                         .toArray(String[]::new)))
+                        .collect(Collectors.toList()),
+                checkDefinitions.stream()
+                        .map(definition -> new AddCheckOperation(
+                                schema,
+                                table,
+                                definition.getName(),
+                                definition.getCondition()))
                         .collect(Collectors.toList()));
     }
 
@@ -187,7 +217,7 @@ public class CreateTable<T> implements OperationBuilder {
 
     private AddColumnOperation getOperationValue(Field field) {
         ReflectionUtils.setAccessible(field, true);
-        ColumnBuilder builder = ReflectionUtils.<ColumnBuilder>getValue(field, columnsDefinitor);
+        ColumnBuilder builder = ReflectionUtils.getValue(field, columnsDefinitor);
         AddColumnOperation operation = builder.build();
         if (!StringUtils.isBlank(operation.getName())) {
             return operation;
@@ -433,6 +463,24 @@ public class CreateTable<T> implements OperationBuilder {
 
         public Function<T, List<ColumnBuilder>> getFunc() {
             return func;
+        }
+    }
+
+    private static class CheckDefinition {
+        private final String name;
+        private final String condition;
+
+        private CheckDefinition(String name, String condition) {
+            this.name = name;
+            this.condition = condition;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCondition() {
+            return condition;
         }
     }
 }
