@@ -70,7 +70,6 @@ public class SchemaWizardBuilder {
     }
 
     public static SchemaWizardBuilder init() {
-        DiContainer container = initDiContainerWithPropertyServices();
         return new SchemaWizardBuilder(new DefaultPropertiesResolver());
     }
 
@@ -91,30 +90,6 @@ public class SchemaWizardBuilder {
         DiContainer container = initDiContainerWithPropertyServices();
 
         ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
-        ConfigurationProperties properties = propertiesService.getProperties();
-
-        return init(container, properties);
-    }
-
-    public static SchemaWizardBuilder init(String location) {
-        DiContainer container = initDiContainerWithPropertyServices();
-
-        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
-        ConfigurationProperties properties = propertiesService.getProperties(location);
-
-        return init(container, properties);
-    }
-
-    public static SchemaWizardBuilder init(File file) {
-        DiContainer container = initDiContainerWithPropertyServices();
-
-        ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
-        ConfigurationProperties properties = propertiesService.getProperties(file);
-
-        return init(container, properties);
-    }
-
-    private static SchemaWizardBuilder init(DiContainer container, ConfigurationProperties properties) {
         ConfigurationProperties properties = propertiesResolver.resolve(propertiesService);
         DatabaseProvider provider = properties.getDatabaseProvider();
 
