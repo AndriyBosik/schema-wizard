@@ -4,7 +4,9 @@ import org.reflections.Reflections;
 import org.schemawizard.core.analyzer.HistoryTable;
 import org.schemawizard.core.analyzer.MigrationAnalyzer;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
+import org.schemawizard.core.analyzer.factory.ReflectionsFactory;
 import org.schemawizard.core.analyzer.factory.impl.DowngradeFactoryImpl;
+import org.schemawizard.core.analyzer.factory.impl.ReflectionsFactoryImpl;
 import org.schemawizard.core.analyzer.impl.HistoryTableImpl;
 import org.schemawizard.core.analyzer.impl.MigrationAnalyzerImpl;
 import org.schemawizard.core.analyzer.service.AppliedMigrationsService;
@@ -16,8 +18,10 @@ import org.schemawizard.core.callback.BeforeQueryExecutionCallback;
 import org.schemawizard.core.callback.QueryGeneratedCallback;
 import org.schemawizard.core.callback.impl.QueryLoggerCallback;
 import org.schemawizard.core.dao.ConnectionHolder;
+import org.schemawizard.core.dao.DriverLoader;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
+import org.schemawizard.core.dao.impl.DriverLoaderImpl;
 import org.schemawizard.core.dao.impl.OracleHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.TransactionServiceImpl;
@@ -53,20 +57,37 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 public class SchemaWizardBuilder {
-    private final DiContainer container;
-    private final ConfigurationProperties properties;
+    private final PropertiesResolver propertiesResolver;
+    private ClassLoader classLoader;
 
     private static final String SW_BASE_PACKAGE_NAME = "org.schemawizard.core";
 
     private SchemaWizardBuilder(
-            DiContainer container,
-            ConfigurationProperties properties
+            PropertiesResolver propertiesResolver
     ) {
-        this.container = container;
-        this.properties = properties;
+        this.propertiesResolver = propertiesResolver;
+        this.classLoader = Thread.currentThread().getContextClassLoader();
     }
 
     public static SchemaWizardBuilder init() {
+        DiContainer container = initDiContainerWithPropertyServices();
+        return new SchemaWizardBuilder(new DefaultPropertiesResolver());
+    }
+
+    public static SchemaWizardBuilder init(String location) {
+        return new SchemaWizardBuilder(new LocationPropertiesResolver(location));
+    }
+
+    public static SchemaWizardBuilder init(File file) {
+        return new SchemaWizardBuilder(new FilePropertiesResolver(file));
+    }
+
+    public SchemaWizardBuilder classLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        return this;
+    }
+
+    public SchemaWizard build() {
         DiContainer container = initDiContainerWithPropertyServices();
 
         ConfigurationPropertiesService propertiesService = container.resolve(ConfigurationPropertiesService.class);
@@ -94,17 +115,17 @@ public class SchemaWizardBuilder {
     }
 
     private static SchemaWizardBuilder init(DiContainer container, ConfigurationProperties properties) {
+        ConfigurationProperties properties = propertiesResolver.resolve(propertiesService);
+        DatabaseProvider provider = properties.getDatabaseProvider();
+
         container.register(ConfigurationProperties.class, properties);
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
-
-        DatabaseProvider provider = properties.getDatabaseProvider();
-
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
-        container.register(ColumnNamingStrategyService.class, getColumnNamingStartegyServiceClass(properties.getColumnNamingStrategy()));
+        container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
         container.register(AppliedMigrationsService.class, AppliedMigrationsServiceImpl.class);
         container.register(DeclaredMigrationService.class, ClassesDeclaredMigrationService.class);
         container.register(ConnectionHolder.class, ConnectionHolder.class);
@@ -112,16 +133,21 @@ public class SchemaWizardBuilder {
         container.register(MigrationAnalyzer.class, MigrationAnalyzerImpl.class);
         container.register(MigrationRunner.class, MigrationRunnerImpl.class);
         container.register(OperationResolverService.class, OperationResolverServiceImpl.class);
+        container.register(DriverLoader.class, DriverLoaderImpl.class);
+        container.register(ReflectionsFactory.class, ReflectionsFactoryImpl.class);
         container.register(SchemaWizard.class, SchemaWizard.class);
 
         if (properties.isLogGeneratedSql()) {
             container.register(QueryGeneratedCallback.class, QueryLoggerCallback.class);
         }
-        Reflections basePackageReflections = new Reflections(SW_BASE_PACKAGE_NAME);
+
+        ReflectionsFactory factory = container.resolve(ReflectionsFactory.class);
+
+        Reflections basePackageReflections = factory.newInstance(SW_BASE_PACKAGE_NAME);
         registerResolvers(basePackageReflections, container, provider);
 
         if (properties.getExtensionPackage() != null) {
-            Reflections extensionPackageReflections = new Reflections(properties.getExtensionPackage());
+            Reflections extensionPackageReflections = factory.newInstance(properties.getExtensionPackage());
             registerResolvers(extensionPackageReflections, container, provider);
 
             extensionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class)
@@ -131,11 +157,13 @@ public class SchemaWizardBuilder {
                     .forEach(callback -> container.register(AfterQueryExecutionCallback.class, callback));
         }
 
-        return new SchemaWizardBuilder(container, properties);
+        return container.resolve(SchemaWizard.class);
     }
 
-    private static DiContainer initDiContainerWithPropertyServices() {
+    private DiContainer initDiContainerWithPropertyServices() {
         DiContainer container = new DiContainer();
+
+        container.register(ClassLoader.class, classLoader);
         container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
         container.register(PropertyParser.class, PropertyParserImpl.class);
         container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
@@ -151,10 +179,6 @@ public class SchemaWizardBuilder {
                 .filter(pair -> pair.getValue() == provider || pair.getValue() == DatabaseProvider.MULTI)
                 .map(Map.Entry::getKey)
                 .forEach(resolver -> container.register(OperationResolver.class, resolver));
-    }
-
-    public SchemaWizard build() {
-        return container.resolve(SchemaWizard.class);
     }
 
     private static DatabaseProvider parserDatabaseProviderFromClass(Class<? extends OperationResolver<? extends Operation>> resolver) {
@@ -177,7 +201,7 @@ public class SchemaWizardBuilder {
                 provider));
     }
 
-    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStartegyServiceClass(ColumnNamingStrategy strategy) {
+    private static Class<? extends ColumnNamingStrategyService> getColumnNamingStrategyServiceClass(ColumnNamingStrategy strategy) {
         if (strategy == null) {
             throw new InvalidConfigurationException(
                     ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND);
@@ -189,5 +213,42 @@ public class SchemaWizardBuilder {
                 String.format(
                         ErrorMessage.NO_COLUMN_NAMING_STRATEGY_FOUND_FORMAT,
                         strategy));
+    }
+
+    private interface PropertiesResolver {
+        ConfigurationProperties resolve(ConfigurationPropertiesService service);
+    }
+
+    private static class DefaultPropertiesResolver implements PropertiesResolver {
+        @Override
+        public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
+            return service.getProperties();
+        }
+    }
+
+    private static class LocationPropertiesResolver implements PropertiesResolver {
+        private final String location;
+
+        private LocationPropertiesResolver(String location) {
+            this.location = location;
+        }
+
+        @Override
+        public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
+            return service.getProperties(location);
+        }
+    }
+
+    private static class FilePropertiesResolver implements PropertiesResolver {
+        private final File file;
+
+        private FilePropertiesResolver(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
+            return service.getProperties(file);
+        }
     }
 }

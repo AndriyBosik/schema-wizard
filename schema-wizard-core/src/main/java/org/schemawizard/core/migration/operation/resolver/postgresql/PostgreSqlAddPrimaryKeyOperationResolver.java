@@ -26,6 +26,6 @@ public class PostgreSqlAddPrimaryKeyOperationResolver implements OperationResolv
                         SqlClause.ADD_CONSTRAINT,
                         operation.getName(),
                         SqlClause.PRIMARY_KEY,
-                        String.join(SqlClause.COLUMNS_SEPARATOR, operationService.mapColumnNames(operation.getColumns()))));
+                        String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getColumns()))));
     }
 }

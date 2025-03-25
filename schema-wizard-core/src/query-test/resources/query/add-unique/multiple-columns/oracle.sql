@@ -1,0 +1,1 @@
+ALTER TABLE users ADD CONSTRAINT unq_users_first_name_last_name UNIQUE (first_name, last_name)

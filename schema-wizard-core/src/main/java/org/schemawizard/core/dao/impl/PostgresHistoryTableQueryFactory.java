@@ -83,17 +83,6 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
     }
 
     @Override
-    public String getSelectLastMigrationsByCount() {
-        return String.format(
-                "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
-                        "FROM %s mh " +
-                        "ORDER BY mh.%s DESC LIMIT ?",
-                ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
-                MIGRATION_TABLE_NAME,
-                ID);
-    }
-
-    @Override
     public String getInsertMigrationHistoryRowQuery() {
         return String.format(
                 "INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",

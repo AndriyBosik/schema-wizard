@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class ConfigurationPropertiesServiceImplTest {
 
     private final ConfigurationPropertiesServiceImpl configurationPropertiesService
-            = new ConfigurationPropertiesServiceImpl(new CamelCasePropertyUtils(), new PropertyParserImpl());
+            = new ConfigurationPropertiesServiceImpl(new CamelCasePropertyUtils(), new PropertyParserImpl(), Thread.currentThread().getContextClassLoader());
 
     @Test
     void propertiesServiceShouldReturnCorrectProperties() {
@@ -27,8 +27,8 @@ public class ConfigurationPropertiesServiceImplTest {
                 "org.schemawizard.core.db.migration",
                 "org.schemawizard.core.migration.operation.resolver",
                 false,
-                ColumnNamingStrategy.SNAKE_CASE,
-                new Defaults(new Text(31))
+            ColumnNamingStrategy.SNAKE_CASE,
+            new Defaults(new Text(31))
         );
         assertEquals(expectedProperties.getDatabaseProvider(), actualProperties.getDatabaseProvider());
         assertEquals(expectedProperties.getContext(), actualProperties.getContext());
@@ -37,7 +37,7 @@ public class ConfigurationPropertiesServiceImplTest {
         assertEquals(expectedProperties.getConnectionUrl(), actualProperties.getConnectionUrl());
         assertEquals(expectedProperties.getMigrationsPackage(), actualProperties.getMigrationsPackage());
         assertEquals(expectedProperties.getDefaults().getText().getDefaultLength(),
-                actualProperties.getDefaults().getText().getDefaultLength());
+            actualProperties.getDefaults().getText().getDefaultLength());
         assertFalse(expectedProperties.isLogGeneratedSql());
     }
 }

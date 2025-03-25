@@ -8,6 +8,7 @@ public class CreateTableOperation extends TableBasedOperation {
     private final List<AddColumnOperation> columns;
     private final List<AddForeignKeyOperation> foreignKeys;
     private final List<AddUniqueOperation> uniques;
+    private final List<AddCheckOperation> checks;
 
     public CreateTableOperation(
             String schema,
@@ -16,7 +17,8 @@ public class CreateTableOperation extends TableBasedOperation {
             AddPrimaryKeyOperation primaryKey,
             List<AddColumnOperation> columns,
             List<AddForeignKeyOperation> foreignKeys,
-            List<AddUniqueOperation> uniques
+            List<AddUniqueOperation> uniques,
+            List<AddCheckOperation> checks
     ) {
         super(schema, table);
         this.ifNotExists = ifNotExists;
@@ -24,6 +26,7 @@ public class CreateTableOperation extends TableBasedOperation {
         this.columns = columns;
         this.foreignKeys = foreignKeys;
         this.uniques = uniques;
+        this.checks = checks;
     }
 
     public boolean isIfNotExists() {
@@ -44,5 +47,9 @@ public class CreateTableOperation extends TableBasedOperation {
 
     public List<AddUniqueOperation> getUniques() {
         return uniques;
+    }
+
+    public List<AddCheckOperation> getChecks() {
+        return checks;
     }
 }
