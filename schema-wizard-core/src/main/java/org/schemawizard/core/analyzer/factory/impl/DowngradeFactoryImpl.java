@@ -34,6 +34,8 @@ public class DowngradeFactoryImpl implements DowngradeFactory {
             return versionStrategy((VersionDowngradeStrategyParameters) parameters);
         } else if (parameters instanceof ContextDowngradeStrategyParameters) {
             return contextStrategy((ContextDowngradeStrategyParameters) parameters);
+        } else if (parameters instanceof CountDowngradeStrategyParameters) {
+            return countStrategy((CountDowngradeStrategyParameters) parameters);
         }
         throw new UnknownDowngradeParametersException(
                 String.format(
