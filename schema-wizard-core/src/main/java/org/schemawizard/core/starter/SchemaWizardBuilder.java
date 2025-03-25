@@ -43,6 +43,7 @@ import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
 import org.schemawizard.core.property.service.impl.CamelCasePropertyUtils;
@@ -79,6 +80,10 @@ public class SchemaWizardBuilder {
 
     public static SchemaWizardBuilder init(File file) {
         return new SchemaWizardBuilder(new FilePropertiesResolver(file));
+    }
+
+    public static SchemaWizardBuilder init(YamlContext yamlContext) {
+        return new SchemaWizardBuilder(new YamlContextPropertiesResolver(yamlContext));
     }
 
     public SchemaWizardBuilder classLoader(ClassLoader classLoader) {
@@ -220,6 +225,19 @@ public class SchemaWizardBuilder {
         @Override
         public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
             return service.getProperties(file);
+        }
+    }
+
+    private static class YamlContextPropertiesResolver implements PropertiesResolver {
+        private final YamlContext yamlContext;
+
+        private YamlContextPropertiesResolver(YamlContext yamlContext) {
+            this.yamlContext = yamlContext;
+        }
+
+        @Override
+        public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
+            return service.getProperties(yamlContext);
         }
     }
 }

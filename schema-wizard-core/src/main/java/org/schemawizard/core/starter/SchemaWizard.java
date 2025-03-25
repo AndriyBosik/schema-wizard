@@ -39,7 +39,7 @@ public class SchemaWizard {
         });
     }
 
-    public void down(int version) {
+    public void downByVersion(int version) {
         transactionService.doWithinTransaction(() -> {
             List<MigrationData> downgradeMigrations = migrationAnalyzer.downgradeAnalyze(new VersionDowngradeStrategyParameters(version));
             migrationRunner.downgrade(downgradeMigrations);
