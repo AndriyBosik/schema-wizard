@@ -43,7 +43,6 @@ import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
-import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
 import org.schemawizard.core.property.service.impl.CamelCasePropertyUtils;
@@ -136,15 +135,6 @@ public class SchemaWizardBuilder {
         DiContainer container = new DiContainer();
 
         container.register(ClassLoader.class, classLoader);
-        container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
-        container.register(PropertyParser.class, PropertyParserImpl.class);
-        container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);
-
-        return container;
-    }
-
-    private static DiContainer initDiContainerWithPropertyServices() {
-        DiContainer container = new DiContainer();
         container.register(PropertyUtils.class, CamelCasePropertyUtils.class);
         container.register(PropertyParser.class, PropertyParserImpl.class);
         container.register(ConfigurationPropertiesService.class, ConfigurationPropertiesServiceImpl.class);

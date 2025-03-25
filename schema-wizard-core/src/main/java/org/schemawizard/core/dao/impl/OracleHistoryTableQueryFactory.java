@@ -84,6 +84,18 @@ public class OracleHistoryTableQueryFactory implements HistoryTableQueryFactory 
     }
 
     @Override
+    public String getSelectLastMigrationsByCount() {
+        return String.format(
+                "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
+                        "FROM %s mh " +
+                        "ORDER BY mh.%s DESC " +
+                        "FETCH FIRST ? ROWS ONLY",
+                ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
+                MIGRATION_TABLE_NAME,
+                ID);
+    }
+
+    @Override
     public String getInsertMigrationHistoryRowQuery() {
         return String.format(
                 "INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",

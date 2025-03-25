@@ -4,6 +4,7 @@ import org.schemawizard.core.analyzer.exception.MigrationAnalyzerException;
 import org.schemawizard.core.analyzer.exception.UnknownDowngradeParametersException;
 import org.schemawizard.core.analyzer.factory.DowngradeFactory;
 import org.schemawizard.core.analyzer.model.ContextDowngradeStrategyParameters;
+import org.schemawizard.core.analyzer.model.CountDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.DowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.model.VersionDowngradeStrategyParameters;
 import org.schemawizard.core.analyzer.service.DowngradeStrategy;
