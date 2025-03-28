@@ -18,6 +18,7 @@ public class ReflectionsFactoryImpl implements ReflectionsFactory {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
                 .addClassLoaders(classLoader)
                 .addUrls(ClasspathHelper.forPackage(packageName, classLoader))
+                .filterInputsBy(input -> input.startsWith(packageName.replace('.', '/')) && input.endsWith(".class"))
                 .addScanners(Scanners.SubTypes, Scanners.Resources);
         return new Reflections(configurationBuilder);
     }

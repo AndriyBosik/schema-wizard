@@ -35,6 +35,7 @@ public abstract class AbstractSchemaWizardMojo extends AbstractMojo {
             File configurationFile = new File(baseDir, CONFIGURATION_FILE_PATH);
 
             SchemaWizard schemaWizard = SchemaWizardBuilder.init(configurationFile)
+                    .classLoader(classLoader)
                     .build();
 
             doExecute(schemaWizard);
