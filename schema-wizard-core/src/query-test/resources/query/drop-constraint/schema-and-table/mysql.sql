@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users DROP CONSTRAINT con_generic

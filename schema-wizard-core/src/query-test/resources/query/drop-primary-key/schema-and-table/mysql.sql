@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users DROP PRIMARY KEY

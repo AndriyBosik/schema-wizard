@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users DROP CONSTRAINT chk_users_age_greater_than_zero

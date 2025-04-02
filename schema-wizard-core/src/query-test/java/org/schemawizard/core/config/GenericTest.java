@@ -1,7 +1,9 @@
 package org.schemawizard.core.config;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.reflections.Reflections;
+import org.schemawizard.core.config.extension.DisableForCondition;
 import org.schemawizard.core.di.DiContainer;
 import org.schemawizard.core.exception.InvalidConfigurationException;
 import org.schemawizard.core.metadata.ColumnNamingStrategy;
@@ -9,6 +11,7 @@ import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.annotation.Provider;
 import org.schemawizard.core.migration.factory.ColumnTypeFactory;
+import org.schemawizard.core.migration.factory.impl.MySqlColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
@@ -33,12 +36,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+@ExtendWith(DisableForCondition.class)
 public class GenericTest {
     protected final OperationResolverService operationResolverService;
     protected final Set<DatabaseProvider> supportedProviders;
 
     protected GenericTest() {
-        this(Set.of(DatabaseProvider.ORACLE, DatabaseProvider.POSTGRESQL));
+        this(Set.of(DatabaseProvider.ORACLE, DatabaseProvider.POSTGRESQL, DatabaseProvider.MYSQL));
     }
 
     protected GenericTest(DatabaseProvider provider) {
@@ -62,6 +66,7 @@ public class GenericTest {
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
+        container.register(ColumnTypeFactory.class, MySqlColumnTypeFactory.class);
         container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
 
         Reflections basePackageReflections = new Reflections("org.schemawizard.core");
@@ -110,6 +115,8 @@ public class GenericTest {
                 return "postgresql";
             case ORACLE:
                 return "oracle";
+            case MYSQL:
+                return "mysql";
             default:
                 throw new IllegalArgumentException("Unknown directory for database provider: " + TestContext.getProvider());
         }

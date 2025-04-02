@@ -2,6 +2,7 @@ package org.schemawizard.core.migration.service.impl;
 
 import org.schemawizard.core.migration.factory.ColumnTypeFactory;
 import org.schemawizard.core.migration.metadata.PlainColumnType;
+import org.schemawizard.core.migration.model.ColumnMetadata;
 import org.schemawizard.core.migration.operation.AddColumnOperation;
 import org.schemawizard.core.migration.operation.TableBasedOperation;
 import org.schemawizard.core.migration.service.ColumnNamingStrategyService;
@@ -34,6 +35,12 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
+    public boolean isPrimaryKeyColumn(String name, String... primaryKeyColumns) {
+        return Arrays.stream(mapColumnNames(primaryKeyColumns))
+                .anyMatch(x -> x.equals(mapColumnName(name)));
+    }
+
+    @Override
     public String mapColumnName(String name) {
         return columnNamingStrategyService.map(name);
     }
@@ -50,6 +57,12 @@ public class OperationServiceImpl implements OperationService {
             AddColumnOperation operation,
             ColumnTypeFactory typeFactory
     ) {
+        return buildColumnDefinition(operation, typeFactory, new ColumnMetadata(true));
+    }
+
+
+    @Override
+    public String buildColumnDefinition(AddColumnOperation operation, ColumnTypeFactory typeFactory, ColumnMetadata metadata) {
         String columnName = mapColumnName(operation.getName());
 
         StringBuilder builder = new StringBuilder(columnName);
@@ -87,7 +100,7 @@ public class OperationServiceImpl implements OperationService {
             builder.append(" DEFAULT ").append(operation.getSqlDefault());
         }
 
-        builder.append(operation.isNullable() ? " NULL" : " NOT NULL");
+        builder.append(operation.isNullable() && metadata.isNullAllowed() ? " NULL" : " NOT NULL");
 
         return builder.toString();
     }

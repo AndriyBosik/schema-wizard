@@ -1,0 +1,1 @@
+ALTER TABLE schemawizard.users RENAME TO customers

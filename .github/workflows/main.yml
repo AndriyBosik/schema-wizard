@@ -21,6 +21,15 @@ jobs:
         env:
           PROVIDER: ORACLE
         run: sh ./gradlew :schema-wizard-core:queryTest --info
+  mysql_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: "MySQL: Test Queries"
+        env:
+          PROVIDER: MYSQL
+        run: sh ./gradlew :schema-wizard-core:queryTest --info
 
   postgresql_integration_test:
     needs: postgresql_query_test
