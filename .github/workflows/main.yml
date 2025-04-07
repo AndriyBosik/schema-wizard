@@ -94,7 +94,7 @@ jobs:
           DB_PORT: 3306
           DB_DATABASE: swtest
           DB_SCHEMA: swtest
-          DB_CASE_SENSITIVE_TABLE_NAMES: false
+          DB_CASE_SENSITIVE_TABLE_NAMES: true
         run: |
           export DB_URL="jdbc:mysql://localhost:${DB_PORT}/${DB_DATABASE}"
           sh ./gradlew :schema-wizard-core:test --info
