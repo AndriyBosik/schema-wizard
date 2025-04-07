@@ -58,12 +58,13 @@ public class HistoryTableImpl implements HistoryTable {
     public void lockForExecution() {
         transactionService.doWithinTransaction(connection -> {
             try (Statement statement = connection.createStatement()) {
-                statement.executeUpdate(historyTableQueryFactory.getLockForExecutionSql());
+                statement.execute(historyTableQueryFactory.getLockForExecutionSql());
             } catch (SQLException exception) {
                 throw new MigrationAnalyzerException(
                         String.format(
                                 ErrorMessage.UNABLE_TO_LOCK_TABLE_TEMPLATE,
-                                MIGRATION_TABLE_NAME));
+                                MIGRATION_TABLE_NAME),
+                        exception);
             }
         });
     }

@@ -23,6 +23,7 @@ public class SqlClause {
     public static final String IF_NOT_EXISTS = "IF NOT EXISTS";
     public static final String ADD_CONSTRAINT = "ADD CONSTRAINT";
     public static final String DROP_CONSTRAINT = "DROP CONSTRAINT";
+    public static final String DROP_PRIMARY_KEY = "DROP PRIMARY KEY";
     public static final String RENAME_COLUMN = "RENAME COLUMN";
     public static final String RENAME = "RENAME";
     public static final String TO = "TO";

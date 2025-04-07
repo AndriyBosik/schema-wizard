@@ -33,6 +33,7 @@ ext {
     testContainersVersion = '1.20.0'
     postgresqlVersion = '42.7.4'
     oracleVersion = '23.5.0.24.07'
+    mysqlVersion = '8.0.33'
     reflectionsVersion = '0.10.2'
     dbUnitVersion = '2.8.0'
     dbRiderVersion = '1.44.0'
@@ -50,9 +51,11 @@ dependencies {
     testImplementation platform("org.testcontainers:testcontainers-bom:${testContainersVersion}")
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:oracle-free'
+    testImplementation 'org.testcontainers:mysql'
     testImplementation "org.dbunit:dbunit:${dbUnitVersion}"
     testRuntimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
     testRuntimeOnly "com.oracle.database.jdbc:ojdbc11:${oracleVersion}"
+    testImplementation "mysql:mysql-connector-java:${mysqlVersion}"
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation "com.github.database-rider:rider-junit5:${dbRiderVersion}"
 

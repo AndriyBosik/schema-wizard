@@ -96,6 +96,7 @@ public class ResetDbExtension implements BeforeEachCallback, AfterEachCallback, 
         switch (EnvUtils.PROVIDER) {
             case POSTGRESQL:
             case ORACLE:
+            case MYSQL:
                 return new ResetQueryTemplate(
                         tableName -> "DELETE FROM " + tableName,
                         tableName -> "DROP TABLE IF EXISTS " + tableName);
@@ -110,6 +111,8 @@ public class ResetDbExtension implements BeforeEachCallback, AfterEachCallback, 
                 return "postgresql";
             case ORACLE:
                 return "oracle";
+            case MYSQL:
+                return "mysql";
         }
         throw new IllegalArgumentException("Unknown database provider: " + EnvUtils.PROVIDER);
     }

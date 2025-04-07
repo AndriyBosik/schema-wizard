@@ -1,0 +1,1 @@
+ALTER TABLE users ADD CONSTRAINT pk_users_first_name_last_name PRIMARY KEY (first_name, last_name)

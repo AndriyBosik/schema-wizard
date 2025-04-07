@@ -22,6 +22,8 @@ public class PipelineTestRunner implements TestRunner {
                 return new PostgreSqlDbInitializer();
             case ORACLE:
                 return new OracleDbInitializer();
+            case MYSQL:
+                return new MySqlDbInitializer();
         }
         throw new IllegalArgumentException("No initializer found for database provider " + EnvUtils.PROVIDER);
     }

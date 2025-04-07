@@ -7,6 +7,8 @@ public class DropIndex implements OperationBuilder {
     private String schema;
     private String name;
     private boolean ifExists = false;
+    private String tableSchema;
+    private String tableName;
 
     private DropIndex() {
     }
@@ -30,8 +32,19 @@ public class DropIndex implements OperationBuilder {
         return this;
     }
 
+    public DropIndex on(String tableName) {
+        this.tableName = tableName;
+        return this;
+    }
+
+    public DropIndex on(String tableSchema, String tableName) {
+        this.tableSchema = tableSchema;
+        this.tableName = tableName;
+        return this;
+    }
+
     @Override
     public Operation build() {
-        return new DropIndexOperation(schema, name, ifExists);
+        return new DropIndexOperation(schema, name, ifExists, tableSchema, tableName);
     }
 }
