@@ -21,7 +21,7 @@ jobs:
         env:
           PROVIDER: ORACLE
         run: sh ./gradlew :schema-wizard-core:queryTest --info
-  mysql_test:
+  mysql_query_test:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -75,4 +75,26 @@ jobs:
           DB_CASE_SENSITIVE_TABLE_NAMES: false
         run: |
           export DB_URL="jdbc:oracle:thin:@localhost:${DB_PORT}/${DB_DATABASE}"
+          sh ./gradlew :schema-wizard-core:test --info
+  mysql_integration_test:
+    needs: mysql_query_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
+      - name: "MySQL: Test library features"
+        env:
+          PROVIDER: MYSQL
+          DB_USERNAME: mysql
+          DB_PASSWORD: root
+          DB_PORT: 3306
+          DB_DATABASE: swtest
+          DB_SCHEMA: swtest
+          DB_CASE_SENSITIVE_TABLE_NAMES: false
+        run: |
+          export DB_URL="jdbc:mysql://localhost:${DB_PORT}/${DB_DATABASE}"
           sh ./gradlew :schema-wizard-core:test --info

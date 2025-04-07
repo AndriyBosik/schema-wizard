@@ -120,6 +120,8 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
             return DatabaseProvider.POSTGRESQL;
         } else if (lowerCaseConnectionUrl.startsWith("jdbc:oracle:")) {
             return DatabaseProvider.ORACLE;
+        } else if (lowerCaseConnectionUrl.startsWith("jdbc:mysql:")) {
+            return DatabaseProvider.MYSQL;
         }
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.INVALID_DATABASE_PROVIDER_FORMAT,

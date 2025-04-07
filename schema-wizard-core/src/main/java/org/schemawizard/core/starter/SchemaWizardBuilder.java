@@ -22,6 +22,7 @@ import org.schemawizard.core.dao.DriverLoader;
 import org.schemawizard.core.dao.HistoryTableQueryFactory;
 import org.schemawizard.core.dao.TransactionService;
 import org.schemawizard.core.dao.impl.DriverLoaderImpl;
+import org.schemawizard.core.dao.impl.MySqlHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.OracleHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
 import org.schemawizard.core.dao.impl.TransactionServiceImpl;
@@ -32,6 +33,7 @@ import org.schemawizard.core.metadata.DatabaseProvider;
 import org.schemawizard.core.metadata.ErrorMessage;
 import org.schemawizard.core.migration.annotation.Provider;
 import org.schemawizard.core.migration.factory.ColumnTypeFactory;
+import org.schemawizard.core.migration.factory.impl.MySqlColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import org.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
 import org.schemawizard.core.migration.operation.Operation;
@@ -102,6 +104,7 @@ public class SchemaWizardBuilder {
         container.register(OperationService.class, OperationServiceImpl.class);
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
+        container.register(ColumnTypeFactory.class, MySqlColumnTypeFactory.class);
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
@@ -171,6 +174,9 @@ public class SchemaWizardBuilder {
         }
         if (provider == DatabaseProvider.ORACLE) {
             return OracleHistoryTableQueryFactory.class;
+        }
+        if (provider == DatabaseProvider.MYSQL) {
+            return MySqlHistoryTableQueryFactory.class;
         }
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT,
