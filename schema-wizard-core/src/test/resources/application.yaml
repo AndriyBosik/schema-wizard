@@ -1,14 +1,16 @@
 schema:
   wizard:
-    context: context
+    context: ${SW_CONTEXT:}
     database:
-      connection-url: jdbc:postgresql://${DS_HOST:default}:${DS_PORT:5432}/${DS_DATABASE:changeMe}?reWriteBatchedInserts=true
-      username: postgres
-      password: postgres
+      connection-url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
     migration:
-      package-name: org.schemawizard.core.db.migration
+      package-name: com.example.migration
+    extension:
+      package-name: com.example.extension
     log:
-      sql-query: false
+      sql-query: ${LOG_GENERATED_SQL:true}
     defaults:
       text:
-        max-length: ${DEFAULT_MAX_LENGTH:31}
+        max-length: ${DEFAULT_MAX_LENGTH:255}

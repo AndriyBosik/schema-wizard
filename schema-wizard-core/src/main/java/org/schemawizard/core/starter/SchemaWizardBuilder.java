@@ -43,6 +43,7 @@ import org.schemawizard.core.migration.service.impl.OperationResolverServiceImpl
 import org.schemawizard.core.migration.service.impl.OperationServiceImpl;
 import org.schemawizard.core.migration.service.impl.SnakeCaseColumnNamingStrategyService;
 import org.schemawizard.core.model.ConfigurationProperties;
+import org.schemawizard.core.property.model.YamlContext;
 import org.schemawizard.core.property.service.ConfigurationPropertiesService;
 import org.schemawizard.core.property.service.PropertyParser;
 import org.schemawizard.core.property.service.impl.CamelCasePropertyUtils;
@@ -81,6 +82,10 @@ public class SchemaWizardBuilder {
         return new SchemaWizardBuilder(new FilePropertiesResolver(file));
     }
 
+    public static SchemaWizardBuilder init(YamlContext yamlContext) {
+        return new SchemaWizardBuilder(new YamlContextPropertiesResolver(yamlContext));
+    }
+
     public SchemaWizardBuilder classLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
         return this;
@@ -111,7 +116,6 @@ public class SchemaWizardBuilder {
         container.register(DriverLoader.class, DriverLoaderImpl.class);
         container.register(ReflectionsFactory.class, ReflectionsFactoryImpl.class);
         container.register(SchemaWizard.class, SchemaWizard.class);
-
         if (properties.isLogGeneratedSql()) {
             container.register(QueryGeneratedCallback.class, QueryLoggerCallback.class);
         }
@@ -120,14 +124,11 @@ public class SchemaWizardBuilder {
 
         Reflections basePackageReflections = factory.newInstance(SW_BASE_PACKAGE_NAME);
         registerResolvers(basePackageReflections, container, provider);
-
         if (properties.getExtensionPackage() != null) {
             Reflections extensionPackageReflections = factory.newInstance(properties.getExtensionPackage());
             registerResolvers(extensionPackageReflections, container, provider);
-
             extensionPackageReflections.getSubTypesOf(BeforeQueryExecutionCallback.class)
                     .forEach(callback -> container.register(BeforeQueryExecutionCallback.class, callback));
-
             extensionPackageReflections.getSubTypesOf(AfterQueryExecutionCallback.class)
                     .forEach(callback -> container.register(AfterQueryExecutionCallback.class, callback));
         }
@@ -224,6 +225,19 @@ public class SchemaWizardBuilder {
         @Override
         public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
             return service.getProperties(file);
+        }
+    }
+
+    private static class YamlContextPropertiesResolver implements PropertiesResolver {
+        private final YamlContext yamlContext;
+
+        private YamlContextPropertiesResolver(YamlContext yamlContext) {
+            this.yamlContext = yamlContext;
+        }
+
+        @Override
+        public ConfigurationProperties resolve(ConfigurationPropertiesService service) {
+            return service.getProperties(yamlContext);
         }
     }
 }

@@ -1,18 +1,18 @@
-name: Testing queries
+name: Testing library functionality
 
 on: [push]
 
 jobs:
-  postgresql_test:
+  postgresql_query_test:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-      - name: "PostgreSql: Test Queries"
+      - name: "PostgreSQL: Test Queries"
         env:
           PROVIDER: POSTGRESQL
         run: sh ./gradlew :schema-wizard-core:queryTest --info
-  oracle_test:
+  oracle_query_test:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -21,3 +21,49 @@ jobs:
         env:
           PROVIDER: ORACLE
         run: sh ./gradlew :schema-wizard-core:queryTest --info
+
+  postgresql_integration_test:
+    needs: postgresql_query_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
+      - name: "PostgreSQL: Test library features"
+        env:
+          PROVIDER: POSTGRESQL
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_PORT: 5432
+          DB_DATABASE: swtest
+          DB_SCHEMA: ""
+          DB_CASE_SENSITIVE_TABLE_NAMES: true
+        run: |
+          export DB_URL="jdbc:postgresql://localhost:${DB_PORT}/${DB_DATABASE}"
+          sh ./gradlew :schema-wizard-core:test --info
+  oracle_integration_test:
+    needs: oracle_query_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
+      - name: "Oracle: Test library features"
+        env:
+          PROVIDER: ORACLE
+          DB_APP_USERNAME: oracle
+          DB_USERNAME: system
+          DB_PASSWORD: oracle
+          DB_PORT: 1521
+          DB_DATABASE: swtest
+          DB_SCHEMA: SYSTEM
+          DB_CASE_SENSITIVE_TABLE_NAMES: false
+        run: |
+          export DB_URL="jdbc:oracle:thin:@localhost:${DB_PORT}/${DB_DATABASE}"
+          sh ./gradlew :schema-wizard-core:test --info

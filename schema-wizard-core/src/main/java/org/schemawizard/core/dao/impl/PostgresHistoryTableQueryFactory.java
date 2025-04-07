@@ -69,16 +69,27 @@ public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactor
     public String getSelectLastMigrationsByContext() {
         return String.format(
                 "WITH break_row AS MATERIALIZED (" +
-                        " SELECT * FROM %s WHERE %s != ? ORDER BY %s DESC LIMIT 1) " +
+                        " SELECT * FROM %s WHERE %s IS NULL OR %s != ? ORDER BY %s DESC LIMIT 1) " +
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
                         "FROM %s mh " +
                         "LEFT JOIN break_row ON TRUE " +
                         "WHERE mh.%s = ? AND (break_row.%s IS NULL OR mh.%s > break_row.%s) " +
                         "ORDER BY mh.%s DESC",
-                MIGRATION_TABLE_NAME, CONTEXT, ID,
+                MIGRATION_TABLE_NAME, CONTEXT, CONTEXT, ID,
                 ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
                 MIGRATION_TABLE_NAME,
                 CONTEXT, ID, ID, ID,
+                ID);
+    }
+
+    @Override
+    public String getSelectLastMigrationsByCount() {
+        return String.format(
+                "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
+                        "FROM %s mh " +
+                        "ORDER BY mh.%s DESC LIMIT ?",
+                ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
+                MIGRATION_TABLE_NAME,
                 ID);
     }
 

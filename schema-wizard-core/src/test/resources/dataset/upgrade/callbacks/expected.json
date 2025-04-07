@@ -1,0 +1,14 @@
+{
+  "migration_history": [
+    {
+      "version": 1,
+      "description": "create people table",
+      "context": null
+    },
+    {
+      "version": 2,
+      "description": "create posts table",
+      "context": null
+    }
+  ]
+}
