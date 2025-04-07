@@ -1,6 +1,7 @@
 package org.schemawizard.gradle.task;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
@@ -10,6 +11,7 @@ import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 import org.schemawizard.core.starter.SchemaWizard;
 import org.schemawizard.core.starter.SchemaWizardBuilder;
+import org.schemawizard.gradle.task.metadata.ConfigConst;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -25,6 +27,10 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
     private final static String CONFIGURATION_FILE_PATH = "src/main/resources/schema-wizard.yml";
     private final static Set<String> GRADLE_CONFIGURATIONS = Set.of("compileClasspath", "runtimeClasspath");
 
+    protected String context;
+    protected Integer version;
+    protected Integer count;
+
     @TaskAction
     public Object execute() {
         ClassLoader parentClassLoader = getProject().getBuildscript().getClassLoader();
@@ -37,6 +43,8 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
 
         URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
         File configurationFile = new File(getProject().getProjectDir().getAbsolutePath(), CONFIGURATION_FILE_PATH);
+
+        initProperties();
 
         SchemaWizard schemaWizard = SchemaWizardBuilder.init(configurationFile)
                 .classLoader(classLoader)
@@ -62,6 +70,7 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
         return Stream.concat(
                         sourceSet.getOutput().getClassesDirs().getFiles().stream(),
                         sourceSet.getRuntimeClasspath().getFiles().stream())
+                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
@@ -71,6 +80,7 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
                                 .map(SourceSetOutput::getResourcesDir)
                                 .stream(),
                         sourceSet.getResources().getFiles().stream())
+                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
@@ -81,6 +91,7 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
                 .map(ResolvedConfiguration::getResolvedArtifacts)
                 .flatMap(Set::stream)
                 .map(ResolvedArtifact::getFile)
+                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
@@ -91,5 +102,29 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
             getLogger().error("Unable to determine file's URL: {}", file.getAbsolutePath(), exception);
         }
         return null;
+    }
+
+    private void initProperties() {
+        Project project = getProject();
+        context = getStringValue(project, ConfigConst.CONTEXT);
+        version = getIntegerValue(project, ConfigConst.VERSION);
+        count = getIntegerValue(project, ConfigConst.COUNT);
+    }
+
+    private String getStringValue(Project project, String propertyName) {
+        Object property = project.findProperty(propertyName);
+        return property != null ? property.toString() : null;
+    }
+
+    private Integer getIntegerValue(Project project, String propertyName) {
+        String rawValue = getStringValue(project, propertyName);
+        if (rawValue == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(rawValue);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Unable to parse value for property '" + propertyName + "': " + rawValue + " (must be an integer)");
+        }
     }
 }
