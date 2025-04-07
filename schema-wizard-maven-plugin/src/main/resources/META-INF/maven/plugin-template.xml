@@ -31,9 +31,86 @@
                     <editable>false</editable>
                     <description>Reference to the current project that includes the Flyway Maven plugin.</description>
                 </parameter>
+                <parameter>
+                    <name>context</name>
+                    <type>java.lang.String</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The context to downgrade migrations for</description>
+                </parameter>
+                <parameter>
+                    <name>version</name>
+                    <type>java.lang.Integer</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The version to downgrade migrations to</description>
+                </parameter>
+                <parameter>
+                    <name>count</name>
+                    <type>java.lang.Integer</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The count to downgrade migrations by</description>
+                </parameter>
             </parameters>
             <configuration>
                 <project implementation="org.apache.maven.project.MavenProject" default-value="${project}"/>
+                <context implementation="java.lang.String">${sw.context}</context>
+                <version implementation="java.lang.Integer">${sw.version}</version>
+                <count implementation="java.lang.Integer">${sw.count}</count>
+            </configuration>
+        </mojo>
+        <mojo>
+            <goal>downgrade</goal>
+            <implementation>org.schemawizard.maven.DowngradeMojo</implementation>
+            <description>Downgrade database migrations</description>
+            <phase>pre-integration-test</phase>
+            <requiresDependencyResolution>compile+runtime</requiresDependencyResolution>
+            <requiresDirectInvocation>false</requiresDirectInvocation>
+            <requiresProject>true</requiresProject>
+            <requiresReports>false</requiresReports>
+            <aggregator>false</aggregator>
+            <requiresOnline>false</requiresOnline>
+            <inheritedByDefault>true</inheritedByDefault>
+            <language>java</language>
+            <instantiationStrategy>per-lookup</instantiationStrategy>
+            <executionStrategy>once-per-session</executionStrategy>
+            <threadSafe>true</threadSafe>
+            <parameters>
+                <parameter>
+                    <name>project</name>
+                    <type>org.apache.maven.project.MavenProject</type>
+                    <required>true</required>
+                    <editable>false</editable>
+                    <description>Reference to the current project that includes the Flyway Maven plugin.</description>
+                </parameter>
+                <parameter>
+                    <name>context</name>
+                    <type>java.lang.String</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The context to downgrade migrations for</description>
+                </parameter>
+                <parameter>
+                    <name>version</name>
+                    <type>java.lang.Integer</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The version to downgrade migrations to</description>
+                </parameter>
+                <parameter>
+                    <name>count</name>
+                    <type>java.lang.Integer</type>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>The count to downgrade migrations by</description>
+                </parameter>
+            </parameters>
+            <configuration>
+                <project implementation="org.apache.maven.project.MavenProject" default-value="${project}"/>
+                <context implementation="java.lang.String">${sw.context}</context>
+                <version implementation="java.lang.Integer">${sw.version}</version>
+                <count implementation="java.lang.Integer">${sw.count}</count>
             </configuration>
         </mojo>
     </mojos>

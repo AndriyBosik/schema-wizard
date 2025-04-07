@@ -8,6 +8,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.schemawizard.core.starter.SchemaWizard;
 import org.schemawizard.core.starter.SchemaWizardBuilder;
+import org.schemawizard.maven.metadata.ConfigConst;
 
 import java.io.File;
 import java.util.HashSet;
@@ -18,6 +19,15 @@ public abstract class AbstractSchemaWizardMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
+
+    @Parameter(name = ConfigConst.CONTEXT)
+    protected String context;
+
+    @Parameter(name = ConfigConst.VERSION)
+    protected Integer version;
+
+    @Parameter(name = ConfigConst.COUNT)
+    protected Integer count;
 
     @Override
     public void execute() throws MojoExecutionException {
