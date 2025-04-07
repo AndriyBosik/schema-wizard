@@ -28,7 +28,7 @@ import java.net.URL;
 import java.util.Optional;
 
 public class ConfigurationPropertiesServiceImpl implements ConfigurationPropertiesService {
-    private final static String DEFAULT_LOCATION = "application.yaml";
+    private final static String DEFAULT_LOCATION = "schema-wizard.yml";
 
     private final PropertyUtils propertyUtils;
     private final PropertyParser propertyParser;

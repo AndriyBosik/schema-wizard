@@ -6,7 +6,7 @@ Library also supports cross-database compatibility - write once, run anywhere.
 
 ## Configuration
 
-SchemaWizard is configured via `application.yaml` file. You are able to configure the following properties:
+SchemaWizard is configured via `schema-wizard.yml` file. You are able to configure the following properties:
 
 | Property                              | Description                          | Type    | Default | Example value                                  |
 |---------------------------------------|--------------------------------------|---------|---------|------------------------------------------------|
