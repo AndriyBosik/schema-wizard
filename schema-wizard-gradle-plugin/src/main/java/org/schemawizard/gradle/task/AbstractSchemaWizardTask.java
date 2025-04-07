@@ -70,7 +70,6 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
         return Stream.concat(
                         sourceSet.getOutput().getClassesDirs().getFiles().stream(),
                         sourceSet.getRuntimeClasspath().getFiles().stream())
-                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
@@ -80,7 +79,6 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
                                 .map(SourceSetOutput::getResourcesDir)
                                 .stream(),
                         sourceSet.getResources().getFiles().stream())
-                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
@@ -91,7 +89,6 @@ public abstract class AbstractSchemaWizardTask extends DefaultTask {
                 .map(ResolvedConfiguration::getResolvedArtifacts)
                 .flatMap(Set::stream)
                 .map(ResolvedArtifact::getFile)
-                .peek(file -> getLogger().debug("Adding class file: {}", file.getAbsolutePath()))
                 .map(this::getUrlOrNullQuietly);
     }
 
