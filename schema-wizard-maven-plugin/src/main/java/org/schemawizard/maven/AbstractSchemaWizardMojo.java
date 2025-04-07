@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractSchemaWizardMojo extends AbstractMojo {
-    private final static String CONFIGURATION_FILE_PATH = "src/main/resources/application.yaml";
+    private final static String CONFIGURATION_FILE_PATH = "src/main/resources/schema-wizard.yml";
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;

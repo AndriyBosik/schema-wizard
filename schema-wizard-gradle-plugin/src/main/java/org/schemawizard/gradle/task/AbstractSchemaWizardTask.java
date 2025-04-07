@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractSchemaWizardTask extends DefaultTask {
-    private final static String CONFIGURATION_FILE_PATH = "src/main/resources/application.yaml";
+    private final static String CONFIGURATION_FILE_PATH = "src/main/resources/schema-wizard.yml";
     private final static Set<String> GRADLE_CONFIGURATIONS = Set.of("compileClasspath", "runtimeClasspath");
 
     @TaskAction
