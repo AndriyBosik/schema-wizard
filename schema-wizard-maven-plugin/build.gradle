@@ -26,8 +26,8 @@ dependencies {
 }
 
 tasks.register('initializePluginDescriptor') {
-    def inputFile = file("/src/main/resources/META-INF/maven/plugin-template.xml")
-    def outputFile = file("/src/main/resources/META-INF/maven/plugin.xml")
+    def inputFile = file("src/main/resources/META-INF/maven/plugin-template.xml")
+    def outputFile = file("src/main/resources/META-INF/maven/plugin.xml")
 
     doLast {
         def content = inputFile.text
