@@ -1,0 +1,23 @@
+name: Release library
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: Library version
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Get latest git tag
+        run: |
+          chmod +x .github/scripts/get_latest_git_tag.sh
+          ./.github/scripts/get_latest_git_tag.sh
