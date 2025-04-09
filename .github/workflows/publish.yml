@@ -57,13 +57,13 @@ jobs:
           gpg --import /home/runner/.gnupg/secring.gpg
 
       - name: Publish library to Sonatype
-        run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest \
-          -Dsw.version=${{ steps.next_version.outputs.value }} \
-          -Dsw.artifactId=${{ github.event.inputs.artifact_id }} \
-          -DsonatypeUsername=${{ secrets.SONATYPE_USERNAME }} \
-          -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }} \
-          -Dsigning.keyId=${{ secrets.GPG_KEY_ID }} \
-          -Dsigning.password=${{ secrets.GPG_KEY_PASSWORD }} \
+        run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest
+          -Dsw.version=${{ steps.next_version.outputs.value }}
+          -Dsw.artifactId=${{ github.event.inputs.artifact_id }}
+          -DsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
+          -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
+          -Dsigning.keyId=${{ secrets.GPG_KEY_ID }}
+          -Dsigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Dsigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
 
       - name: Tag new version
