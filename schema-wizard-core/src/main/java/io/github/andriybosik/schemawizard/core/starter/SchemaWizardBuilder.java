@@ -63,7 +63,7 @@ public class SchemaWizardBuilder {
     private final PropertiesResolver propertiesResolver;
     private ClassLoader classLoader;
 
-    private static final String SW_BASE_PACKAGE_NAME = "org.schemawizard.core";
+    private static final String SW_BASE_PACKAGE_NAME = "io.github.andriybosik.schemawizard.core";
 
     private SchemaWizardBuilder(
             PropertiesResolver propertiesResolver

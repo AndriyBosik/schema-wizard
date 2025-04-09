@@ -49,7 +49,7 @@ public class MigrationValidationTest extends BaseTest {
     void shouldThrowExceptionWhenMigrationConstructorHasParams() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.constructionwithparams");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
-        assertEquals("org.schemawizard.core.migration.validation.constructionwithparams.SW001CreatePeopleTable constructor shouldn't have params", exception.getMessage());
+        assertEquals("io.github.andriybosik.schemawizard.core.migration.validation.constructionwithparams.SW001CreatePeopleTable constructor shouldn't have params", exception.getMessage());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class MigrationValidationTest extends BaseTest {
     void shouldThrowExceptionWhenPrivateMigrationConstructor() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.privateconstrctor");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
-        assertEquals("org.schemawizard.core.migration.validation.privateconstrctor.SW001CreatePeopleTable constructor should be 'public'", exception.getMessage());
+        assertEquals("io.github.andriybosik.schemawizard.core.migration.validation.privateconstrctor.SW001CreatePeopleTable constructor should be 'public'", exception.getMessage());
     }
 
     @Test
@@ -69,6 +69,6 @@ public class MigrationValidationTest extends BaseTest {
     void shouldThrowExceptionWhenMultipleConstructorsDeclared() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.multipleconstructors");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
-        assertEquals("org.schemawizard.core.migration.validation.multipleconstructors.SW001CreatePeopleTable should have only one public constructor without params", exception.getMessage());
+        assertEquals("io.github.andriybosik.schemawizard.core.migration.validation.multipleconstructors.SW001CreatePeopleTable should have only one public constructor without params", exception.getMessage());
     }
 }

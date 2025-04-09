@@ -39,10 +39,10 @@ public class FactoryUtils {
         database.setPassword(EnvUtils.DB_PASSWORD);
 
         YamlContext.Schema.Wizard.Migration migration = new YamlContext.Schema.Wizard.Migration();
-        migration.setPackageName(String.format("org.schemawizard.core.migration.%s", migrationType));
+        migration.setPackageName(String.format("io.github.andriybosik.schemawizard.core.migration.%s", migrationType));
 
         YamlContext.Schema.Wizard.Extension extension = new YamlContext.Schema.Wizard.Extension();
-        extension.setPackageName(String.format("org.schemawizard.core.extension.%s", migrationType));
+        extension.setPackageName(String.format("io.github.andriybosik.schemawizard.core.extension.%s", migrationType));
 
         YamlContext.Schema.Wizard.Log log = new YamlContext.Schema.Wizard.Log();
         log.setSqlQuery(String.valueOf(true));

@@ -69,7 +69,7 @@ public class GenericTest {
         container.register(ColumnTypeFactory.class, MySqlColumnTypeFactory.class);
         container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
 
-        Reflections basePackageReflections = new Reflections("org.schemawizard.core");
+        Reflections basePackageReflections = new Reflections("io.github.andriybosik.schemawizard.core");
         registerResolvers(basePackageReflections, TestContext.getProvider())
                 .forEach(resolver -> container.register(OperationResolver.class, resolver));
 
