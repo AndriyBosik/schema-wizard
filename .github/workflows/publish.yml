@@ -36,6 +36,9 @@ jobs:
           echo "Latest version is: $latest_version"
           echo "value=$latest_version" >> $GITHUB_OUTPUT
 
+      - name: Mock
+        run: git tag --sort=-v:refname
+
       - name: Generate next version
         id: next_version
         run: |

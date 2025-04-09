@@ -2,8 +2,6 @@
 
 set -e
 
-git tag --sort=-v:refname
-
 latest_tag=$(git tag --sort=-v:refname | head -n 1)
 
 if [ -z "$latest_tag" ]; then
