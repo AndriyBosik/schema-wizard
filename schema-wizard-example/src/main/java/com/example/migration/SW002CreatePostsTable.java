@@ -1,11 +1,11 @@
 package com.example.migration;
 
-import org.schemawizard.core.migration.Migration;
-import org.schemawizard.core.migration.builder.column.ColumnBuilder;
-import org.schemawizard.core.migration.builder.operation.CreateTable;
-import org.schemawizard.core.migration.builder.operation.DropTable;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.Migration;
+import io.github.andriybosik.schemawizard.core.migration.builder.column.ColumnBuilder;
+import io.github.andriybosik.schemawizard.core.migration.builder.operation.CreateTable;
+import io.github.andriybosik.schemawizard.core.migration.builder.operation.DropTable;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationContext;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 
 public class SW002CreatePostsTable implements Migration {
     @Override

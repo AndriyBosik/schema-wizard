@@ -1,7 +1,7 @@
 package com.example;
 
-import org.schemawizard.core.starter.SchemaWizard;
-import org.schemawizard.core.starter.SchemaWizardBuilder;
+import io.github.andriybosik.schemawizard.core.starter.SchemaWizard;
+import io.github.andriybosik.schemawizard.core.starter.SchemaWizardBuilder;
 
 public class MigrationUsageApplication {
     public static void main(String[] args) {

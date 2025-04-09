@@ -1,7 +1,7 @@
 package com.example.extension.callback.after;
 
-import org.schemawizard.core.analyzer.MigrationData;
-import org.schemawizard.core.callback.AfterQueryExecutionCallback;
+import io.github.andriybosik.schemawizard.core.analyzer.MigrationData;
+import io.github.andriybosik.schemawizard.core.callback.AfterQueryExecutionCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

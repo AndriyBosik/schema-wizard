@@ -1,12 +1,75 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id("eu.kakde.gradle.sonatype-maven-central-publisher") version "1.0.6"
 }
 
-group 'org.schema-wizard'
-version '1.0-SNAPSHOT'
+group 'io.github.andriybosik'
+version(System.getProperty("sw.version") ?: '1.0-SNAPSHOT')
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    meta = [
+            DESC          : "GitHub Version Catalog Repository for Personal Projects based on Gradle", // TODO fix
+            LICENSE       : "Apache-2.0",
+            LICENSE_URL   : "https://opensource.org/licenses/Apache-2.0",
+            GITHUB_REPO   : "https://github.com/AndriyBosik/schema-wizard.git",
+            DEVELOPER_ID  : "andriibosyk",
+            DEVELOPER_NAME: "Andrii Bosyk",
+            ARTIFACT_ID   : System.getProperty("sw.artifactId") ?: "schema-wizard-core-test",
+            VERSION       : version,
+            GROUP_ID      : group
+    ]
+}
+
+def sonatypeUsername = project.findProperty('sonatypeUsername') ?: System.getenv('SONATYPE_USERNAME')
+def sonatypePassword = project.findProperty('sonatypePassword') ?: System.getenv('SONATYPE_PASSWORD')
+
+sonatypeCentralPublishExtension {
+    groupId = meta.GROUP_ID
+    artifactId = meta.ARTIFACT_ID
+    version = meta.VERSION
+
+    componentType = "java"
+    publishingType = "AUTOMATIC"
+
+    username = sonatypeUsername
+    password = sonatypePassword
+
+    pom {
+        name = meta.ARTIFACT_ID
+        description = meta.DESC
+        url = "${meta.GITHUB_REPO}"
+
+        licenses {
+            license {
+                name = meta.LICENSE
+                url = meta.LICENSE_URL
+            }
+        }
+
+        developers {
+            developer {
+                id = meta.DEVELOPER_ID
+                name = meta.DEVELOPER_NAME
+            }
+        }
+
+        scm {
+            url = "${meta.GITHUB_REPO}"
+            connection = "scm:git:${meta.GITHUB_REPO}"
+            developerConnection = "scm:git:${meta.GITHUB_REPO}"
+        }
+
+        issueManagement {
+            system = "GitHub"
+            url = "${meta.GITHUB_REPO}/issues"
+        }
+    }
 }
 
 configurations {
