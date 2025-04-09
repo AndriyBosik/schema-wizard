@@ -18,6 +18,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Configure Git access
+        run: |
+          chmod +x ./.github/scripts/configure_git_access.sh
+          ./.github/scripts/configure_git_access.sh ${{ secrets.ACTIONS_SSH_KEY }}
+
       - name: Get latest version
         id: latest_version
         run: |
