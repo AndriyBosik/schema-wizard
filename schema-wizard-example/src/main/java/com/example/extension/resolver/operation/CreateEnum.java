@@ -1,6 +1,6 @@
 package com.example.extension.resolver.operation;
 
-import org.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 
 public class CreateEnum {
     private String schema;

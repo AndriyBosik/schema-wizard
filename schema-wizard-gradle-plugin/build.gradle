@@ -13,8 +13,8 @@ repositories {
 gradlePlugin {
     plugins {
         schemaWizardPlugin {
-            id = 'org.schemawizard.gradle-plugin'
-            implementationClass = 'org.schemawizard.gradle.SchemaWizardPlugin'
+            id = 'io.github.andriybosik.schemawizard.gradle-plugin'
+            implementationClass = 'io.github.andriybosik.schemawizard.gradle.SchemaWizardPlugin'
         }
     }
 }

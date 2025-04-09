@@ -1,10 +1,10 @@
 package com.example.extension.resolver;
 
 import com.example.extension.resolver.operation.DropEnumOperation;
-import org.schemawizard.core.metadata.DatabaseProvider;
-import org.schemawizard.core.migration.annotation.Provider;
-import org.schemawizard.core.migration.model.MigrationInfo;
-import org.schemawizard.core.migration.operation.resolver.OperationResolver;
+import io.github.andriybosik.schemawizard.core.metadata.DatabaseProvider;
+import io.github.andriybosik.schemawizard.core.migration.annotation.Provider;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationInfo;
+import io.github.andriybosik.schemawizard.core.migration.operation.resolver.OperationResolver;
 
 @Provider(DatabaseProvider.POSTGRESQL)
 public class PostgreSqlDropEnumOperationResolver implements OperationResolver<DropEnumOperation> {
