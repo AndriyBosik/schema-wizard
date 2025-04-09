@@ -168,4 +168,7 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+# Other
+schema-wizard-maven-plugin/src/main/resources/META-INF/maven/plugin.xml
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,gradle,java

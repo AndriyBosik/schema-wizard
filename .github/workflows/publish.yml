@@ -52,7 +52,7 @@ jobs:
       - name: Configure secring.gpg
         run: |
           echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > secring.gpg
-          gpg import secring.gpg
+          gpg --import secring.gpg
 
       - name: Publish library to Sonatype
         run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest \
