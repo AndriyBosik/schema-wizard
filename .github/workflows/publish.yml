@@ -57,7 +57,7 @@ jobs:
           gpg --import /home/runner/.gnupg/secring.gpg
 
       - name: Publish library to Sonatype
-        run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest
+        run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
           -Dsw.version=${{ steps.next_version.outputs.value }}
           -Dsw.artifactId=${{ github.event.inputs.artifact_id }}
           -DsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
