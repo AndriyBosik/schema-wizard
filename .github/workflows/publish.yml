@@ -69,8 +69,8 @@ jobs:
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
-          -DsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
-          -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
+          -PsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
+          -PsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
 
       - name: Tag new version
         run: |
