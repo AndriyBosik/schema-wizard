@@ -52,8 +52,8 @@ jobs:
       - name: Configure secring.gpg
         run: |
           export GPG_TTY=$(tty)
-          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > secring.gpg
-          gpg --import secring.gpg
+          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
+          gpg --import /home/runner/.gnupg/secring.gpg
 
       - name: Publish library to Sonatype
         run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest \
@@ -63,7 +63,7 @@ jobs:
           -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }} \
           -Dsigning.keyId=${{ secrets.GPG_KEY_ID }} \
           -Dsigning.password=${{ secrets.GPG_KEY_PASSWORD }} \
-          -Dsigning.secretKeyRingFile=secring.gpg
+          -Dsigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
 
       - name: Tag new version
         run: |
