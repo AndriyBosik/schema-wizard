@@ -2,9 +2,9 @@ package com.example.migration;
 
 import com.example.extension.resolver.operation.CreateEnum;
 import com.example.extension.resolver.operation.DropEnum;
-import org.schemawizard.core.migration.Migration;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.Migration;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationContext;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 
 public class SW006CreateStatusEnum implements Migration {
     @Override

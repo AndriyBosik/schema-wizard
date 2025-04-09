@@ -75,10 +75,10 @@ with `@SWName` annotation - you will see an example in a following code fragment
 ```Java
 package com.example.schemawizard;
 
-import org.schemawizard.core.migration.annotation.SWName;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
-import org.schemawizard.core.migration.Migration;
+import io.github.andriybosik.schemawizard.core.migration.annotation.SWName;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationContext;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.Migration;
 
 @SWName("Create users table")
 public class SW001CreateUsersTable implements Migration {
@@ -99,10 +99,10 @@ public class SW001CreateUsersTable implements Migration {
 ```Java
 package com.example.schemawizard;
 
-import org.schemawizard.core.migration.annotation.SWName;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
-import org.schemawizard.core.migration.Migration;
+import io.github.andriybosik.schemawizard.core.migration.annotation.SWName;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationContext;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.Migration;
 
 @SWName("Create users table")
 public class SW001CreateUsersTable implements Migration {
@@ -473,8 +473,8 @@ Since Oracle does not a syntax for creating an enum, your migration will fail.
 To avoid such issues, you have to implement two resolvers and annotation them with `@Provider` annotation:
 
 ```Java
-import org.schemawizard.core.metadata.DatabaseProvider;
-import org.schemawizard.core.migration.annotation.Provider;
+import io.github.andriybosik.schemawizard.core.metadata.DatabaseProvider;
+import io.github.andriybosik.schemawizard.core.migration.annotation.Provider;
 
 @Provider(DatabaseProvider.POSTGRESQL)
 public class PostgreSqlCreateEnumOperationResolver implements OperationResolver<CreateEnumOperation> {
@@ -486,8 +486,8 @@ public class PostgreSqlCreateEnumOperationResolver implements OperationResolver<
 ```
 
 ```Java
-import org.schemawizard.core.metadata.DatabaseProvider;
-import org.schemawizard.core.migration.annotation.Provider;
+import io.github.andriybosik.schemawizard.core.metadata.DatabaseProvider;
+import io.github.andriybosik.schemawizard.core.migration.annotation.Provider;
 
 @Provider(DatabaseProvider.ORACLE)
 public class OracleCreateEnumOperationResolver implements OperationResolver<CreateEnumOperation> {
