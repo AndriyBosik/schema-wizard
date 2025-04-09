@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -51,8 +51,8 @@ jobs:
 
       - name: Configure secring.gpg
         run: |
-          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /secring.gpg
-          gpg import /secring.gpg
+          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > secring.gpg
+          gpg import secring.gpg
 
       - name: Publish library to Sonatype
         run: ./gradlew :schema-wizard-core:publishToSonatype -x text -x queryTest \
@@ -62,7 +62,7 @@ jobs:
           -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }} \
           -Dsigning.keyId=${{ secrets.GPG_KEY_ID }} \
           -Dsigning.password=${{ secrets.GPG_KEY_PASSWORD }} \
-          -Dsigning.secretKeyRingFile=/secring.gpg
+          -Dsigning.secretKeyRingFile=secring.gpg
 
       - name: Tag new version
         run: |
