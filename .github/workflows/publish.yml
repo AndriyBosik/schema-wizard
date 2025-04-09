@@ -76,4 +76,5 @@ jobs:
       - name: Tag new version
         run: |
           chmod +x ./.github/scripts/tag_new_version.sh
-          ./.github/scripts/tag_new_version.sh ${{ steps.next_version.outputs.value }}
+          ./.github/scripts/tag_new_version.sh ${{ steps.next_version.outputs.raw }}
+          echo "${{ steps.latest_version.outputs.value }} -> ${{ steps.next_version.outputs.raw }}"
