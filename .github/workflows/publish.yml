@@ -60,11 +60,11 @@ jobs:
         run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
           -Dsw.version=${{ steps.next_version.outputs.value }}
           -Dsw.artifactId=${{ github.event.inputs.artifact_id }}
+          -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+          -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
+          -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
           -DsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
           -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
-          -Dsigning.keyId=${{ secrets.GPG_KEY_ID }}
-          -Dsigning.password=${{ secrets.GPG_KEY_PASSWORD }}
-          -Dsigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
 
       - name: Tag new version
         run: |
