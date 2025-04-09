@@ -52,6 +52,7 @@ jobs:
       - name: Configure secring.gpg
         run: |
           export GPG_TTY=$(tty)
+          mkdir -p /home/runner/.gnupg
           echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
           gpg --import /home/runner/.gnupg/secring.gpg
 
