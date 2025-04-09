@@ -42,7 +42,8 @@ jobs:
           chmod +x ./.github/scripts/increment_version.sh
           next_version=$(./.github/scripts/increment_version.sh ${{ steps.latest_version.outputs.value }} ${{ github.event.inputs.publish_type }})
           echo "${{ steps.latest_version.outputs.value }} -> $next_version"
-          echo "value=$next_version" >> $GITHUB_OUTPUT
+          echo "raw=$next_version" >> $GITHUB_OUTPUT
+          echo "semantic=${next_version#v}" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -64,7 +65,7 @@ jobs:
 
       - name: Publish library to Sonatype
         run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
-          -Dsw.version=${{ steps.next_version.outputs.value }}
+          -Dsw.version=${{ steps.next_version.outputs.semantic }}
           -Dsw.artifactId=${{ github.event.inputs.artifact_id }}
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
