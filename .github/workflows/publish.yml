@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Configure Git access
         run: |
@@ -35,9 +37,6 @@ jobs:
           latest_version=$(./.github/scripts/get_latest_git_tag.sh)
           echo "Latest version is: $latest_version"
           echo "value=$latest_version" >> $GITHUB_OUTPUT
-
-      - name: Mock
-        run: git tag --sort=-v:refname
 
       - name: Generate next version
         id: next_version
