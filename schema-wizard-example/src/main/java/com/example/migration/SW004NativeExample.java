@@ -1,10 +1,10 @@
 package com.example.migration;
 
-import org.schemawizard.core.migration.Migration;
-import org.schemawizard.core.migration.builder.operation.DropColumns;
-import org.schemawizard.core.migration.builder.operation.NativeQuery;
-import org.schemawizard.core.migration.model.MigrationContext;
-import org.schemawizard.core.migration.operation.Operation;
+import io.github.andriybosik.schemawizard.core.migration.Migration;
+import io.github.andriybosik.schemawizard.core.migration.builder.operation.DropColumns;
+import io.github.andriybosik.schemawizard.core.migration.builder.operation.NativeQuery;
+import io.github.andriybosik.schemawizard.core.migration.model.MigrationContext;
+import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 
 public class SW004NativeExample implements Migration {
     @Override

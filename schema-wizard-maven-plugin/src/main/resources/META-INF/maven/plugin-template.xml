@@ -9,7 +9,7 @@
     <mojos>
         <mojo>
             <goal>upgrade</goal>
-            <implementation>org.schemawizard.maven.UpgradeMojo</implementation>
+            <implementation>io.github.andriybosik.schemawizard.maven.UpgradeMojo</implementation>
             <description>Upgrade database migrations</description>
             <phase>pre-integration-test</phase>
             <requiresDependencyResolution>compile+runtime</requiresDependencyResolution>
@@ -62,7 +62,7 @@
         </mojo>
         <mojo>
             <goal>downgrade</goal>
-            <implementation>org.schemawizard.maven.DowngradeMojo</implementation>
+            <implementation>io.github.andriybosik.schemawizard.maven.DowngradeMojo</implementation>
             <description>Downgrade database migrations</description>
             <phase>pre-integration-test</phase>
             <requiresDependencyResolution>compile+runtime</requiresDependencyResolution>

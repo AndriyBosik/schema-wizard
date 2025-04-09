@@ -1,0 +1,83 @@
+name: Publish library
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_type:
+        type: choice
+        description: Publishing type
+        options:
+          - patch
+          - minor
+          - major
+      artifact_id:
+        type: string
+        description: ArtifactId to use when publishing a library
+        default: "schema-wizard-core-test"
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Configure Git access
+        run: |
+          chmod +x ./.github/scripts/configure_git_access.sh
+          ./.github/scripts/configure_git_access.sh "${{ secrets.ACTIONS_SSH_KEY }}"
+
+      - name: Get latest version
+        id: latest_version
+        run: |
+          chmod +x ./.github/scripts/get_latest_git_tag.sh
+          latest_version=$(./.github/scripts/get_latest_git_tag.sh)
+          echo "Latest version is: $latest_version"
+          echo "value=$latest_version" >> $GITHUB_OUTPUT
+
+      - name: Generate next version
+        id: next_version
+        run: |
+          chmod +x ./.github/scripts/increment_version.sh
+          next_version=$(./.github/scripts/increment_version.sh ${{ steps.latest_version.outputs.value }} ${{ github.event.inputs.publish_type }})
+          echo "${{ steps.latest_version.outputs.value }} -> $next_version"
+          echo "raw=$next_version" >> $GITHUB_OUTPUT
+          echo "semantic=${next_version#v}" >> $GITHUB_OUTPUT
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+      - name: Build core project
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :schema-wizard-core:build -x test -x queryTest
+
+      - name: Configure secring.gpg
+        run: |
+          export GPG_TTY=$(tty)
+          mkdir -p /home/runner/.gnupg
+          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
+          gpg --import /home/runner/.gnupg/secring.gpg
+
+      - name: Publish library to Sonatype
+        run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
+          -Dsw.version=${{ steps.next_version.outputs.semantic }}
+          -Dsw.artifactId=${{ github.event.inputs.artifact_id }}
+          -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+          -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
+          -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
+          -PsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
+          -PsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
+
+      - name: Tag new version
+        run: |
+          chmod +x ./.github/scripts/tag_new_version.sh
+          ./.github/scripts/tag_new_version.sh ${{ steps.next_version.outputs.raw }}
+          echo "${{ steps.latest_version.outputs.value }} -> ${{ steps.next_version.outputs.raw }}"
