@@ -1,23 +1,89 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'signing'
+    id("eu.kakde.gradle.sonatype-maven-central-publisher") version "1.0.6"
 }
 
 def pluginName = "SchemaWizard Plugin"
 def pluginDescription = "Use plugin to run SchemaWizard from command line"
 
-group 'org.schema-wizard'
-version '1.0-SNAPSHOT'
+group 'io.github.andriybosik'
+version(System.getProperty("sw.version") ?: '1.0-SNAPSHOT')
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    meta = [
+            DESC          : "SchemaWizard is an open-source tool designed to simplify the process of database versioning",
+            LICENSE       : "Apache-2.0",
+            LICENSE_URL   : "https://opensource.org/licenses/Apache-2.0",
+            GITHUB_REPO   : "https://github.com/AndriyBosik/schema-wizard.git",
+            DEVELOPER_ID  : "andriibosyk",
+            DEVELOPER_NAME: "Andrii Bosyk",
+            ARTIFACT_ID   : System.getProperty("sw.artifactId") ?: "schema-wizard-maven-plugin-preview",
+            VERSION       : version,
+            GROUP_ID      : group
+    ]
+}
+
+def sonatypeUsername = project.findProperty('sonatypeUsername') ?: System.getenv('SONATYPE_USERNAME')
+def sonatypePassword = project.findProperty('sonatypePassword') ?: System.getenv('SONATYPE_PASSWORD')
+
+sonatypeCentralPublishExtension {
+    groupId = meta.GROUP_ID
+    artifactId = meta.ARTIFACT_ID
+    version = meta.VERSION
+
+    componentType = "java"
+    publishingType = "AUTOMATIC"
+
+    username = sonatypeUsername
+    password = sonatypePassword
+
+    pom {
+        name = meta.ARTIFACT_ID
+        description = meta.DESC
+        url = "${meta.GITHUB_REPO}"
+
+        licenses {
+            license {
+                name = meta.LICENSE
+                url = meta.LICENSE_URL
+            }
+        }
+
+        developers {
+            developer {
+                id = meta.DEVELOPER_ID
+                name = meta.DEVELOPER_NAME
+            }
+        }
+
+        scm {
+            url = "${meta.GITHUB_REPO}"
+            connection = "scm:git:${meta.GITHUB_REPO}"
+            developerConnection = "scm:git:${meta.GITHUB_REPO}"
+        }
+
+        issueManagement {
+            system = "GitHub"
+            url = "${meta.GITHUB_REPO}/issues"
+        }
+    }
 }
 
 dependencies {
     implementation 'org.apache.maven:maven-core:3.9.9'
     implementation 'org.apache.maven:maven-plugin-api:3.9.9'
     implementation 'org.apache.maven:maven-project:2.2.1'
-    implementation project(':schema-wizard-core') // TODO change to `implementation 'org.schema-wizard:schema-wizard-core:version'` once the library becomes published to Maven repository
+    if (System.getProperty("sw.version")) {
+        implementation "$group:schema-wizard-core:$version"
+    } else {
+        implementation project(':schema-wizard-core')
+    }
 
     compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.14.0'
 
@@ -49,6 +115,7 @@ tasks.register('copyPluginDescriptor', Copy) {
 
 tasks.copyPluginDescriptor {
     dependsOn initializePluginDescriptor
+    dependsOn javadoc
 }
 
 tasks.jar {
