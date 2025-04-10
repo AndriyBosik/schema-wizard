@@ -7,6 +7,7 @@ plugins {
 
 def pluginName = "SchemaWizard Plugin"
 def pluginDescription = "Use plugin to run SchemaWizard from command line"
+def artifact = System.getProperty("sw.artifactId") ?: "schema-wizard-maven-plugin-preview"
 
 group 'io.github.andriybosik'
 version(System.getProperty("sw.version") ?: '1.0-SNAPSHOT')
@@ -23,7 +24,6 @@ ext {
             GITHUB_REPO   : "https://github.com/AndriyBosik/schema-wizard.git",
             DEVELOPER_ID  : "andriibosyk",
             DEVELOPER_NAME: "Andrii Bosyk",
-            ARTIFACT_ID   : System.getProperty("sw.artifactId") ?: "schema-wizard-maven-plugin-preview",
             VERSION       : version,
             GROUP_ID      : group
     ]
@@ -34,7 +34,7 @@ def sonatypePassword = project.findProperty('sonatypePassword') ?: System.getenv
 
 sonatypeCentralPublishExtension {
     groupId = meta.GROUP_ID
-    artifactId = meta.ARTIFACT_ID
+    artifactId = artifact
     version = meta.VERSION
 
     componentType = "java"
@@ -101,7 +101,7 @@ tasks.register('initializePluginDescriptor') {
         content = content.replace("\${plugin.name}", pluginName)
         content = content.replace("\${plugin.description}", pluginDescription)
         content = content.replace("\${plugin.groupId}", project.group.toString())
-        content = content.replace("\${plugin.artifactId}", project.name)
+        content = content.replace("\${plugin.artifactId}", artifact.toString())
         content = content.replace("\${plugin.version}", project.version.toString())
 
         outputFile.text = content

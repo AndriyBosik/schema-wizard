@@ -1,4 +1,4 @@
-name: Publish library plugins
+name: Publish Maven plugin
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         required: true
       artifact_suffix:
         type: string
-        description: Suffix to use to for all artifactId's
+        description: Suffix to use to for artifact
         default: "-preview"
         required: false
 
