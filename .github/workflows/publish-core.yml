@@ -1,4 +1,4 @@
-name: Publish library core
+name: Publish core functionality
 
 on:
   workflow_dispatch:
