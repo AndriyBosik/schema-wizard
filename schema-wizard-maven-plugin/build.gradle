@@ -80,7 +80,7 @@ dependencies {
     implementation 'org.apache.maven:maven-plugin-api:3.9.9'
     implementation 'org.apache.maven:maven-project:2.2.1'
     if (System.getProperty("sw.version")) {
-        implementation "$group:schema-wizard-core:$version"
+        implementation "$group:schema-wizard-core${System.getProperty("sw.core.suffix")}:$version"
     } else {
         implementation project(':schema-wizard-core')
     }

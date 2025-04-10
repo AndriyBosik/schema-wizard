@@ -1,0 +1,58 @@
+name: Publish library plugins
+
+on:
+  workflow_dispatch:
+    inputs:
+      core_version:
+        type: string
+        description: The version of library core artifact to use
+        required: true
+      artifact_suffix:
+        type: string
+        description: Suffix to use to for all artifactId's
+        default: "-preview"
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Configure Git access
+        run: |
+          chmod +x ./.github/scripts/configure_git_access.sh
+          ./.github/scripts/configure_git_access.sh "${{ secrets.ACTIONS_SSH_KEY }}"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+      - name: Build Maven plugin project
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :schema-wizard-maven-plugin:build -x test
+
+      - name: Configure secring.gpg
+        run: |
+          export GPG_TTY=$(tty)
+          mkdir -p /home/runner/.gnupg
+          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
+          gpg --import /home/runner/.gnupg/secring.gpg
+
+      - name: Publish library Maven plugin to Sonatype
+        run: ./gradlew :schema-wizard-maven-plugin:publishToSonatype -x test
+          -Dsw.version=${{ github.event.inputs.core_version }}
+          -Dsw.core.suffix=${{ github.event.inputs.artifact_suffix }}
+          -Dsw.artifactId=schema-wizard-maven-plugin${{ github.event.inputs.artifact_suffix }}
+          -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+          -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
+          -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
+          -PsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
+          -PsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
