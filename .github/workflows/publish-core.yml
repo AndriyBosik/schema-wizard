@@ -1,4 +1,4 @@
-name: Publish library
+name: Publish library core
 
 on:
   workflow_dispatch:
@@ -70,16 +70,6 @@ jobs:
         run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
           -Dsw.version=${{ steps.next_version.outputs.semantic }}
           -Dsw.artifactId=schema-wizard-core${{ github.event.inputs.artifact_suffix }}
-          -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
-          -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
-          -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
-          -PsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
-          -PsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
-
-      - name: Publish library maven plugin to Sonatype
-        run: ./gradlew :schema-wizard-maven-plugin:publishToSonatype -x test -x queryTest
-          -Dsw.version=${{ steps.next_version.outputs.semantic }}
-          -Dsw.artifactId=schema-wizard-maven-plugin${{ github.event.inputs.artifact_suffix }}
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
