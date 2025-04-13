@@ -5,12 +5,12 @@ plugins {
     id("eu.kakde.gradle.sonatype-maven-central-publisher") version "1.0.6"
 }
 
-def pluginName = "SchemaWizard Plugin"
-def pluginDescription = "Use plugin to run SchemaWizard from command line"
+def pluginName = "SchemaWizard Maven Plugin"
+def pluginDescription = "Use plugin to run SchemaWizard database migration tool from command line"
 def artifact = System.getProperty("sw.artifactId") ?: "schema-wizard-maven-plugin-preview"
 
-group 'io.github.andriybosik'
-version(System.getProperty("sw.version") ?: '1.0-SNAPSHOT')
+group = 'io.github.andriybosik'
+version = System.getProperty("sw.version") ?: '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()

@@ -116,11 +116,11 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
 
     private DatabaseProvider mapDatabaseProvider(String connectionUrl) {
         String lowerCaseConnectionUrl = connectionUrl.toLowerCase();
-        if (lowerCaseConnectionUrl.startsWith("jdbc:postgresql:")) {
+        if (lowerCaseConnectionUrl.contains(":postgresql:")) {
             return DatabaseProvider.POSTGRESQL;
-        } else if (lowerCaseConnectionUrl.startsWith("jdbc:oracle:")) {
+        } else if (lowerCaseConnectionUrl.contains(":oracle:")) {
             return DatabaseProvider.ORACLE;
-        } else if (lowerCaseConnectionUrl.startsWith("jdbc:mysql:")) {
+        } else if (lowerCaseConnectionUrl.contains(":mysql:")) {
             return DatabaseProvider.MYSQL;
         }
         throw new InvalidConfigurationException(String.format(

@@ -1,19 +1,28 @@
 plugins {
     id 'java'
     id 'java-gradle-plugin'
+    id 'signing'
+    id 'com.gradle.plugin-publish' version '1.3.1'
 }
 
-group = 'org.schema-wizard'
-version = '1.0-SNAPSHOT'
+group = 'io.github.andriybosik'
+version = System.getProperty("sw.version") ?: '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 gradlePlugin {
+    website = 'https://github.com/AndriyBosik/schema-wizard'
+    vcsUrl = 'https://github.com/AndriyBosik/schema-wizard'
+
     plugins {
-        schemaWizardPlugin {
-            id = 'io.github.andriybosik.schemawizard.gradle-plugin'
+        schemaWizard {
+            displayName = 'SchemaWizard Gradle Plugin'
+            description = 'Use plugin to run SchemaWizard database migration tool from command line'
+            tags = ['code', 'migration', 'database', 'sql', 'versioning', 'automation', 'db']
+
+            id = "io.github.andriybosik.schema-wizard-gradle-plugin${System.getProperty("sw.core.suffix")}"
             implementationClass = 'io.github.andriybosik.schemawizard.gradle.SchemaWizardPlugin'
         }
     }
@@ -21,7 +30,11 @@ gradlePlugin {
 
 dependencies {
     implementation gradleApi()
-    implementation project(':schema-wizard-core') // TODO it doesn't work. Change to `implementation 'org.schema-wizard:schema-wizard-core:version'` once the library becomes published to Maven repository
+    if (System.getProperty("sw.version")) {
+        implementation "$group:schema-wizard-core${System.getProperty("sw.core.suffix")}:$version"
+    } else {
+        implementation project(':schema-wizard-core')
+    }
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
