@@ -19,8 +19,8 @@ repositories {
 ext {
     meta = [
             DESC          : "SchemaWizard is an open-source tool designed to simplify the process of database versioning",
-            LICENSE       : "Apache-2.0",
-            LICENSE_URL   : "https://opensource.org/licenses/Apache-2.0",
+            LICENSE       : "MIT",
+            LICENSE_URL   : "https://opensource.org/licenses/MIT",
             GITHUB_REPO   : "https://github.com/AndriyBosik/schema-wizard.git",
             DEVELOPER_ID  : "andriibosyk",
             DEVELOPER_NAME: "Andrii Bosyk",
