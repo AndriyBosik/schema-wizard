@@ -1,4 +1,4 @@
-name: Publish Maven plugin
+name: Publish Gradle plugin
 
 on:
   workflow_dispatch:
@@ -29,10 +29,10 @@ jobs:
           distribution: 'corretto'
           java-version: '21'
 
-      - name: Build Maven plugin project
+      - name: Build Gradle plugin project
         run: |
           chmod +x ./gradlew
-          ./gradlew :schema-wizard-maven-plugin:build -x test
+          ./gradlew :schema-wizard-gradle-plugin:build -x test
 
       - name: Configure secring.gpg
         run: |
@@ -41,11 +41,11 @@ jobs:
           echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
           gpg --import /home/runner/.gnupg/secring.gpg
 
-      - name: Publish library Maven plugin to Sonatype
-        run: ./gradlew :schema-wizard-maven-plugin:publishToSonatype -x test
+      - name: Publish library Gradle plugin to Gradle plugin repository
+        run: ./gradlew :schema-wizard-gradle-plugin:publishPlugins -x test
           -Dsw.version=${{ github.event.inputs.core_version }}
+          -Dgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }}
+          -Dgradle.publish.secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
-          -PsonatypeUsername=${{ secrets.SONATYPE_USERNAME }}
-          -PsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}

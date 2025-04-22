@@ -10,11 +10,6 @@ on:
           - patch
           - minor
           - major
-      artifact_suffix:
-        type: string
-        description: Suffix to use to for all artifactId's when publishing a library
-        default: "-preview"
-        required: false
 
 jobs:
   publish:
@@ -69,7 +64,6 @@ jobs:
       - name: Publish library core to Sonatype
         run: ./gradlew :schema-wizard-core:publishToSonatype -x test -x queryTest
           -Dsw.version=${{ steps.next_version.outputs.semantic }}
-          -Dsw.artifactId=schema-wizard-core${{ github.event.inputs.artifact_suffix }}
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg

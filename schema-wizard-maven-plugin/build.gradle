@@ -7,7 +7,7 @@ plugins {
 
 def pluginName = "SchemaWizard Maven Plugin"
 def pluginDescription = "Use plugin to run SchemaWizard database migration tool from command line"
-def artifact = System.getProperty("sw.artifactId") ?: "schema-wizard-maven-plugin-preview"
+def artifact = "schema-wizard-maven-plugin"
 
 group = 'io.github.andriybosik'
 version = System.getProperty("sw.version") ?: '1.0-SNAPSHOT'
@@ -80,7 +80,7 @@ dependencies {
     implementation 'org.apache.maven:maven-plugin-api:3.9.9'
     implementation 'org.apache.maven:maven-project:2.2.1'
     if (System.getProperty("sw.version")) {
-        implementation "$group:schema-wizard-core${System.getProperty("sw.core.suffix")}:$version"
+        implementation "$group:schema-wizard-core:$version"
     } else {
         implementation project(':schema-wizard-core')
     }
