@@ -39,9 +39,19 @@ jobs:
           chmod +x ./gradlew
           ./gradlew :schema-wizard-gradle-plugin:build -x test
 
+      - name: Configure secring.gpg
+        run: |
+          export GPG_TTY=$(tty)
+          mkdir -p /home/runner/.gnupg
+          echo "${{ secrets.GPG_SECRING_BASE64 }}" | base64 --decode > /home/runner/.gnupg/secring.gpg
+          gpg --import /home/runner/.gnupg/secring.gpg
+
       - name: Publish library Maven plugin to Sonatype
         run: ./gradlew :schema-wizard-gradle-plugin:publishPlugins -x test
           -Dsw.version=${{ github.event.inputs.core_version }}
           -Dsw.core.suffix=${{ github.event.inputs.artifact_suffix }}
+          -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
+          -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
+          -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg
           -Pgradle.publish.key=${{ secrets.GRADLE_PUBLISH_KEY }}
           -Pgradle.publish-secret=${{ secrets.GRADLE_PUBLISH_SECRET }}
