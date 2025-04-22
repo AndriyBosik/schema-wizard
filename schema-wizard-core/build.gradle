@@ -20,7 +20,7 @@ ext {
             GITHUB_REPO   : "https://github.com/AndriyBosik/schema-wizard.git",
             DEVELOPER_ID  : "andriibosyk",
             DEVELOPER_NAME: "Andrii Bosyk",
-            ARTIFACT_ID   : System.getProperty("sw.artifactId") ?: "schema-wizard-core-preview",
+            ARTIFACT_ID   : "schema-wizard-core",
             VERSION       : version,
             GROUP_ID      : group
     ]

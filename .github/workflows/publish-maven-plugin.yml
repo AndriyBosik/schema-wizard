@@ -7,11 +7,6 @@ on:
         type: string
         description: The version of library core artifact to use
         required: true
-      artifact_suffix:
-        type: string
-        description: Suffix to use to for artifact
-        default: "-preview"
-        required: false
 
 jobs:
   publish:
@@ -49,8 +44,6 @@ jobs:
       - name: Publish library Maven plugin to Sonatype
         run: ./gradlew :schema-wizard-maven-plugin:publishToSonatype -x test
           -Dsw.version=${{ github.event.inputs.core_version }}
-          -Dsw.core.suffix=${{ github.event.inputs.artifact_suffix }}
-          -Dsw.artifactId=schema-wizard-maven-plugin${{ github.event.inputs.artifact_suffix }}
           -Psigning.keyId=${{ secrets.GPG_KEY_ID }}
           -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }}
           -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg

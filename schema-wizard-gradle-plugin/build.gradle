@@ -7,7 +7,6 @@ plugins {
 
 group = 'io.github.andriybosik'
 version = System.getProperty("sw.version") ?: '1.0-SNAPSHOT'
-def suffix = System.getProperty("sw.core.suffix") ?: ""
 
 repositories {
     mavenCentral()
@@ -23,7 +22,7 @@ gradlePlugin {
             description = 'Use plugin to run SchemaWizard database migration tool from command line'
             tags = ['code', 'migration', 'database', 'sql', 'versioning', 'automation', 'db']
 
-            id = "io.github.andriybosik.schema-wizard-gradle-plugin$suffix"
+            id = "io.github.andriybosik.schema-wizard-gradle-plugin"
             implementationClass = 'io.github.andriybosik.schemawizard.gradle.SchemaWizardPlugin'
         }
     }
@@ -32,7 +31,7 @@ gradlePlugin {
 dependencies {
     implementation gradleApi()
     if (System.getProperty("sw.version")) {
-        implementation "$group:schema-wizard-core$suffix:$version"
+        implementation "$group:schema-wizard-core:$version"
     } else {
         implementation project(':schema-wizard-core')
     }
