@@ -1,4 +1,4 @@
-name: Publish Maven plugin
+name: Publish Gradle plugin
 
 on:
   workflow_dispatch:
