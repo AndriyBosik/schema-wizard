@@ -161,7 +161,7 @@ public class SW001CreateUsersTable implements Migration {
                                         .newText("first_name"); // column type - text, column name - first_name
 
                             ColumnBuilder lastName = factory
-                                        .text("last_name"); // column type - text, column name - last_name
+                                        .newText("last_name"); // column type - text, column name - last_name
                         })
                 .primaryKey("pk_users", table -> table.id) // CONSTRAINT pk_users PRIMARY KEY (id)
                 .unique("unq_users_email", table -> table.email) // CONSTRAINT unq_users_email UNIQUE (email)
