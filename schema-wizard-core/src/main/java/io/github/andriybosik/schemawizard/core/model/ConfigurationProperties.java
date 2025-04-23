@@ -14,7 +14,6 @@ public class ConfigurationProperties {
     private final String extensionPackage;
     private final boolean logGeneratedSql;
     private final ColumnNamingStrategy columnNamingStrategy;
-
     private final Defaults defaults;
 
     public ConfigurationProperties(

@@ -4,34 +4,71 @@ SchemaWizard is a powerful tool for managing database migrations easily.
 Writing a database migration is just as easily as writing a simple Java class.
 Library also supports cross-database compatibility - write once, run anywhere.
 
+## Supported databases
+
+1. PostgreSQL
+2. Oracle
+3. MySQL
+
+## Installation
+
+For Gradle-based project, include the following dependency to your project:
+
+```groovy
+implementation "io.github.andriybosik:schema-wizard-core:${version}"
+```
+
+For Maven-based project, include the following dependency to your project:
+
+```xml
+<dependency>
+   <groupId>io.github.andriybosik</groupId>
+   <artifactId>schema-wizard-core-preview</artifactId>
+   <version>${version}</version>
+</dependency>
+```
+
 ## Configuration
 
 SchemaWizard is configured via `schema-wizard.yml` file. You are able to configure the following properties:
 
-| Property                              | Description                          | Type    | Default | Example value                                  |
-|---------------------------------------|--------------------------------------|---------|---------|------------------------------------------------|
-| schema.wizard.database.connection-url | Database connection URL              | String  | -       | jdbc:postgresql://localhost:5432/schema-wizard |
-| schema.wizard.database.username       | Database username                    | String  | -       | postgres                                       |
-| schema.wizard.database.password       | Database password                    | String  | -       | postgres                                       |
-| schema.wizard.migration.package-name  | Package to scan migrations from      | String  | -       | com.example.schemawizard                       |
-| schema.wizard.log.sql-query           | Whether to log generated SQL queries | boolean | false   | true                                           |
+| Property                                  | Description                                                                                                                                           | Type    | Default    | Example value                                  |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|---------|------------|------------------------------------------------|
+| schema.wizard.context                     | The context to use when running migrations. It is stored in a separate column of `migration_history` table. It could be used for downgrade operations | String  | -          | migration-context                              |
+| schema.wizard.database.connection-url     | Database connection URL                                                                                                                               | String  | -          | jdbc:postgresql://localhost:5432/schema-wizard |
+| schema.wizard.database.username           | Database username                                                                                                                                     | String  | -          | postgres                                       |
+| schema.wizard.database.password           | Database password                                                                                                                                     | String  | -          | postgres                                       |
+| schema.wizard.naming-strategy.column.type | Defines which strategy to use to generate names for table columns. Possible values: SNAKE_CASE, CAMEL_CASE                                            | enum    | SNAKE_CASE | CAMEL_CASE                                     |
+| schema.wizard.migration.package-name      | Package to scan migrations from                                                                                                                       | String  | -          | com.example.schemawizard                       |
+| schema.wizard.extension.package-name      | Package to scan extensions (callbacks, operation resolvers etc) from                                                                                  | String  | -          | com.example.extension                          |
+| schema.wizard.log.sql-query               | Whether to log generated SQL queries                                                                                                                  | boolean | false      | true                                           |
+| schema.wizard.defaults.text.max-length    | Default max length value for text column                                                                                                              | Integer | -          | 255                                            |
 
 Example of the configuration file:
 
 ```yaml
 schema:
   wizard:
+    context: migration-context
     database:
       connection-url: jdbc:postgresql://localhost:5432/schema-wizard
       username: ${DB_USERNAME:postgres}
       password: ${DB_PASSWORD:postgres}
+    naming-strategy:
+      column:
+        type: SNAKE_CASE
     migration:
       package-name: com.example.migration
+    extension:
+      package-name: com.example.extension
     log:
       sql-query: false
+    defaults:
+      text:
+        max-length: 255
 ```
 
-## Usage
+## Upgrade a database
 
 ### Creating a table
 
@@ -112,30 +149,22 @@ public class SW001CreateUsersTable implements Migration {
                         "public", // schema name
                         "users", // table name
                         factory -> new Object() {
-                            public ColumnBuilder id() {
-                                return factory
-                                        .integer("id") // column type - integer, column name - id
+                            ColumnBuilder id = factory
+                                        .newInteger() // column type - integer, column name - id
                                         .nullable(false); // not-nullable
-                            }
 
-                            public ColumnBuilder email() {
-                                return factory
-                                        .text("email") // column type - text, column name - email
+                            ColumnBuilder email = factory
+                                        .newText() // column type - text, column name - email
                                         .nullable(false); // not-nullable
-                            }
 
-                            public ColumnBuilder firstName() {
-                                return factory
-                                        .text("first_name"); // column type - text, column name - first_name
-                            }
+                            ColumnBuilder firstName = factory
+                                        .newText("first_name"); // column type - text, column name - first_name
 
-                            public ColumnBuilder lastName() {
-                                return factory
+                            ColumnBuilder lastName = factory
                                         .text("last_name"); // column type - text, column name - last_name
-                            }
                         })
-                .primaryKey("pk_users", table -> table.id()) // CONSTRAINT pk_users PRIMARY KEY (id)
-                .unique("unq_users_email", table -> table.email()) // CONSTRAINT unq_users_email UNIQUE (email)
+                .primaryKey("pk_users", table -> table.id) // CONSTRAINT pk_users PRIMARY KEY (id)
+                .unique("unq_users_email", table -> table.email) // CONSTRAINT unq_users_email UNIQUE (email)
                 .build();
     }
 
@@ -194,40 +223,18 @@ public class SW002CreatePostsTable implements Migration {
                         "public",
                         "posts",
                         factory -> new Object() {
-                            public ColumnBuilder id() {
-                                return factory
-                                        .integer("id")
-                                        .nullable(false);
-                            }
+                            ColumnBuilder id = factory.newInteger().nullable(false);
 
-                            public ColumnBuilder userId() {
-                                return factory
-                                        .integer("user_id")
-                                        .nullable(false);
-                            }
+                            ColumnBuilder userId = factory.newInteger().nullable(false); // if schema.wizard.naming-strategy.column.type was set to SNAKE_CASE, SchemaWizard will generate `user_id` name for this column
 
-                            public ColumnBuilder title() {
-                                return factory
-                                        .text("title")
-                                        .nullable(false);
-                            }
+                            ColumnBuilder title = factory.newText().nullable(false);
 
-                            public ColumnBuilder description() {
-                                return factory
-                                        .text("description")
-                                        .nullable(false);
-                            }
+                            ColumnBuilder description = factory.newText().nullable(false);
 
-                            public ColumnBuilder details() {
-                                return factory
-                                        .generic("details")
-                                        .type("JSON")
-                                        .nullable(false)
-                                        .sqlDefault("JSON_BUILD_OBJECT()");
-                            }
+                            ColumnBuilder details = factory.generic().type("JSON").nullable(false).sqlDefault("JSON_BUILD_OBJECT()");
                         })
-                .primaryKey("pk_posts", table -> table.id())
-                .foreignKey("fk_posts_user_id", fk -> fk.column(table -> table.userId())
+                .primaryKey("pk_posts", table -> table.id)
+                .foreignKey("fk_posts_user_id", fk -> fk.column(table -> table.userId)
                         .foreignSchema("public")
                         .foreignTable("users")
                         .foreignColumn("id")) // CONSTRAINT fk_posts_user_id FOREIGN KEY (user_id) REFERENCES public.users (id)
@@ -272,25 +279,97 @@ public class SW003NativeExample implements Migration {
     }
 }
 ```
+## Downgrade a database
 
-#### Other supported actions
+SchemaWizard provides 3 ways to downgrade your database version:
+
+1. Downgrade by count
+2. Downgrade by version
+3. Downgrade by context
+
+### Downgrade by count
+
+To trigger downgrading by count, the following code should be used:
+
+```java
+schemaWizard.downByCount(2);
+```
+
+In this case, SchemaWizard will search for 2 recently (recency is defined by applied date and not by version number) executed migration classes and will execute `down()` method.
+
+### Downgrade by version
+
+To trigger downgrading by version, the following code should be used:
+
+```java
+schemaWizard.downByVersion(1745424669072);
+```
+
+In this case, SchemaWizard will execute `down()` method for all the migrations that were executed after a migration with version number equal to 2.
+Downgrade for migration with the provided version will be executed as well.
+If a migration with a provided version number does not exist in the `migration_history` table - no migrations will be downgraded.
+
+### Downgrade by context
+
+To trigger downgrading by context, the following code should be used:
+
+```java
+schemaWizard.downByContext("migration-context");
+```
+
+In this case, SchemaWizard will execute downgrade for the migrations that have provided context in `context` column of `migration_history` table.
+For example, let's consider the following `migration_history` table:
+
+| id | version       | description                      | context           | applied_on                 |
+|----|---------------|----------------------------------|-------------------|----------------------------|
+| 1  | 1644935164376 | Create users table               | \<null\>          | 2022-02-15 20:08:02.297015 |
+| 2  | 1644942227413 | Create posts table               | \<null\>          | 2022-02-15 20:08:02.368423 |
+| 3  | 1645132160010 | Add idx_users_email index        | migration-context | 2022-02-17 23:57:41.282187 |
+| 4  | 1645136472162 | Add status column to users table | migration-context | 2022-02-18 00:22:06.842839 |
+
+When running the above command for this database, SchemaWizard will downgrade the migrations with `id` = 4 and 3.
+
+**Note!** There might a case when there are multiple migrations with the same `context` value, but there are some migrations with a different `context` value between them. Like in the following example:
+
+| id | version       | description                      | context        | applied_on                 |
+|----|---------------|----------------------------------|----------------|----------------------------|
+| 1  | 1644935164376 | Create users table               | feature/first  | 2022-02-15 20:08:02.297015 |
+| 2  | 1644942227413 | Create posts table               | feature/second | 2022-02-15 20:08:02.368423 |
+| 3  | 1645132160010 | Add idx_users_email index        | feature/first  | 2022-02-17 23:57:41.282187 |
+| 4  | 1645136472162 | Add status column to users table | feature/first  | 2022-02-18 00:22:06.842839 |
+
+In this case, when running the following command:
+
+```java
+schemaWizard.downByContext("feature/first");
+```
+
+Only the migrations with `id` = 4 and 3 will be downgraded.
+
+## Other supported actions
 
 SchemaWizard also supports the following actions:
 
-1. `AddColumns` - add columns to a database table
-2. `AddForeignKey` - add foreign key to a database table
-3. `AddPrimaryKey` - add primary key to a database table
-4. `AddUnique` - add unique constraint to a database table
-5. `Composite` - compose multiple actions into one
-6. `CreateTable` - create a database table
-7. `DropColumns` - drop columns from a database table
-8. `DropForeignKey` - drop foreign key from a database table
-9. `DropPrimaryKey` - drop primary key from a database table
-10. `DropTable` - drop a table
-11. `DropUnique` - drop unique constraint from a database table
-12. `NativeQuery` - run native queries
+1. `AddCheck` - add check constraint to a database table
+2. `AddColumns` - add columns to a database table
+3. `AddForeignKey` - add foreign key to a database table
+4. `AddPrimaryKey` - add primary key to a database table
+5. `AddUnique` - add unique constraint to a database table
+6. `Composite` - compose multiple actions into one
+7. `CreateIndex` - create an index
+8. `CreateSequence` - create a sequence
+9. `CreateTable` - create a database table
+10. `DropCheck` - drop check constraint from a database table
+11. `DropColumns` - drop columns from a database table
+12. `DropConstraint` - drop constraint from a database table
+13. `DropForeignKey` - drop foreign key from a database table
+14. `DropIndex` - drop index
+15. `DropPrimaryKey` - drop primary key from a database table
+16. `DropTable` - drop a table
+17. `DropUnique` - drop unique constraint from a database table
+18. `NativeQuery` - run native queries
 
-### Defining a custom Operation
+## Defining a custom Operation
 
 You might notice that `up()` and `down()` both returns an instance of `Operation` interface.
 `Operation` interface defines an action on a database.
@@ -302,10 +381,9 @@ To achieve this, you have to follow the next steps:
 
 1. Create a class that implements `Operation` interface
 2. Create a class that implements `OperationResolver<T extends Operation>` class
-3. Register the `OperationResolver`
-4. Use your operation in a migration class
+3. Use your operation in a migration class
 
-#### Step 1 - Create a class that implements `Operation` interface
+### Step 1 - Create a class that implements `Operation` interface
 
 ```Java
 public class CreateEnumOperation implements Operation {
@@ -376,7 +454,9 @@ public class CreateEnum {
 }
 ```
 
-#### Step 2 - Create a class that implements `OperationResolver<T extends Operation>` class
+### Step 2 - Create a class that implements `OperationResolver<T extends Operation>` class
+
+**Note!** The class should be created under a package defined in `schema.wizard.extension.package-name` property.
 
 `OperationResolver` is a class that is used to translate `Operation`'s metadata into native SQL. Let's take a look at
 this interface:
@@ -431,18 +511,7 @@ public class CreateEnumOperationResolver implements OperationResolver<CreateEnum
 
 The implementation just uses values, provided by `CreateEnumOperation` class to combine them into native script.
 
-#### Step 3 - Register the `OperationResolver`
-
-The last, but not least - you have to register your `OperationResolver` in your `SchemaWizard` instance.
-You can use `.registerResolver()` method to achieve this:
-
-```Java
-SchemaWizard schemaWizard=SchemaWizardBuilder.init()
-        .registerResolver(CreateEnumOperationResolver.class)
-        .build();
-```
-
-#### Step 4 - Use your operation in a migration class
+### Step 3 - Use your operation in a migration class
 
 Finally, you can create a migration script that uses your custom defined `CreateEnumOperation`:
 
@@ -470,7 +539,7 @@ And will be run on your database.
 **Note!** If you use multiple database providers(for example, PostgreSQL and Oracle), the
 same `CreateEnumOperationResolver` will be used for both database.
 Since Oracle does not a syntax for creating an enum, your migration will fail.
-To avoid such issues, you have to implement two resolvers and annotation them with `@Provider` annotation:
+To avoid such issues, you have to implement two resolvers and annotate them with `@Provider` annotation:
 
 ```Java
 import io.github.andriybosik.schemawizard.core.metadata.DatabaseProvider;
@@ -498,7 +567,7 @@ public class OracleCreateEnumOperationResolver implements OperationResolver<Crea
 }
 ```
 
-### Using callbacks
+## Using callbacks
 
 SchemaWizard provides an ability to execute custom logic before or after some action is happened.
 Currently supported callbacks are:
@@ -510,10 +579,11 @@ Currently supported callbacks are:
 The procedure to implement a callback is the similar to defining a custom `Operation`. You have to:
 
 1. Create a class that implements a corresponding callback interface
-2. Register your callback
-3. Run your migrations
+2. Run your migrations
 
-#### Step 1 - Create a class that implements a corresponding callback interface
+### Step 1 - Create a class that implements a corresponding callback interface
+
+**Note!** The class should be created under a package defined in `schema.wizard.extension.package-name` property.
 
 Let's define a callback which executes each time before an SQL query will be run on a database:
 
@@ -528,19 +598,7 @@ public class BeforeCallback implements BeforeQueryExecutionCallback {
 }
 ```
 
-#### Step 2 - Register your callback
-
-Let's register `BeforeCallback` callback.
-In order to register a callback you have to use `.registerCallback()` method, where you have to provider an interface
-for a callback you would like to register and its implementation:
-
-```Java
-SchemaWizard schemaWizard=SchemaWizardBuilder.init()
-        .registerCallback(BeforeQueryExecutionCallback.class,BeforeCallback.class)
-        .build();
-```
-
-#### Step 3 - Run your migrations
+### Step 2 - Run your migrations
 
 If you run `schemaWizard.up()`, you will see the following logs:
 
@@ -548,3 +606,55 @@ If you run `schemaWizard.up()`, you will see the following logs:
 [main] INFO com.example.schemawizard.BeforeCallback - Running: 1; Description: Create users table
 [main] INFO com.example.schemawizard.BeforeCallback - Running: 2; Description: create posts table
 ```
+
+## Plugins
+
+SchemaWizard library provides Gradle and Maven plugins that could be used to execute library's functionality from command line.
+It makes the library easily integrated with any CI/CD tools.
+
+### Installation
+
+To include Gradle plugin to your project, add the following plugin to your build.gradle:
+
+```groovy
+plugins {
+    id "io.github.andriybosik.schema-wizard-gradle-plugin" version "${version}"
+}
+```
+
+To include Maven plugin to your project, add the following plugin to your pom.xml:
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>io.github.andriybosik</groupId>
+            <artifactId>schema-wizard-maven-plugin-preview</artifactId>
+            <version>${version}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>upgrade</goal>
+                        <goal>downgrade</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+### Usage
+
+1. Upgrade:
+   1. Gradle: `./gradlew :upgrade`
+   2. Maven:  `./mvnw sw:upgrade`
+2. Downgrade by count:
+   1. Gradle: `./gradlew :downgrade -Psw.count=2`
+   2. Maven:  `./mvnw sw:downgrade -Dsw.count=2`
+3. Downgrade by version:
+   1. Gradle: `./gradlew :downgrade -Psw.version=1745424669072`
+   2. Maven:  `./mvnw sw:downgrade -Dsw.version=1745424669072`
+4. Downgrade by context:
+   1. Gradle: `./gradlew :downgrade -Psw.context=migration-context`
+   2. Maven:  `./mvnw sw:downgrade -Dsw.context=migration-context`
