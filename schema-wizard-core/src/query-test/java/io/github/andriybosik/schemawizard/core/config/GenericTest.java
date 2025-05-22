@@ -1,8 +1,5 @@
 package io.github.andriybosik.schemawizard.core.config;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.reflections.Reflections;
 import io.github.andriybosik.schemawizard.core.config.extension.DisableForCondition;
 import io.github.andriybosik.schemawizard.core.di.DiContainer;
 import io.github.andriybosik.schemawizard.core.exception.InvalidConfigurationException;
@@ -14,6 +11,7 @@ import io.github.andriybosik.schemawizard.core.migration.factory.ColumnTypeFacto
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.MySqlColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
+import io.github.andriybosik.schemawizard.core.migration.factory.impl.SqlServerColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 import io.github.andriybosik.schemawizard.core.migration.operation.resolver.OperationResolver;
 import io.github.andriybosik.schemawizard.core.migration.service.ColumnNamingStrategyService;
@@ -26,6 +24,9 @@ import io.github.andriybosik.schemawizard.core.model.ConfigurationProperties;
 import io.github.andriybosik.schemawizard.core.model.defaults.Defaults;
 import io.github.andriybosik.schemawizard.core.model.defaults.Text;
 import io.github.andriybosik.schemawizard.core.utils.TestIOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.reflections.Reflections;
 
 import java.io.File;
 import java.util.AbstractMap;
@@ -42,7 +43,12 @@ public class GenericTest {
     protected final Set<DatabaseProvider> supportedProviders;
 
     protected GenericTest() {
-        this(Set.of(DatabaseProvider.ORACLE, DatabaseProvider.POSTGRESQL, DatabaseProvider.MYSQL));
+        this(
+                Set.of(
+                        DatabaseProvider.ORACLE,
+                        DatabaseProvider.POSTGRESQL,
+                        DatabaseProvider.MYSQL,
+                        DatabaseProvider.SQLSERVER));
     }
 
     protected GenericTest(DatabaseProvider provider) {
@@ -67,6 +73,7 @@ public class GenericTest {
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, MySqlColumnTypeFactory.class);
+        container.register(ColumnTypeFactory.class, SqlServerColumnTypeFactory.class);
         container.register(ColumnNamingStrategyService.class, getColumnNamingStrategyServiceClass(properties.getColumnNamingStrategy()));
 
         Reflections basePackageReflections = new Reflections("io.github.andriybosik.schemawizard.core");
@@ -117,6 +124,8 @@ public class GenericTest {
                 return "oracle";
             case MYSQL:
                 return "mysql";
+            case SQLSERVER:
+                return "sqlserver";
             default:
                 throw new IllegalArgumentException("Unknown directory for database provider: " + TestContext.getProvider());
         }

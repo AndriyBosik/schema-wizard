@@ -10,7 +10,7 @@ import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 
 public class DropIndexTest extends GenericTest {
     @Test
-    @DisableFor(DatabaseProvider.MYSQL)
+    @DisableFor({DatabaseProvider.MYSQL, DatabaseProvider.SQLSERVER})
     public void shouldGenerateDropIndexWithName() {
         Operation operation = DropIndex.builder()
                 .name("idx_users_email")
@@ -21,7 +21,7 @@ public class DropIndexTest extends GenericTest {
     }
 
     @Test
-    @DisableFor(DatabaseProvider.MYSQL)
+    @DisableFor({DatabaseProvider.MYSQL, DatabaseProvider.SQLSERVER})
     public void shouldGenerateDropIndexWithSchemaAndName() {
         Operation operation = DropIndex.builder()
                 .schema("schemawizard")
@@ -33,7 +33,7 @@ public class DropIndexTest extends GenericTest {
     }
 
     @Test
-    @DisableFor(DatabaseProvider.MYSQL)
+    @DisableFor({DatabaseProvider.MYSQL, DatabaseProvider.SQLSERVER})
     public void shouldGenerateDropIndexIfExists() {
         Operation operation = DropIndex.builder()
                 .name("idx_users_email")
@@ -53,7 +53,19 @@ public class DropIndexTest extends GenericTest {
                 .build();
 
         MigrationInfo info = operationResolverService.resolve(operation);
-        assertQuery("drop-index/with-table/name", info.getSql());
+        assertQuery("drop-index/with-table/table", info.getSql());
+    }
+
+    @Test
+    @DisableFor({DatabaseProvider.POSTGRESQL, DatabaseProvider.ORACLE})
+    public void shouldGenerateDropIndexWithNameAndSchemaAndTable() {
+        Operation operation = DropIndex.builder()
+                .name("idx_users_email")
+                .on("schemawizard", "users")
+                .build();
+
+        MigrationInfo info = operationResolverService.resolve(operation);
+        assertQuery("drop-index/with-table/schema-and-table", info.getSql());
     }
 
     @Test

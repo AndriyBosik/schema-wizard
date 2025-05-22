@@ -1,0 +1,1 @@
+ALTER TABLE users ADD enabled BIT NOT NULL

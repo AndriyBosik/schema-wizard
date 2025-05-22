@@ -1,4 +1,4 @@
-package io.github.andriybosik.schemawizard.core.migration.operation.resolver.oracle;
+package io.github.andriybosik.schemawizard.core.migration.operation.resolver.sqlserver;
 
 import io.github.andriybosik.schemawizard.core.di.annotation.Qualifier;
 import io.github.andriybosik.schemawizard.core.metadata.DatabaseProvider;
@@ -7,6 +7,7 @@ import io.github.andriybosik.schemawizard.core.migration.annotation.Provider;
 import io.github.andriybosik.schemawizard.core.migration.factory.ColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.metadata.ColumnTypeFactoryQualifier;
 import io.github.andriybosik.schemawizard.core.migration.metadata.ReferentialAction;
+import io.github.andriybosik.schemawizard.core.migration.model.ColumnMetadata;
 import io.github.andriybosik.schemawizard.core.migration.model.MigrationInfo;
 import io.github.andriybosik.schemawizard.core.migration.operation.AddCheckOperation;
 import io.github.andriybosik.schemawizard.core.migration.operation.AddForeignKeyOperation;
@@ -23,14 +24,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Provider(DatabaseProvider.ORACLE)
-public class OracleCreateTableOperationResolver implements OperationResolver<CreateTableOperation> {
+@Provider(DatabaseProvider.SQLSERVER)
+public class SqlServerCreateTableOperationResolver implements OperationResolver<CreateTableOperation> {
     private final OperationService operationService;
     private final ColumnTypeFactory columnTypeFactory;
 
-    public OracleCreateTableOperationResolver(
+    public SqlServerCreateTableOperationResolver(
             OperationService operationService,
-            @Qualifier(ColumnTypeFactoryQualifier.ORACLE) ColumnTypeFactory columnTypeFactory
+            @Qualifier(ColumnTypeFactoryQualifier.SQLSERVER) ColumnTypeFactory columnTypeFactory
     ) {
         this.operationService = operationService;
         this.columnTypeFactory = columnTypeFactory;
@@ -50,7 +51,15 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
 
     private String buildColumnsDefinitions(CreateTableOperation operation) {
         return operation.getColumns().stream()
-                .map(columnOperation -> operationService.buildColumnDefinition(columnOperation, columnTypeFactory))
+                .map(columnOperation -> operationService.buildColumnDefinition(
+                        columnOperation,
+                        columnTypeFactory,
+                        new ColumnMetadata(
+                                !operationService.isPrimaryKeyColumn(
+                                        columnOperation.getName(),
+                                        Optional.ofNullable(operation.getPrimaryKey())
+                                                .map(AddPrimaryKeyOperation::getColumns)
+                                                .orElse(new String[0])))))
                 .collect(Collectors.joining(SqlClause.COMMA_SEPARATOR));
     }
 
@@ -98,7 +107,7 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
         }
         return String.format(
                 "%s%s (%s)",
-                operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operationService.mapColumnName(operation.getName())),
+                operation.getName() == null ? "" : String.format("%s %s ", SqlClause.CONSTRAINT, operation.getName()),
                 SqlClause.UNIQUE,
                 String.join(SqlClause.COMMA_SEPARATOR, operationService.mapColumnNames(operation.getColumns())));
     }
@@ -115,10 +124,17 @@ public class OracleCreateTableOperationResolver implements OperationResolver<Cre
     }
 
     private String buildReferentialActions(AddForeignKeyOperation operation) {
-        return Optional.ofNullable(operation.getOnDelete())
-                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.ORACLE))
-                .map(ReferentialAction::getValue)
-                .map(value -> " ON DELETE " + value)
-                .orElse("");
+        return Stream.of(
+                        Optional.ofNullable(operation.getOnDelete())
+                                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.POSTGRESQL))
+                                .map(ReferentialAction::getValue)
+                                .map(value -> " ON DELETE " + value),
+                        Optional.ofNullable(operation.getOnUpdate())
+                                .filter(action -> action.getSupportedProviders().contains(DatabaseProvider.POSTGRESQL))
+                                .map(ReferentialAction::getValue)
+                                .map(value -> " ON UPDATE " + value))
+                .map(opt -> opt.orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining());
     }
 }
