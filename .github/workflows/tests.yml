@@ -32,7 +32,6 @@ jobs:
         run: sh ./gradlew :schema-wizard-core:queryTest --info
 
   postgresql_integration_test:
-    needs: postgresql_query_test
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -54,7 +53,6 @@ jobs:
           export DB_URL="jdbc:postgresql://localhost:${DB_PORT}/${DB_DATABASE}"
           sh ./gradlew :schema-wizard-core:test --info
   oracle_integration_test:
-    needs: oracle_query_test
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -77,7 +75,6 @@ jobs:
           export DB_URL="jdbc:oracle:thin:@localhost:${DB_PORT}/${DB_DATABASE}"
           sh ./gradlew :schema-wizard-core:test --info
   mysql_integration_test:
-    needs: mysql_query_test
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
