@@ -1,0 +1,1 @@
+CREATE TABLE posts (email VARCHAR(50) NOT NULL, id INT NOT NULL, user_id INT NULL, PRIMARY KEY (id), CONSTRAINT fk_posts_user_id FOREIGN KEY (user_id) REFERENCES schemawizard.users (id) ON DELETE CASCADE ON UPDATE SET NULL)

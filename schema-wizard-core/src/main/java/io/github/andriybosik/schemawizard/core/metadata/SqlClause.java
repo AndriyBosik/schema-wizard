@@ -4,6 +4,10 @@ public class SqlClause {
     public static final String SPACE_SEPARATOR = " ";
     public static final String COMMA_SEPARATOR = ", ";
 
+    public static final String EXEC = "EXEC";
+    public static final String SP_RENAME = "SP_RENAME";
+    public static final String OBJECT = "OBJECT";
+    public static final String COLUMN = "COLUMN";
     public static final String CREATE_SEQUENCE = "CREATE SEQUENCE";
     public static final String CREATE_INDEX = "CREATE INDEX";
     public static final String DROP_INDEX = "DROP INDEX";

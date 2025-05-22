@@ -1,0 +1,1 @@
+EXEC SP_RENAME 'pk_users', 'pk_users_id', 'OBJECT'

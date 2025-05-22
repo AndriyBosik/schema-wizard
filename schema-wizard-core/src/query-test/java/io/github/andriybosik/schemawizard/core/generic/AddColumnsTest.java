@@ -82,7 +82,7 @@ public class AddColumnsTest extends GenericTest {
                         "users",
                         factory -> List.of(
                                 factory.generic("age")
-                                        .type("INTEGER")
+                                        .type("CUSTOM_TYPE")
                                         .nullable(false)
                                         .sqlDefault("5")))
                 .build();

@@ -1,0 +1,1 @@
+ALTER TABLE users DROP COLUMN first_name, COLUMN IF EXISTS age, COLUMN IF EXISTS enabled

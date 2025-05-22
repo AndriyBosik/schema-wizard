@@ -1,0 +1,1 @@
+EXEC SP_RENAME 'users.name', 'first_name', 'COLUMN'

@@ -1,0 +1,1 @@
+ALTER TABLE users ADD enabled BIT NULL, first_name VARCHAR(200) NULL

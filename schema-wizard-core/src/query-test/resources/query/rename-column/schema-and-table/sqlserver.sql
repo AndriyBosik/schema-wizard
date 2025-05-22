@@ -1,0 +1,1 @@
+EXEC SP_RENAME 'schemawizard.users.name', 'first_name', 'COLUMN'
