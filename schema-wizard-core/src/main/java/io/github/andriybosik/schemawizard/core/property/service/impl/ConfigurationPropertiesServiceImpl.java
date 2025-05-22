@@ -122,6 +122,8 @@ public class ConfigurationPropertiesServiceImpl implements ConfigurationProperti
             return DatabaseProvider.ORACLE;
         } else if (lowerCaseConnectionUrl.contains(":mysql:")) {
             return DatabaseProvider.MYSQL;
+        } else if (lowerCaseConnectionUrl.contains(":sqlserver:")) {
+            return DatabaseProvider.SQLSERVER;
         }
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.INVALID_DATABASE_PROVIDER_FORMAT,

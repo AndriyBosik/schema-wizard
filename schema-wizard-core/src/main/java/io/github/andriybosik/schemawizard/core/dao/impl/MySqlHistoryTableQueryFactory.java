@@ -10,9 +10,9 @@ import static io.github.andriybosik.schemawizard.core.dao.Constants.MIGRATION_TA
 import static io.github.andriybosik.schemawizard.core.dao.Constants.VERSION;
 
 public class MySqlHistoryTableQueryFactory implements HistoryTableQueryFactory {
-    private final static String METADATA_TABLE_NAME = "information_schema.tables";
-    private final static String LOCK_NAME = MIGRATION_TABLE_NAME + "_LOCK";
-    private final static String EXECUTION_LOCK_NAME = MIGRATION_TABLE_NAME + "_EXECUTION_LOCK";
+    private static final String METADATA_TABLE_NAME = "information_schema.tables";
+    private static final String LOCK_NAME = MIGRATION_TABLE_NAME + "_LOCK";
+    private static final String EXECUTION_LOCK_NAME = MIGRATION_TABLE_NAME + "_EXECUTION_LOCK";
 
     @Override
     public String getCreateMigrationHistoryTableSql() {

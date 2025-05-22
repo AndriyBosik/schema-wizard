@@ -1,6 +1,5 @@
 package io.github.andriybosik.schemawizard.core.starter;
 
-import org.reflections.Reflections;
 import io.github.andriybosik.schemawizard.core.analyzer.HistoryTable;
 import io.github.andriybosik.schemawizard.core.analyzer.MigrationAnalyzer;
 import io.github.andriybosik.schemawizard.core.analyzer.factory.DowngradeFactory;
@@ -24,7 +23,8 @@ import io.github.andriybosik.schemawizard.core.dao.TransactionService;
 import io.github.andriybosik.schemawizard.core.dao.impl.DriverLoaderImpl;
 import io.github.andriybosik.schemawizard.core.dao.impl.MySqlHistoryTableQueryFactory;
 import io.github.andriybosik.schemawizard.core.dao.impl.OracleHistoryTableQueryFactory;
-import io.github.andriybosik.schemawizard.core.dao.impl.PostgresHistoryTableQueryFactory;
+import io.github.andriybosik.schemawizard.core.dao.impl.PostgreSqlHistoryTableQueryFactory;
+import io.github.andriybosik.schemawizard.core.dao.impl.SqlServerHistoryTableQueryFactory;
 import io.github.andriybosik.schemawizard.core.dao.impl.TransactionServiceImpl;
 import io.github.andriybosik.schemawizard.core.di.DiContainer;
 import io.github.andriybosik.schemawizard.core.exception.InvalidConfigurationException;
@@ -36,6 +36,7 @@ import io.github.andriybosik.schemawizard.core.migration.factory.ColumnTypeFacto
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.MySqlColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.OracleColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.factory.impl.PostgreSqlColumnTypeFactory;
+import io.github.andriybosik.schemawizard.core.migration.factory.impl.SqlServerColumnTypeFactory;
 import io.github.andriybosik.schemawizard.core.migration.operation.Operation;
 import io.github.andriybosik.schemawizard.core.migration.operation.resolver.OperationResolver;
 import io.github.andriybosik.schemawizard.core.migration.service.ColumnNamingStrategyService;
@@ -53,6 +54,7 @@ import io.github.andriybosik.schemawizard.core.property.service.impl.Configurati
 import io.github.andriybosik.schemawizard.core.property.service.impl.PropertyParserImpl;
 import io.github.andriybosik.schemawizard.core.runner.MigrationRunner;
 import io.github.andriybosik.schemawizard.core.runner.impl.MigrationRunnerImpl;
+import org.reflections.Reflections;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.File;
@@ -105,6 +107,7 @@ public class SchemaWizardBuilder {
         container.register(ColumnTypeFactory.class, PostgreSqlColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, OracleColumnTypeFactory.class);
         container.register(ColumnTypeFactory.class, MySqlColumnTypeFactory.class);
+        container.register(ColumnTypeFactory.class, SqlServerColumnTypeFactory.class);
         container.register(DowngradeFactory.class, DowngradeFactoryImpl.class);
         container.register(TransactionService.class, TransactionServiceImpl.class);
         container.register(HistoryTableQueryFactory.class, getHistoryTableQueryFactoryClass(provider));
@@ -170,13 +173,16 @@ public class SchemaWizardBuilder {
 
     private static Class<? extends HistoryTableQueryFactory> getHistoryTableQueryFactoryClass(DatabaseProvider provider) {
         if (provider == DatabaseProvider.POSTGRESQL) {
-            return PostgresHistoryTableQueryFactory.class;
+            return PostgreSqlHistoryTableQueryFactory.class;
         }
         if (provider == DatabaseProvider.ORACLE) {
             return OracleHistoryTableQueryFactory.class;
         }
         if (provider == DatabaseProvider.MYSQL) {
             return MySqlHistoryTableQueryFactory.class;
+        }
+        if (provider == DatabaseProvider.SQLSERVER) {
+            return SqlServerHistoryTableQueryFactory.class;
         }
         throw new InvalidConfigurationException(String.format(
                 ErrorMessage.NO_HISTORY_TABLE_QUERY_FACTORY_FOUND_FORMAT,

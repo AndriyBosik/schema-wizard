@@ -9,9 +9,9 @@ import static io.github.andriybosik.schemawizard.core.dao.Constants.ID;
 import static io.github.andriybosik.schemawizard.core.dao.Constants.MIGRATION_TABLE_NAME;
 import static io.github.andriybosik.schemawizard.core.dao.Constants.VERSION;
 
-public class PostgresHistoryTableQueryFactory implements HistoryTableQueryFactory {
-    private final static String METADATA_TABLE_NAME = "information_schema.tables";
-    private final static int LOCK_NUMBER = 11111111;
+public class PostgreSqlHistoryTableQueryFactory implements HistoryTableQueryFactory {
+    private static final String METADATA_TABLE_NAME = "information_schema.tables";
+    private static final int LOCK_NUMBER = 11111111;
 
     @Override
     public String getCreateMigrationHistoryTableSql() {
