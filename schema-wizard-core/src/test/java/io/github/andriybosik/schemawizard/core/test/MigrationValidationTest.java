@@ -15,7 +15,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/validation/fail-when-not-found/initial.json")
-    @ExpectedDataSet(value = "/dataset/validation/fail-when-not-found/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/validation/fail-when-not-found/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenMigrationNotFound() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.failwhennotfound");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
@@ -25,7 +25,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/validation/fail-when-duplicate-version/initial.json")
-    @ExpectedDataSet(value = "/dataset/validation/fail-when-duplicate-version/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/validation/fail-when-duplicate-version/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenDuplicateVersion() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.failwhenduplicateversion");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
@@ -35,7 +35,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/common/empty/initial.json")
-    @ExpectedDataSet("/dataset/common/empty/initial.json")
+    @ExpectedDataSet(value = "/dataset/common/empty/initial.json", ignoreCols = "id")
     void shouldThrowExceptionWhenIncorrectMigrationNamePattern() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.incorrectmigrationnamepattern");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
@@ -45,7 +45,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/common/empty/initial.json")
-    @ExpectedDataSet("/dataset/common/empty/expected.json")
+    @ExpectedDataSet(value = "/dataset/common/empty/expected.json", ignoreCols = "id")
     void shouldThrowExceptionWhenMigrationConstructorHasParams() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.constructionwithparams");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
@@ -55,7 +55,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/common/empty/initial.json")
-    @ExpectedDataSet("/dataset/common/empty/expected.json")
+    @ExpectedDataSet(value = "/dataset/common/empty/expected.json", ignoreCols = "id")
     void shouldThrowExceptionWhenPrivateMigrationConstructor() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.privateconstrctor");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);
@@ -65,7 +65,7 @@ public class MigrationValidationTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/common/empty/initial.json")
-    @ExpectedDataSet("/dataset/common/empty/expected.json")
+    @ExpectedDataSet(value = "/dataset/common/empty/expected.json", ignoreCols = "id")
     void shouldThrowExceptionWhenMultipleConstructorsDeclared() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("validation.multipleconstructors");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, schemaWizard::up);

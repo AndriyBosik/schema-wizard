@@ -1,7 +1,6 @@
 {
   "migration_history": [
     {
-      "id": 101,
       "version": 1,
       "description": "create people table"
     }

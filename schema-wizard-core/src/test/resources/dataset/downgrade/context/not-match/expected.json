@@ -1,25 +1,21 @@
 {
   "migration_history": [
     {
-      "id": 101,
       "version": 123,
       "description": "create people table",
       "context": "test-context"
     },
     {
-      "id": 102,
       "version": 124,
       "description": "create posts table",
       "context": "separator"
     },
     {
-      "id": 103,
       "version": 222,
       "description": "add age column",
       "context": "test-context"
     },
     {
-      "id": 104,
       "version": 333,
       "description": "add description column to posts table",
       "context": "text-context-not-match"

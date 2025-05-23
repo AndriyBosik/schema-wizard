@@ -1,13 +1,13 @@
 package io.github.andriybosik.schemawizard.core.config.impl;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import io.github.andriybosik.schemawizard.core.annotation.PostResetDb;
 import io.github.andriybosik.schemawizard.core.annotation.PreResetDb;
 import io.github.andriybosik.schemawizard.core.utils.EnvUtils;
 import io.github.andriybosik.schemawizard.core.utils.TestIOUtils;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -97,6 +97,7 @@ public class ResetDbExtension implements BeforeEachCallback, AfterEachCallback, 
             case POSTGRESQL:
             case ORACLE:
             case MYSQL:
+            case SQLSERVER:
                 return new ResetQueryTemplate(
                         tableName -> "DELETE FROM " + tableName,
                         tableName -> "DROP TABLE IF EXISTS " + tableName);
@@ -113,6 +114,8 @@ public class ResetDbExtension implements BeforeEachCallback, AfterEachCallback, 
                 return "oracle";
             case MYSQL:
                 return "mysql";
+            case SQLSERVER:
+                return "sqlserver";
         }
         throw new IllegalArgumentException("Unknown database provider: " + EnvUtils.PROVIDER);
     }

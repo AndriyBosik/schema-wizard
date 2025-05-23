@@ -30,6 +30,15 @@ jobs:
         env:
           PROVIDER: MYSQL
         run: sh ./gradlew :schema-wizard-core:queryTest --info
+  sqlserver_query_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: "SQL Server: Test Queries"
+        env:
+          PROVIDER: SQLSERVER
+        run: sh ./gradlew :schema-wizard-core:queryTest --info
 
   postgresql_integration_test:
     runs-on: ubuntu-latest
@@ -94,4 +103,25 @@ jobs:
           DB_CASE_SENSITIVE_TABLE_NAMES: true
         run: |
           export DB_URL="jdbc:mysql://localhost:${DB_PORT}/${DB_DATABASE}"
+          sh ./gradlew :schema-wizard-core:test --info
+  sqlserver_integration_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: Copy Testcontainers properties
+        run: |
+          mkdir -p /home/runner/
+          echo "testcontainers.reuse.enable=true" > /home/runner/.testcontainers.properties
+      - name: "SQL Server: Test library features"
+        env:
+          PROVIDER: SQLSERVER
+          DB_USERNAME: admin
+          DB_PASSWORD: Password1!
+          DB_PORT: 1433
+          DB_DATABASE: swtest
+          DB_SCHEMA: swtest
+          DB_CASE_SENSITIVE_TABLE_NAMES: true
+        run: |
+          export DB_URL="jdbc:sqlserver://localhost:${DB_PORT};database=${DB_DATABASE};encrypt=false;trustServerCertificate=true"
           sh ./gradlew :schema-wizard-core:test --info

@@ -16,7 +16,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts"})
     @DataSet("/dataset/downgrade/count/initial/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/count/initial/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/count/initial/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeMigrationsByCount() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.count.initial");
         schemaWizard.downByCount(2);
@@ -25,7 +25,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts"})
     @DataSet("/dataset/downgrade/count/zero/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/count/zero/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/count/zero/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldNotDowngradeWhenCountIsZero() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.count.zero");
         schemaWizard.downByCount(0);
@@ -34,7 +34,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts"})
     @DataSet("/dataset/downgrade/count/negative/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/count/negative/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/count/negative/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenCountIsNegative() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.count.negative");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, () -> schemaWizard.downByCount(-10));
@@ -44,7 +44,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts"})
     @DataSet("/dataset/downgrade/count/greater/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/count/greater/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/count/greater/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenCountIsGreaterThanAppliedMigrationsCount() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.count.greater");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, () -> schemaWizard.downByCount(10));
@@ -63,7 +63,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/initial/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/initial/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/initial/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeByStrippedContext() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context.initial");
         schemaWizard.downByContext("    test-context ");
@@ -72,7 +72,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/last-null/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/last-null/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/last-null/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldNotDowngradeWhenLastContextValueIsNull() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context.lastnull");
         schemaWizard.downByContext("test-context");
@@ -81,7 +81,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/not-match/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/not-match/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/not-match/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldNotDowngradeWhenLastContextValueDoesNotMatch() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context.notmatch");
         schemaWizard.downByContext("test-context");
@@ -90,7 +90,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/all/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/all/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/all/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeAllByContext() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context.all");
         schemaWizard.downByContext("test-context");
@@ -99,7 +99,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/nullable/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/nullable/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/nullable/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenContextIsNull() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context.nullable");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, () -> schemaWizard.downByContext(null));
@@ -109,7 +109,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/context/empty/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/context/empty/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/context/empty/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldThrowExceptionWhenContextIsEmpty() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.context/empty");
         MigrationAnalyzerException exception = assertThrows(MigrationAnalyzerException.class, () -> schemaWizard.downByContext("     \n\n\t\t   "));
@@ -128,7 +128,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/version/initial/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/version/initial/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/version/initial/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeByVersion() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.version.initial");
         schemaWizard.downByVersion(124);
@@ -137,7 +137,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/version/not-ordered/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/version/not-ordered/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/version/not-ordered/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeByNotOrderedVersions() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.version.notordered");
         schemaWizard.downByVersion(222);
@@ -146,7 +146,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/version/non-existent/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/version/non-existent/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/version/non-existent/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldNotDowngradeByNonExistentVersion() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.version.nonexistent");
         schemaWizard.downByVersion(-342);
@@ -155,7 +155,7 @@ public class DowngradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history", execute = {"people-with-age", "posts-with-description"})
     @DataSet("/dataset/downgrade/version/all/initial.json")
-    @ExpectedDataSet(value = "/dataset/downgrade/version/all/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/downgrade/version/all/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldDowngradeAllByVersion() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("downgrade.version.all");
         schemaWizard.downByVersion(123);
