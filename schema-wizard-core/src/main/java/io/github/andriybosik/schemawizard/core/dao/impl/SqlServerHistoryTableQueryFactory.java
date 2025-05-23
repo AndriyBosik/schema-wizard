@@ -57,7 +57,7 @@ public class SqlServerHistoryTableQueryFactory implements HistoryTableQueryFacto
                         "  SELECT %s FROM %s WHERE %s = ?)" +
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
                         "FROM %s mh " +
-                        "LEFT JOIN break_row ON TRUE " +
+                        "LEFT JOIN break_row ON (1 = 1) " +
                         "WHERE break_row.%s IS NOT NULL AND mh.%s >= break_row.%s " +
                         "ORDER BY mh.%s DESC",
                 ID,
@@ -72,10 +72,10 @@ public class SqlServerHistoryTableQueryFactory implements HistoryTableQueryFacto
     public String getSelectLastMigrationsByContext() {
         return String.format(
                 "WITH break_row (%s) AS (" +
-                        " SELECT %s FROM %s WHERE %s IS NULL OR %s != ? ORDER BY %s DESC LIMIT 1) " +
+                        "  SELECT TOP 1 %s FROM %s WHERE %s IS NULL OR %s != ? ORDER BY %s DESC) " +
                         "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
                         "FROM %s mh " +
-                        "LEFT JOIN break_row ON TRUE " +
+                        "LEFT JOIN break_row ON (1 = 1) " +
                         "WHERE mh.%s = ? AND (break_row.%s IS NULL OR mh.%s > break_row.%s) " +
                         "ORDER BY mh.%s DESC",
                 ID,
@@ -89,12 +89,20 @@ public class SqlServerHistoryTableQueryFactory implements HistoryTableQueryFacto
     @Override
     public String getSelectLastMigrationsByCount() {
         return String.format(
-                "SELECT mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
-                        "FROM %s mh " +
-                        "ORDER BY mh.%s DESC LIMIT ?",
+                "SELECT " +
+                        "  r.%s, r.%s, r.%s, r.%s, r.%s " +
+                        "FROM ( " +
+                        "  SELECT " +
+                        "    ROW_NUMBER() OVER (ORDER BY mh.%s DESC) AS rn, " +
+                        "    mh.%s, mh.%s, mh.%s, mh.%s, mh.%s " +
+                        "  FROM %s mh " +
+                        ") AS r " +
+                        "WHERE r.rn <= ? " +
+                        "ORDER BY r.rn",
                 ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
-                MIGRATION_TABLE_NAME,
-                ID);
+                ID,
+                ID, VERSION, DESCRIPTION, CONTEXT, APPLIED_ON,
+                MIGRATION_TABLE_NAME);
     }
 
     @Override

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UpgradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
-    @ExpectedDataSet("/dataset/upgrade/empty-database/expected.json")
+    @ExpectedDataSet(value = "/dataset/upgrade/empty-database/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldUpgradeWithEmptyDatabase() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("upgrade.emptyhistory");
         schemaWizard.up();
@@ -26,7 +26,7 @@ public class UpgradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/upgrade/subsequent/initial.json")
-    @ExpectedDataSet(value = "/dataset/upgrade/subsequent/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/upgrade/subsequent/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldUpgradeSubsequentWithContext() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("upgrade.subsequent", "subsequent-upgrade");
         schemaWizard.up();
@@ -35,7 +35,7 @@ public class UpgradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/upgrade/unordered/initial.json")
-    @ExpectedDataSet(value = "/dataset/upgrade/unordered/expected.json", orderBy = "version")
+    @ExpectedDataSet(value = "/dataset/upgrade/unordered/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldUpgradeUnordered() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("upgrade.unordered");
         schemaWizard.up();
@@ -44,7 +44,7 @@ public class UpgradeTest extends BaseTest {
     @Test
     @PreResetDb(drop = {"people", "posts"}, clean = "migration_history")
     @DataSet("/dataset/common/empty/initial.json")
-    @ExpectedDataSet("/dataset/upgrade/callbacks/expected.json")
+    @ExpectedDataSet(value = "/dataset/upgrade/callbacks/expected.json", orderBy = "version", ignoreCols = "id")
     void shouldExecuteCallbacks() {
         SchemaWizard schemaWizard = FactoryUtils.newInstance("upgrade.callbacks");
         schemaWizard.up();
