@@ -44,7 +44,7 @@ sonatypeCentralPublishExtension {
     password = sonatypePassword
 
     pom {
-        name = meta.ARTIFACT_ID
+        name = artifact
         description = meta.DESC
         url = "${meta.GITHUB_REPO}"
 
