@@ -9,6 +9,7 @@ Library also supports cross-database compatibility - write once, run anywhere.
 1. PostgreSQL
 2. Oracle
 3. MySQL
+4. SQL Server
 
 ## Installation
 
